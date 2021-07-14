@@ -7,4 +7,15 @@
   <display-name>dxpivotgrid-demo</display-name>
   <description>dxpivotgrid-demo</description>
 
+  <servlet>
+    <servlet-name>api-service</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>api-service</servlet-name>
+    <url-pattern>/api/v1/*</url-pattern>
+  </servlet-mapping>
+
 </web-app>

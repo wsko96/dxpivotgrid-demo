@@ -2,13 +2,13 @@
 
 dxpivotgrid-demo
 
-## How to build
+## How to build and run
 
-    mvn clean verify
-
-## How to run locally
-
-    mvn jetty:run
+    set MAVEN_OPTS=-Xmx1024m
+    mvn clean verify jetty:run
 
 And visit http://localhost:8080
 
+## Example Sales Data REST API
+
+    http://localhost:8080/api/v1/sales

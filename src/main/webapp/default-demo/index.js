@@ -60,7 +60,10 @@ $(function() {
                 format: "currency",
                 area: "data"
             }],
-            store: sales
+            // store: sales
+            load: function(){
+                return  $.getJSON('/api/v1/sales');
+            }
         }
     }).dxPivotGrid("instance");
 
