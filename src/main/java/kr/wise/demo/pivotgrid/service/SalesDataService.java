@@ -76,11 +76,6 @@ public class SalesDataService {
         }
 
         if (ArrayUtils.isNotEmpty(groupParams)) {
-            System.out.println("$$$$$ filter: " + filter);
-            System.out.println("$$$$$ group: " + group);
-            System.out.println("$$$$$ totalSummary: " + totalSummary);
-            System.out.println("$$$$$ groupSummary: " + groupSummary);
-
             try {
                 final DataFrame dataFrame = new ArrayNodeDataFrame(dataArray, SALES_COLUMN_NAMES);
                 final DataAggregation aggregation = createDataAggregation(dataFrame, groupParams,
@@ -170,47 +165,5 @@ public class SalesDataService {
         }
 
         return aggregation;
-    }
-
-    private void addYearGroupNodes(final DataAggregation aggregation, final ArrayNode dataArray,
-            final String filter, final GroupParam[] groupParams, final String totalSummary,
-            final String groupSummary) throws Exception {
-        aggregation.addGroup("2013").addSummaryValue(100);
-        aggregation.addGroup("2014").addSummaryValue(200);
-        aggregation.addGroup("2015").addSummaryValue(300);
-    }
-
-    private void addRegionYearGroupNodes(final DataAggregation aggregation,
-            final ArrayNode dataArray, final String filter, final GroupParam[] groupParams,
-            final String totalSummary, final String groupSummary) throws Exception {
-        DataGroup group = aggregation.addGroup("Africa").addSummaryValue(new BigDecimal(1000));
-        group.addItem("2013").addSummaryValue(100);
-        group.addItem("2014").addSummaryValue(200);
-        group.addItem("2015").addSummaryValue(300);
-
-        group = aggregation.addGroup("Austrailia").addSummaryValue(new BigDecimal(1000));
-        group.addItem("2013").addSummaryValue(100);
-        group.addItem("2014").addSummaryValue(200);
-        group.addItem("2015").addSummaryValue(300);
-
-        group = aggregation.addGroup("Asia").addSummaryValue(new BigDecimal(1000));
-        group.addItem("2013").addSummaryValue(100);
-        group.addItem("2014").addSummaryValue(200);
-        group.addItem("2015").addSummaryValue(300);
-
-        group = aggregation.addGroup("South America").addSummaryValue(new BigDecimal(1000));
-        group.addItem("2013").addSummaryValue(100);
-        group.addItem("2014").addSummaryValue(200);
-        group.addItem("2015").addSummaryValue(300);
-
-        group = aggregation.addGroup("North America").addSummaryValue(new BigDecimal(1000));
-        group.addItem("2013").addSummaryValue(100);
-        group.addItem("2014").addSummaryValue(200);
-        group.addItem("2015").addSummaryValue(300);
-
-        group = aggregation.addGroup("Europe").addSummaryValue(new BigDecimal(1000));
-        group.addItem("2013").addSummaryValue(100);
-        group.addItem("2014").addSummaryValue(200);
-        group.addItem("2015").addSummaryValue(300);
     }
 }
