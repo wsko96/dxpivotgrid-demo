@@ -3,6 +3,7 @@ package kr.wise.demo.pivotgrid.service;
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,7 @@ import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataGroup;
 import kr.wise.demo.pivotgrid.model.DataRow;
+import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.GroupSummaryParam;
 import kr.wise.demo.pivotgrid.repository.SalesDataRepository;
@@ -43,12 +45,17 @@ public class SalesDataService {
             @RequestParam(name = "group", required = false) String group,
             @RequestParam(name = "groupSummary", required = false) String groupSummary,
             @RequestParam(name = "totalSummary", required = false) String totalSummary) {
-        final ArrayNode dataArray = repository.findAll();
+        ArrayNode dataArray = repository.findAll();
 
+        FilterParam[] filterParams = null;
         GroupParam[] groupParams = null;
         GroupSummaryParam[] groupSummaryParams = null;
 
         try {
+            final ArrayNode filterParamsNode = StringUtils.isNotBlank(filter)
+                    ? (ArrayNode) JacksonUtils.getObjectMapper().readTree(filter) : null;
+            filterParams = ParamUtils.toFilterParams(filterParamsNode);
+
             final ArrayNode groupParamsNode = StringUtils.isNotBlank(group)
                     ? (ArrayNode) JacksonUtils.getObjectMapper().readTree(group) : null;
             groupParams = ParamUtils.toGroupParams(groupParamsNode);
@@ -67,9 +74,9 @@ public class SalesDataService {
                     filter, group, groupSummary, totalSummary);
 
             try {
-                final DataFrame dataFrame = new ArrayNodeDataFrame(dataArray, SALES_COLUMN_NAMES);
-                final DataAggregation aggregation = createDataAggregation(dataFrame, groupParams,
-                        groupSummaryParams);
+                DataFrame dataFrame = new ArrayNodeDataFrame(dataArray, SALES_COLUMN_NAMES);
+                final DataAggregation aggregation = createDataAggregation(dataFrame, filterParams,
+                        groupParams, groupSummaryParams);
                 return aggregation;
             }
             catch (Exception e) {
@@ -97,13 +104,55 @@ public class SalesDataService {
         return dataArray;
     }
 
+    private boolean isFilteredIn(final DataRow row, final FilterParam[] filterParams) {
+        for (FilterParam filterParam : filterParams) {
+            final String selector = filterParam.getSelector();
+            final String operator = filterParam.getOperator();
+            final String comparingValue = filterParam.getComparingValue();
+
+            final String rowValue = row.getString(selector);
+
+            if ("=".equals(operator)) {
+                if (!Objects.equals(comparingValue, rowValue)) {
+                    return false;
+                }
+            }
+            else if ("<".equals(operator)) {
+                if (comparingValue.compareTo(rowValue) <= 0) {
+                    return false;
+                }
+            }
+            else if (">".equals(operator)) {
+                if (comparingValue.compareTo(rowValue) >= 0) {
+                    return false;
+                }
+            }
+            else if ("<=".equals(operator)) {
+                if (comparingValue.compareTo(rowValue) < 0) {
+                    return false;
+                }
+            }
+            else if (">=".equals(operator)) {
+                if (comparingValue.compareTo(rowValue) > 0) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     private DataAggregation createDataAggregation(final DataFrame dataFrame,
-            final GroupParam[] groupParams, final GroupSummaryParam[] groupSummaryParams)
-            throws Exception {
+            final FilterParam[] filterParams, final GroupParam[] groupParams,
+            final GroupSummaryParam[] groupSummaryParams) throws Exception {
         final DataAggregation aggregation = new DataAggregation();
 
         for (Iterator<DataRow> it = dataFrame.iterator(); it.hasNext();) {
             final DataRow row = it.next();
+
+            if (ArrayUtils.isNotEmpty(filterParams) && !isFilteredIn(row, filterParams)) {
+                continue;
+            }
 
             GroupParam groupParam = groupParams[0];
             String columnName = groupParam.getSelector();
