@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,6 +17,8 @@ import kr.wise.demo.pivotgrid.model.DataRow;
 public class ObjectNodeDataRow implements DataRow {
 
     private static final Pattern DATE_PATTERN = Pattern.compile("^(\\d+)-(\\d+)-(\\d+).*$");
+
+    private static final String[] QUARTER_LABELS = { "Q1", "Q2", "Q3", "Q4" };
 
     private final ObjectNode dataNode;
 
@@ -41,13 +44,17 @@ public class ObjectNodeDataRow implements DataRow {
         final Matcher matcher = DATE_PATTERN.matcher(value);
 
         if (matcher.matches()) {
-            if ("year".equals(dateInterval)) {
+            if (StringUtils.equalsIgnoreCase("year", dateInterval)) {
                 return matcher.group(1);
             }
-            else if ("month".equals(dateInterval)) {
+            else if (StringUtils.equalsIgnoreCase("quarter", dateInterval)) {
+                final int quarterIndex = (NumberUtils.toInt(matcher.group(2)) - 1) / 3;
+                return QUARTER_LABELS[quarterIndex];
+            }
+            else if (StringUtils.equalsIgnoreCase("month", dateInterval)) {
                 return matcher.group(2);
             }
-            else if ("day".equals(dateInterval)) {
+            else if (StringUtils.equalsIgnoreCase("day", dateInterval)) {
                 return matcher.group(3);
             }
         }

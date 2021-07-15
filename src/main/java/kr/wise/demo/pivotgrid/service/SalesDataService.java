@@ -47,14 +47,14 @@ public class SalesDataService {
             @RequestParam(name = "totalSummary", required = false) String totalSummary) {
         ArrayNode dataArray = repository.findAll();
 
-        FilterParam[] filterParams = null;
+        FilterParam rootFilter = null;
         GroupParam[] groupParams = null;
         GroupSummaryParam[] groupSummaryParams = null;
 
         try {
             final ArrayNode filterParamsNode = StringUtils.isNotBlank(filter)
                     ? (ArrayNode) JacksonUtils.getObjectMapper().readTree(filter) : null;
-            filterParams = ParamUtils.toFilterParams(filterParamsNode);
+            rootFilter = ParamUtils.toFilterParam(filterParamsNode);
 
             final ArrayNode groupParamsNode = StringUtils.isNotBlank(group)
                     ? (ArrayNode) JacksonUtils.getObjectMapper().readTree(group) : null;
@@ -75,7 +75,7 @@ public class SalesDataService {
 
             try {
                 DataFrame dataFrame = new ArrayNodeDataFrame(dataArray, SALES_COLUMN_NAMES);
-                final DataAggregation aggregation = createDataAggregation(dataFrame, filterParams,
+                final DataAggregation aggregation = createDataAggregation(dataFrame, rootFilter,
                         groupParams, groupSummaryParams);
                 return aggregation;
             }
@@ -104,38 +104,79 @@ public class SalesDataService {
         return dataArray;
     }
 
-    private boolean isFilteredIn(final DataRow row, final FilterParam[] filterParams) {
-        for (FilterParam filterParam : filterParams) {
-            final String selector = filterParam.getSelector();
-            final String operator = filterParam.getOperator();
-            final String comparingValue = filterParam.getComparingValue();
+    private boolean isIncludedByRootFilter(final DataRow row, final FilterParam rootFilter) {
+        final FilterParam firstChild = rootFilter.getFirstChild();
 
-            final String rowValue = row.getString(selector);
+        if (firstChild == null) {
+            return true;
+        }
 
-            if ("=".equals(operator)) {
-                if (!Objects.equals(comparingValue, rowValue)) {
-                    return false;
-                }
+        if (firstChild.hasChild()) {
+            return isIncludedByContainerFilter(row, firstChild);
+        } else {
+            return isIncludedByLeafFilter(row, firstChild);
+        }
+    }
+
+    private boolean isIncludedByContainerFilter(final DataRow row,
+            final FilterParam containerFilter) {
+        if (containerFilter.getChildCount() < 2) {
+            return false;
+        }
+
+        final String operator = containerFilter.getOperator();
+        final FilterParam childFilter1 = containerFilter.getChildren().get(0);
+        final FilterParam childFilter2 = containerFilter.getChildren().get(1);
+
+        if ("and".equals(operator)) {
+            return (childFilter1.hasChild() ? isIncludedByContainerFilter(row, childFilter1)
+                    : isIncludedByLeafFilter(row, childFilter1))
+                    && (childFilter2.hasChild() ? isIncludedByContainerFilter(row, childFilter2)
+                            : isIncludedByLeafFilter(row, childFilter2));
+        }
+
+        if ("or".equals(operator)) {
+            return (childFilter1.hasChild() ? isIncludedByContainerFilter(row, childFilter1)
+                    : isIncludedByLeafFilter(row, childFilter1))
+                    || (childFilter2.hasChild() ? isIncludedByContainerFilter(row, childFilter2)
+                            : isIncludedByLeafFilter(row, childFilter2));
+        }
+
+        return true;
+    }
+
+    private boolean isIncludedByLeafFilter(final DataRow row, final FilterParam leafFilter) {
+        final String operator = leafFilter.getOperator();
+        final String[] selectorTokens = StringUtils.split(leafFilter.getSelector(), ".", 2);
+        final String columnName = selectorTokens[0];
+        final String dateInterval = selectorTokens.length > 1 ? selectorTokens[1] : null;
+        final String comparingValue = leafFilter.getComparingValue();
+
+        final String rowValue = row.getString(columnName, dateInterval);
+
+        if ("=".equals(operator)) {
+            if (!Objects.equals(comparingValue, rowValue)) {
+                return false;
             }
-            else if ("<".equals(operator)) {
-                if (comparingValue.compareTo(rowValue) <= 0) {
-                    return false;
-                }
+        }
+        else if ("<".equals(operator)) {
+            if (comparingValue.compareTo(rowValue) <= 0) {
+                return false;
             }
-            else if (">".equals(operator)) {
-                if (comparingValue.compareTo(rowValue) >= 0) {
-                    return false;
-                }
+        }
+        else if (">".equals(operator)) {
+            if (comparingValue.compareTo(rowValue) >= 0) {
+                return false;
             }
-            else if ("<=".equals(operator)) {
-                if (comparingValue.compareTo(rowValue) < 0) {
-                    return false;
-                }
+        }
+        else if ("<=".equals(operator)) {
+            if (comparingValue.compareTo(rowValue) < 0) {
+                return false;
             }
-            else if (">=".equals(operator)) {
-                if (comparingValue.compareTo(rowValue) > 0) {
-                    return false;
-                }
+        }
+        else if (">=".equals(operator)) {
+            if (comparingValue.compareTo(rowValue) > 0) {
+                return false;
             }
         }
 
@@ -143,14 +184,14 @@ public class SalesDataService {
     }
 
     private DataAggregation createDataAggregation(final DataFrame dataFrame,
-            final FilterParam[] filterParams, final GroupParam[] groupParams,
+            final FilterParam rootFilter, final GroupParam[] groupParams,
             final GroupSummaryParam[] groupSummaryParams) throws Exception {
         final DataAggregation aggregation = new DataAggregation();
 
         for (Iterator<DataRow> it = dataFrame.iterator(); it.hasNext();) {
             final DataRow row = it.next();
 
-            if (ArrayUtils.isNotEmpty(filterParams) && !isFilteredIn(row, filterParams)) {
+            if (rootFilter != null && !isIncludedByRootFilter(row, rootFilter)) {
                 continue;
             }
 

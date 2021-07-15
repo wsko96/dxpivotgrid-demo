@@ -3,6 +3,10 @@ package kr.wise.demo.pivotgrid.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
@@ -11,31 +15,51 @@ import kr.wise.demo.pivotgrid.param.GroupSummaryParam;
 
 public final class ParamUtils {
 
+    private static Logger log = LoggerFactory.getLogger(ParamUtils.class);
+
     private ParamUtils() {
 
     }
 
-    public static FilterParam[] toFilterParams(final ArrayNode filterParamsNode) {
-        if (filterParamsNode == null) {
-            return null;
-        }
-
+    public static FilterParam toFilterParam(final ArrayNode filterParamsNode) {
         final int size = filterParamsNode != null ? filterParamsNode.size() : 0;
-        FilterParam[] params = new FilterParam[size];
+        final String operator = size > 1 ? filterParamsNode.get(1).asText() : null;
+        final FilterParam rootFilter;
 
-        for (int i = 0; i < size; i++) {
-            params[i] = toFilterParam((ArrayNode) filterParamsNode.get(i));
+        if ("and".equals(operator) || "or".equals(operator)) {
+            rootFilter = new FilterParam(operator);
+            final ArrayNode firstFilterNodeWrapper = (ArrayNode) filterParamsNode.get(0);
+            final ArrayNode secondFilterNodeWrapper = (ArrayNode) filterParamsNode.get(2);
+            addChildFilterParam(rootFilter, (ArrayNode) firstFilterNodeWrapper.get(0));
+            addChildFilterParam(rootFilter, (ArrayNode) secondFilterNodeWrapper.get(0));
+        } else {
+            rootFilter = new FilterParam();
+
+            for (int i = 0; i < size; i++) {
+                addChildFilterParam(rootFilter, (ArrayNode) filterParamsNode.get(i));
+            }
         }
 
-        return params;
+        return rootFilter;
     }
 
-    public static FilterParam toFilterParam(final ArrayNode filterParamNode) {
-        final int size = filterParamNode.size();
-        final String selector = size > 0 ? filterParamNode.get(0).asText() : null;
-        final String operator = size > 1 ? filterParamNode.get(1).asText() : null;
-        final String comparingValue = size > 2 ? filterParamNode.get(2).asText() : null;
-        return new FilterParam(selector, operator, comparingValue);
+    private static void addChildFilterParam(final FilterParam filterParam, final ArrayNode childFilterParamNode) {
+        final int size = childFilterParamNode != null ? childFilterParamNode.size() : 0;
+        final String operator = size > 1 ? childFilterParamNode.get(1).asText() : null;
+
+        if (StringUtils.isBlank(operator)) {
+            return;
+        }
+
+        if ("and".equals(operator) || "or".equals(operator)) {
+            FilterParam childFilter = new FilterParam(operator);
+            addChildFilterParam(childFilter, (ArrayNode) childFilterParamNode.get(0));
+            addChildFilterParam(childFilter, (ArrayNode) childFilterParamNode.get(2));
+        } else {
+            final String selector = childFilterParamNode.get(0).asText();
+            final String comparingValue = childFilterParamNode.get(2).asText();
+            filterParam.addChild(operator, selector, comparingValue);
+        }
     }
 
     public static GroupParam[] toGroupParams(final ArrayNode groupParamsNode) {
