@@ -8,32 +8,38 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class DataAggregation {
+public class DataAggregation implements SummaryContainer<DataAggregation> {
 
     private List<DataGroup> data;
     private List<DataGroup> unmodifiableData;
     private Map<String, DataGroup> dataMap;
     private List<BigDecimal> summary;
+    private int rowCount;
 
     public DataAggregation() {
     }
 
+    @Override
     public DataAggregation addSummaryValue(final int value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataAggregation addSummaryValue(final long value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataAggregation addSummaryValue(final double value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataAggregation addSummaryValue(final String value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataAggregation addSummaryValue(final BigDecimal value) {
         if (summary == null) {
             summary = new ArrayList<>();
@@ -42,8 +48,19 @@ public class DataAggregation {
         return this;
     }
 
+    @Override
     public List<BigDecimal> getSummary() {
         return summary;
+    }
+
+    @Override
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    @Override
+    public int incrementRowCount() {
+        return ++rowCount;
     }
 
     public DataGroup addGroup(final String key) {

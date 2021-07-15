@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class DataGroup {
+public class DataGroup implements SummaryContainer<DataGroup> {
 
     private final String key;
     private List<BigDecimal> summary;
@@ -29,22 +29,27 @@ public class DataGroup {
         return key;
     }
 
+    @Override
     public DataGroup addSummaryValue(final int value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataGroup addSummaryValue(final long value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataGroup addSummaryValue(final double value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataGroup addSummaryValue(final String value) {
         return addSummaryValue(new BigDecimal(value));
     }
 
+    @Override
     public DataGroup addSummaryValue(final BigDecimal value) {
         if (summary == null) {
             summary = new ArrayList<>();
@@ -53,8 +58,19 @@ public class DataGroup {
         return this;
     }
 
+    @Override
     public List<BigDecimal> getSummary() {
         return summary;
+    }
+
+    @Override
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    @Override
+    public int incrementRowCount() {
+        return ++rowCount;
     }
 
     public DataGroup addItem(final String key) {
@@ -77,13 +93,5 @@ public class DataGroup {
 
     public List<DataGroup> getItems() {
         return unmodifiableItems;
-    }
-
-    public int getRowCount() {
-        return rowCount;
-    }
-
-    public int incrementRowCount() {
-        return ++rowCount;
     }
 }

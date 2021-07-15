@@ -1,6 +1,6 @@
 package kr.wise.demo.pivotgrid.param;
 
-public class GroupSummaryParam {
+public class SummaryParam {
 
     private String selector;
     private String summaryType;

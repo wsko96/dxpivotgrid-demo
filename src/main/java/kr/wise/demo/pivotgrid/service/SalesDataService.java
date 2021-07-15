@@ -20,9 +20,10 @@ import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataGroup;
 import kr.wise.demo.pivotgrid.model.DataRow;
+import kr.wise.demo.pivotgrid.model.SummaryContainer;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
-import kr.wise.demo.pivotgrid.param.GroupSummaryParam;
+import kr.wise.demo.pivotgrid.param.SummaryParam;
 import kr.wise.demo.pivotgrid.repository.SalesDataRepository;
 import kr.wise.demo.pivotgrid.util.JacksonUtils;
 import kr.wise.demo.pivotgrid.util.ParamUtils;
@@ -49,7 +50,8 @@ public class SalesDataService {
 
         FilterParam rootFilter = null;
         GroupParam[] groupParams = null;
-        GroupSummaryParam[] groupSummaryParams = null;
+        SummaryParam[] groupSummaryParams = null;
+        SummaryParam[] totalSummaryParams = null;
 
         try {
             final ArrayNode filterParamsNode = StringUtils.isNotBlank(filter)
@@ -62,10 +64,14 @@ public class SalesDataService {
 
             final ArrayNode groupSummaryParamsNode = StringUtils.isNotBlank(groupSummary)
                     ? (ArrayNode) JacksonUtils.getObjectMapper().readTree(groupSummary) : null;
-            groupSummaryParams = ParamUtils.toGroupSummaryParams(groupSummaryParamsNode);
+            groupSummaryParams = ParamUtils.toSummaryParams(groupSummaryParamsNode);
+
+            final ArrayNode totalSummaryParamsNode = StringUtils.isNotBlank(totalSummary)
+                    ? (ArrayNode) JacksonUtils.getObjectMapper().readTree(totalSummary) : null;
+            totalSummaryParams = ParamUtils.toSummaryParams(totalSummaryParamsNode);
         }
         catch (Exception e) {
-            log.error("Failed to parse group and/or groupSummary params.", e);
+            log.error("Failed to parse params.", e);
         }
 
         if (ArrayUtils.isNotEmpty(groupParams)) {
@@ -76,7 +82,7 @@ public class SalesDataService {
             try {
                 DataFrame dataFrame = new ArrayNodeDataFrame(dataArray, SALES_COLUMN_NAMES);
                 final DataAggregation aggregation = createDataAggregation(dataFrame, rootFilter,
-                        groupParams, groupSummaryParams);
+                        groupParams, groupSummaryParams, totalSummaryParams);
                 return aggregation;
             }
             catch (Exception e) {
@@ -185,7 +191,8 @@ public class SalesDataService {
 
     private DataAggregation createDataAggregation(final DataFrame dataFrame,
             final FilterParam rootFilter, final GroupParam[] groupParams,
-            final GroupSummaryParam[] groupSummaryParams) throws Exception {
+            final SummaryParam[] groupSummaryParams, final SummaryParam[] totalSummaryParams)
+            throws Exception {
         final DataAggregation aggregation = new DataAggregation();
 
         for (Iterator<DataRow> it = dataFrame.iterator(); it.hasNext();) {
@@ -195,58 +202,61 @@ public class SalesDataService {
                 continue;
             }
 
-            GroupParam groupParam = groupParams[0];
-            String columnName = groupParam.getSelector();
-            String dateInterval = groupParam.getGroupInterval();
+            aggregation.incrementRowCount();
+            updateDataGroupSummary(aggregation, row, totalSummaryParams);
+
+            final GroupParam firstGroupParam = groupParams[0];
+            String columnName = firstGroupParam.getSelector();
+            String dateInterval = firstGroupParam.getGroupInterval();
             String key = row.getString(columnName, dateInterval);
 
-            DataGroup group = aggregation.getGroup(key);
-            if (group == null) {
-                group = aggregation.addGroup(key);
+            DataGroup firstGroup = aggregation.getGroup(key);
+            if (firstGroup == null) {
+                firstGroup = aggregation.addGroup(key);
             }
 
-            DataGroup parent = group;
+            firstGroup.incrementRowCount();
+            updateDataGroupSummary(firstGroup, row, groupSummaryParams);
+
+            DataGroup parentGroup = firstGroup;
 
             for (int i = 1; i < groupParams.length; i++) {
-                groupParam = groupParams[i];
+                final GroupParam groupParam = groupParams[i];
                 columnName = groupParam.getSelector();
                 dateInterval = groupParam.getGroupInterval();
                 key = row.getString(columnName, dateInterval);
 
-                DataGroup item = parent.getItem(key);
-                if (item == null) {
-                    item = parent.addItem(key);
+                DataGroup itemGroup = parentGroup.getItem(key);
+                if (itemGroup == null) {
+                    itemGroup = parentGroup.addItem(key);
                 }
 
-                item.incrementRowCount();
-                updateDataGroupSummary(item, row, groupSummaryParams);
+                itemGroup.incrementRowCount();
+                updateDataGroupSummary(itemGroup, row, groupSummaryParams);
 
-                parent = item;
+                parentGroup = itemGroup;
             }
-
-            group.incrementRowCount();
-            updateDataGroupSummary(group, row, groupSummaryParams);
         }
 
         return aggregation;
     }
 
-    private void updateDataGroupSummary(final DataGroup dataGroup, final DataRow dataRow,
-            final GroupSummaryParam[] groupSummaryParams) {
-        if (ArrayUtils.isEmpty(groupSummaryParams)) {
+    private <T> void updateDataGroupSummary(final SummaryContainer<T> summaryContainer, final DataRow dataRow,
+            final SummaryParam[] summaryParams) {
+        if (ArrayUtils.isEmpty(summaryParams)) {
             return;
         }
 
-        if (dataGroup.getSummary() == null) {
-            for (int i = 0; i < groupSummaryParams.length; i++) {
-                dataGroup.addSummaryValue(new BigDecimal(0));
+        if (summaryContainer.getSummary() == null) {
+            for (int i = 0; i < summaryParams.length; i++) {
+                summaryContainer.addSummaryValue(new BigDecimal(0));
             }
         }
 
-        final List<BigDecimal> groupSummary = dataGroup.getSummary();
+        final List<BigDecimal> groupSummary = summaryContainer.getSummary();
 
-        for (int i = 0; i < groupSummaryParams.length; i++) {
-            final GroupSummaryParam groupSummaryParam = groupSummaryParams[i];
+        for (int i = 0; i < summaryParams.length; i++) {
+            final SummaryParam groupSummaryParam = summaryParams[i];
             final String summaryColumnName = groupSummaryParam.getSelector();
             final String summaryType = groupSummaryParam.getSummaryType();
 
@@ -266,7 +276,7 @@ public class SalesDataService {
                 groupSummary.set(i, summaryValue.max(rowValue));
             }
             else if ("average".equals(summaryType)) {
-                final int rowCount = dataGroup.getRowCount();
+                final int rowCount = summaryContainer.getRowCount();
                 groupSummary.set(i, summaryValue.multiply(new BigDecimal(rowCount - 1))
                         .add(rowValue).divide(new BigDecimal(rowCount)));
             }

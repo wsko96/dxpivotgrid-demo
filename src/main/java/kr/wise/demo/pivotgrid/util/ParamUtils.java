@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
-import kr.wise.demo.pivotgrid.param.GroupSummaryParam;
+import kr.wise.demo.pivotgrid.param.SummaryParam;
 
 public final class ParamUtils {
 
@@ -93,20 +93,20 @@ public final class ParamUtils {
         return JacksonUtils.getObjectMapper().convertValue(groupParamNode, GroupParam.class);
     }
 
-    public static GroupSummaryParam[] toGroupSummaryParams(final ArrayNode groupSummaryParamsNode) {
-        final List<GroupSummaryParam> params = new ArrayList<>();
-        final int size = groupSummaryParamsNode != null ? groupSummaryParamsNode.size() : 0;
+    public static SummaryParam[] toSummaryParams(final ArrayNode summaryParamsNode) {
+        final List<SummaryParam> params = new ArrayList<>();
+        final int size = summaryParamsNode != null ? summaryParamsNode.size() : 0;
 
         for (int i = 0; i < size; i++) {
-            params.add(toGroupSummaryParam(groupSummaryParamsNode.get(i)));
+            params.add(toSummaryParam(summaryParamsNode.get(i)));
         }
 
-        return params.toArray(new GroupSummaryParam[params.size()]);
+        return params.toArray(new SummaryParam[params.size()]);
     }
 
-    public static GroupSummaryParam toGroupSummaryParam(final Object groupSummaryParamNode) {
-        return JacksonUtils.getObjectMapper().convertValue(groupSummaryParamNode,
-                GroupSummaryParam.class);
+    public static SummaryParam toSummaryParam(final Object summaryParamNode) {
+        return JacksonUtils.getObjectMapper().convertValue(summaryParamNode,
+                SummaryParam.class);
     }
 
 }
