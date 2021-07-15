@@ -1,6 +1,7 @@
 package kr.wise.demo.pivotgrid.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
+import kr.wise.demo.pivotgrid.param.GroupParam;
 
 public class ParamUtilsTest {
 
@@ -38,8 +40,8 @@ public class ParamUtilsTest {
 
     @Test
     public void testCompositeFilterParamParsing() throws Exception {
-        ArrayNode filterNode = (ArrayNode) JacksonUtils.getObjectMapper()
-                .readTree("[[[\"date.Year\",\"=\",\"2013\"]], \"and\", [[\"region\",\"=\",\"Africa\"]]]");
+        ArrayNode filterNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+                "[[[\"date.Year\",\"=\",\"2013\"]],\"and\",[[\"region\",\"=\",\"Africa\"]]]");
         FilterParam rootFilter = ParamUtils.toFilterParam(filterNode);
         assertNotNull(rootFilter);
         assertEquals("and", rootFilter.getOperator());
@@ -58,5 +60,36 @@ public class ParamUtilsTest {
         assertEquals("=", childFilter2.getOperator());
         assertEquals("region", childFilter2.getSelector());
         assertEquals("Africa", childFilter2.getComparingValue());
+    }
+
+    @Test
+    public void testSingleGroupParamParsing() throws Exception {
+        ArrayNode groupParamsNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+                "[{\"selector\":\"date\",\"groupInterval\":\"year\",\"isExpanded\":false}]");
+        GroupParam[] groupParams = ParamUtils.toGroupParams(groupParamsNode);
+        assertEquals(1, groupParams.length);
+
+        GroupParam groupParam = groupParams[0];
+        assertEquals("date", groupParam.getSelector());
+        assertEquals("year", groupParam.getGroupInterval());
+        assertFalse(groupParam.getIsExpanded());
+    }
+
+    @Test
+    public void testDoubleGroupParamParsing() throws Exception {
+        ArrayNode groupParamsNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+                "[{\"selector\":\"region\",\"isExpanded\":false},{\"selector\":\"date\",\"groupInterval\":\"year\",\"isExpanded\":false}]");
+        GroupParam[] groupParams = ParamUtils.toGroupParams(groupParamsNode);
+        assertEquals(2, groupParams.length);
+
+        GroupParam groupParam = groupParams[0];
+        assertEquals("region", groupParam.getSelector());
+        assertNull(groupParam.getGroupInterval());
+        assertFalse(groupParam.getIsExpanded());
+
+        groupParam = groupParams[1];
+        assertEquals("date", groupParam.getSelector());
+        assertEquals("year", groupParam.getGroupInterval());
+        assertFalse(groupParam.getIsExpanded());
     }
 }

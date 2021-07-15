@@ -205,19 +205,23 @@ public class SalesDataService {
                 group = aggregation.addGroup(key);
             }
 
+            DataGroup parent = group;
+
             for (int i = 1; i < groupParams.length; i++) {
                 groupParam = groupParams[i];
                 columnName = groupParam.getSelector();
                 dateInterval = groupParam.getGroupInterval();
                 key = row.getString(columnName, dateInterval);
 
-                DataGroup item = group.getItem(key);
+                DataGroup item = parent.getItem(key);
                 if (item == null) {
-                    item = group.addItem(key);
+                    item = parent.addItem(key);
                 }
 
                 item.incrementRowCount();
                 updateDataGroupSummary(item, row, groupSummaryParams);
+
+                parent = item;
             }
 
             group.incrementRowCount();
