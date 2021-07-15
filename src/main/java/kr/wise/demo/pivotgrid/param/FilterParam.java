@@ -46,13 +46,14 @@ public class FilterParam {
         this.comparingValue = comparingValue;
     }
 
-    public void addChild(final String operator, final String selector,
+    public FilterParam addChild(final String operator, final String selector,
             final String comparingValue) {
         final FilterParam child = new FilterParam(operator, selector, comparingValue);
         if (children == null) {
             children = new LinkedList<>();
         }
         children.add(child);
+        return child;
     }
 
     public List<FilterParam> getChildren() {

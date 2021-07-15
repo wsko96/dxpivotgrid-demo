@@ -54,12 +54,55 @@ public class ParamUtilsTest {
         FilterParam childFilter2 = rootFilter.getChildren().get(1);
         assertNotNull(childFilter1);
         assertNotNull(childFilter2);
+
         assertEquals("=", childFilter1.getOperator());
         assertEquals("date.Year", childFilter1.getSelector());
         assertEquals("2013", childFilter1.getComparingValue());
+
         assertEquals("=", childFilter2.getOperator());
         assertEquals("region", childFilter2.getSelector());
         assertEquals("Africa", childFilter2.getComparingValue());
+    }
+
+    @Test
+    public void testMoreComplexFilterParamParsing() throws Exception {
+        ArrayNode filterNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+                "[[[\"date.Year\",\"=\",\"2013\"]],\"and\",[[\"region\",\"=\",\"Africa\"],\"or\",[\"region\",\"=\",\"Australia\"]]]");
+        FilterParam rootFilter = ParamUtils.toFilterParam(filterNode);
+        assertNotNull(rootFilter);
+        assertEquals("and", rootFilter.getOperator());
+        assertNull(rootFilter.getSelector());
+        assertNull(rootFilter.getComparingValue());
+        assertTrue(rootFilter.hasChild());
+        assertEquals(2, rootFilter.getChildCount());
+
+        FilterParam childFilter1 = rootFilter.getChildren().get(0);
+        FilterParam childFilter2 = rootFilter.getChildren().get(1);
+        assertNotNull(childFilter1);
+        assertNotNull(childFilter2);
+
+        assertEquals("=", childFilter1.getOperator());
+        assertEquals("date.Year", childFilter1.getSelector());
+        assertEquals("2013", childFilter1.getComparingValue());
+
+        assertEquals("or", childFilter2.getOperator());
+        assertNull(childFilter2.getSelector());
+        assertNull(childFilter2.getComparingValue());
+        assertTrue(childFilter2.hasChild());
+        assertEquals(2, childFilter2.getChildCount());
+
+        FilterParam grandchildFilter21 = childFilter2.getChildren().get(0);
+        FilterParam grandchildFilter22 = childFilter2.getChildren().get(1);
+        assertNotNull(grandchildFilter21);
+        assertNotNull(grandchildFilter21);
+
+        assertEquals("=", grandchildFilter21.getOperator());
+        assertEquals("region", grandchildFilter21.getSelector());
+        assertEquals("Africa", grandchildFilter21.getComparingValue());
+
+        assertEquals("=", grandchildFilter22.getOperator());
+        assertEquals("region", grandchildFilter22.getSelector());
+        assertEquals("Australia", grandchildFilter22.getComparingValue());
     }
 
     @Test

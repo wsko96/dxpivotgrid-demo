@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
@@ -30,8 +31,8 @@ public final class ParamUtils {
             rootFilter = new FilterParam(operator);
             final ArrayNode firstFilterNodeWrapper = (ArrayNode) filterParamsNode.get(0);
             final ArrayNode secondFilterNodeWrapper = (ArrayNode) filterParamsNode.get(2);
-            addChildFilterParam(rootFilter, (ArrayNode) firstFilterNodeWrapper.get(0));
-            addChildFilterParam(rootFilter, (ArrayNode) secondFilterNodeWrapper.get(0));
+            addChildFilterParam(rootFilter, unwrapDoubleArrayNode(firstFilterNodeWrapper));
+            addChildFilterParam(rootFilter, unwrapDoubleArrayNode(secondFilterNodeWrapper));
         } else {
             rootFilter = new FilterParam();
 
@@ -43,6 +44,17 @@ public final class ParamUtils {
         return rootFilter;
     }
 
+    private static ArrayNode unwrapDoubleArrayNode(final ArrayNode arrayNode) {
+        final int size = arrayNode.size();
+        if (size == 1) {
+            final JsonNode innerNode = arrayNode.get(0);
+            if (innerNode.isArray()) {
+                return (ArrayNode) innerNode;
+            }
+        }
+        return arrayNode;
+    }
+
     private static void addChildFilterParam(final FilterParam filterParam, final ArrayNode childFilterParamNode) {
         final int size = childFilterParamNode != null ? childFilterParamNode.size() : 0;
         final String operator = size > 1 ? childFilterParamNode.get(1).asText() : null;
@@ -52,7 +64,7 @@ public final class ParamUtils {
         }
 
         if ("and".equals(operator) || "or".equals(operator)) {
-            FilterParam childFilter = new FilterParam(operator);
+            final FilterParam childFilter = filterParam.addChild(operator, null, null);
             addChildFilterParam(childFilter, (ArrayNode) childFilterParamNode.get(0));
             addChildFilterParam(childFilter, (ArrayNode) childFilterParamNode.get(2));
         } else {
