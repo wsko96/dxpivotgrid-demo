@@ -61,28 +61,8 @@ $(function() {
                 area: "data"
             }],
             // store: sales
-            remoteOperations: true,
-            load: function (loadOptions) {
-                var d = $.Deferred();
-                $.getJSON('/api/v1/sales', {
-                    // Passing settings to the server
- 
-                    // Pass if the remoteOperations option is set to true
-                    take: loadOptions.take,
-                    skip: loadOptions.skip,
-                    group: loadOptions.group ? JSON.stringify(loadOptions.group) : "",
-                    filter: loadOptions.filter ? JSON.stringify(loadOptions.filter) : "",
-                    totalSummary: loadOptions.totalSummary ? JSON.stringify(loadOptions.totalSummary) : "",
-                    groupSummary: loadOptions.groupSummary ? JSON.stringify(loadOptions.groupSummary) : ""
-                }).done(function (result) {
-                    // You can process the received data here
- 
-                    if("data" in result)
-                        d.resolve(result.data, { summary: result.summary });
-                    else
-                        d.resolve(result);
-                });
-                return d.promise();
+            load: function(){
+                return  $.getJSON('/api/v1/sales');
             }
         }
     }).dxPivotGrid("instance");
