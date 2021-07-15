@@ -13,7 +13,7 @@ public class DataAggregation {
     private List<DataGroup> data;
     private List<DataGroup> unmodifiableData;
     private Map<String, DataGroup> dataMap;
-    private List<BigDecimal> summary = new ArrayList<>();
+    private List<BigDecimal> summary;
 
     public DataAggregation() {
     }
@@ -35,6 +35,9 @@ public class DataAggregation {
     }
 
     public DataAggregation addSummaryValue(final BigDecimal value) {
+        if (summary == null) {
+            summary = new ArrayList<>();
+        }
         summary.add(value);
         return this;
     }

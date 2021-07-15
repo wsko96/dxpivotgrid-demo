@@ -36,24 +36,6 @@ public class SalesDataService {
     @Autowired
     private SalesDataRepository repository;
 
-    /**
-     * 
-     * $$$$$ filter: $$$$$ group:
-     * [{"selector":"region","isExpanded":false},{"selector":"date","groupInterval":"year","isExpanded":false}] $$$$$
-     * totalSummary: [{"selector":"amount","summaryType":"sum"}] $$$$$ groupSummary:
-     * [{"selector":"amount","summaryType":"sum"}]
-     * 
-     * $$$$$ filter: $$$$$ group: [{"selector":"date","groupInterval":"year","isExpanded":false}] $$$$$ totalSummary: []
-     * $$$$$ groupSummary: [{"selector":"amount","summaryType":"sum"}]
-     * 
-     * @param skip
-     * @param take
-     * @param filter
-     * @param group
-     * @param totalSummary
-     * @param groupSummary
-     * @return
-     */
     @GetMapping("/sales")
     public Object all(@RequestParam(name = "skip", required = false, defaultValue = "0") int skip,
             @RequestParam(name = "take", required = false, defaultValue = "0") int take,
@@ -133,47 +115,67 @@ public class SalesDataService {
                 group = aggregation.addGroup(key);
             }
 
-            DataGroup prevItem = group;
-
             for (int i = 1; i < groupParams.length; i++) {
                 groupParam = groupParams[i];
                 columnName = groupParam.getSelector();
                 dateInterval = groupParam.getGroupInterval();
                 key = row.getString(columnName, dateInterval);
 
-                DataGroup item = prevItem.getItem(key);
+                DataGroup item = group.getItem(key);
                 if (item == null) {
-                    item = prevItem.addItem(key);
+                    item = group.addItem(key);
                 }
 
-                for (GroupSummaryParam groupSummaryParam : groupSummaryParams) {
-                    final String summaryColumnName = groupSummaryParam.getSelector();
-                    final BigDecimal value = row.getBigDecimal(summaryColumnName);
-                    final List<BigDecimal> summary = item.getSummary();
-                    if (summary.isEmpty()) {
-                        summary.add(value);
-                    }
-                    else {
-                        final BigDecimal sum = summary.get(0);
-                        summary.set(0, sum.add(value));
-                    }
-                }
+                item.incrementRowCount();
+                updateDataGroupSummary(item, row, groupSummaryParams);
             }
 
-            for (GroupSummaryParam groupSummaryParam : groupSummaryParams) {
-                final String summaryColumnName = groupSummaryParam.getSelector();
-                final BigDecimal value = row.getBigDecimal(summaryColumnName);
-                final List<BigDecimal> summary = group.getSummary();
-                if (summary.isEmpty()) {
-                    summary.add(value);
-                }
-                else {
-                    final BigDecimal sum = summary.get(0);
-                    summary.set(0, sum.add(value));
-                }
-            }
+            group.incrementRowCount();
+            updateDataGroupSummary(group, row, groupSummaryParams);
         }
 
         return aggregation;
+    }
+
+    private void updateDataGroupSummary(final DataGroup dataGroup, final DataRow dataRow,
+            final GroupSummaryParam[] groupSummaryParams) {
+        if (ArrayUtils.isEmpty(groupSummaryParams)) {
+            return;
+        }
+
+        if (dataGroup.getSummary() == null) {
+            for (int i = 0; i < groupSummaryParams.length; i++) {
+                dataGroup.addSummaryValue(new BigDecimal(0));
+            }
+        }
+
+        final List<BigDecimal> groupSummary = dataGroup.getSummary();
+
+        for (int i = 0; i < groupSummaryParams.length; i++) {
+            final GroupSummaryParam groupSummaryParam = groupSummaryParams[i];
+            final String summaryColumnName = groupSummaryParam.getSelector();
+            final String summaryType = groupSummaryParam.getSummaryType();
+
+            final BigDecimal summaryValue = groupSummary.get(i);
+            final BigDecimal rowValue = dataRow.getBigDecimal(summaryColumnName);
+
+            if ("sum".equals(summaryType)) {
+                groupSummary.set(i, summaryValue.add(rowValue));
+            }
+            else if ("count".equals(summaryType)) {
+                groupSummary.set(i, summaryValue.add(new BigDecimal(1)));
+            }
+            else if ("min".equals(summaryType)) {
+                groupSummary.set(i, summaryValue.min(rowValue));
+            }
+            else if ("max".equals(summaryType)) {
+                groupSummary.set(i, summaryValue.max(rowValue));
+            }
+            else if ("average".equals(summaryType)) {
+                final int rowCount = dataGroup.getRowCount();
+                groupSummary.set(i, summaryValue.multiply(new BigDecimal(rowCount - 1))
+                        .add(rowValue).divide(new BigDecimal(rowCount)));
+            }
+        }
     }
 }

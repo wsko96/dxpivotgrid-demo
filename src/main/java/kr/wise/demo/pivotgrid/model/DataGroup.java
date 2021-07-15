@@ -11,10 +11,11 @@ import java.util.Map;
 public class DataGroup {
 
     private final String key;
-    private List<BigDecimal> summary = new ArrayList<>();
+    private List<BigDecimal> summary;
     private List<DataGroup> items;
     private List<DataGroup> unmodifiableItems;
     private Map<String, DataGroup> itemsMap;
+    private int rowCount;
 
     public DataGroup() {
         this(null);
@@ -45,6 +46,9 @@ public class DataGroup {
     }
 
     public DataGroup addSummaryValue(final BigDecimal value) {
+        if (summary == null) {
+            summary = new ArrayList<>();
+        }
         summary.add(value);
         return this;
     }
@@ -73,5 +77,13 @@ public class DataGroup {
 
     public List<DataGroup> getItems() {
         return unmodifiableItems;
+    }
+
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    public int incrementRowCount() {
+        return ++rowCount;
     }
 }
