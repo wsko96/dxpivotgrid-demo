@@ -3,6 +3,8 @@ package kr.wise.demo.pivotgrid.repository;
 import java.io.InputStream;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import kr.wise.demo.pivotgrid.util.JacksonUtils;
 
 @Service
 public class SalesDataRepository {
+
+    private static Logger log = LoggerFactory.getLogger(SalesDataRepository.class);
 
     private static final int EXPECTED_MIN_DATA_SIZE = 1000000;
 
@@ -40,9 +44,11 @@ public class SalesDataRepository {
                     this.dataArray.add(dataNode);
                 }
             }
+
+            log.debug("Test sales data (size: {}) loaded from {}.", this.dataArray.size(), salesJsonFile);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to load data array from the json.", e);
         }
     }
 

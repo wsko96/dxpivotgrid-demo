@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,8 @@ import kr.wise.demo.pivotgrid.util.ParamUtils;
 
 @RestController
 public class SalesDataService {
+
+    private static Logger log = LoggerFactory.getLogger(SalesDataService.class);
 
     private static final String[] SALES_COLUMN_NAMES = { "id", "region", "country", "city",
             "amount", "date", };
@@ -55,8 +59,8 @@ public class SalesDataService {
             @RequestParam(name = "take", required = false, defaultValue = "0") int take,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "group", required = false) String group,
-            @RequestParam(name = "totalSummary", required = false) String totalSummary,
-            @RequestParam(name = "groupSummary", required = false) String groupSummary) {
+            @RequestParam(name = "groupSummary", required = false) String groupSummary,
+            @RequestParam(name = "totalSummary", required = false) String totalSummary) {
         final ArrayNode dataArray = repository.findAll();
 
         GroupParam[] groupParams = null;
@@ -72,10 +76,14 @@ public class SalesDataService {
             groupSummaryParams = ParamUtils.toGroupSummaryParams(groupSummaryParamsNode);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to parse group and/or groupSummary params.", e);
         }
 
         if (ArrayUtils.isNotEmpty(groupParams)) {
+            log.debug(
+                    "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
+                    filter, group, groupSummary, totalSummary);
+
             try {
                 final DataFrame dataFrame = new ArrayNodeDataFrame(dataArray, SALES_COLUMN_NAMES);
                 final DataAggregation aggregation = createDataAggregation(dataFrame, groupParams,
@@ -86,6 +94,8 @@ public class SalesDataService {
                 throw new RuntimeException(e);
             }
         }
+
+        log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
 
         final int size = dataArray.size();
 
