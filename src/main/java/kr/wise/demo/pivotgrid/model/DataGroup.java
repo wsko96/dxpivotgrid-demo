@@ -8,6 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * {@link DataAggregator}에 포함되는 데이터 그룹과 하위 아이템 데이터 그룹.
+ */
 public class DataGroup implements SummaryContainer<DataGroup> {
 
     private final String key;
