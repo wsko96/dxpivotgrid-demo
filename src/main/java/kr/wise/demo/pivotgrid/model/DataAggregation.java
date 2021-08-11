@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 그룹별 총 써머리 데이터 집합.
  * <P>
@@ -62,6 +64,7 @@ public class DataAggregation implements SummaryContainer<DataAggregation> {
         return summary;
     }
 
+    @JsonIgnore
     @Override
     public int getRowCount() {
         return rowCount;
