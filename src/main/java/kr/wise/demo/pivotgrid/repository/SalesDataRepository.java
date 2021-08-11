@@ -11,14 +11,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -46,30 +44,27 @@ public class SalesDataRepository {
         initializeTestCSVDataFile();
     }
 
-    public CSVDataSet findAll() {
+    public CSVDataReader findAll() {
         InputStream is = null;
         InputStreamReader isr = null;
         BufferedReader br = null;
         CSVParser csvParser = null;
+
+        CSVDataReader csvDataReader = null;
 
         try {
             is = new FileInputStream(salesCsvFile);
             isr = new InputStreamReader(is, "UTF-8");
             br = new BufferedReader(isr);
             csvParser = new CSVParser(br, CSVFormat.EXCEL.withHeader());
-
-            final List<String> headers = csvParser.getHeaderNames();
-            final List<CSVRecord> records = csvParser.getRecords();
-            return new CSVDataSet(headers, records);
+            csvDataReader = new CSVDataReader(csvParser, true);
         }
         catch (Exception e) {
+            IOUtils.closeQuietly(csvParser, br, isr, is);
             log.error("Failed to load data array from the csv.", e);
         }
-        finally {
-            IOUtils.closeQuietly(csvParser, br, isr, is);
-        }
 
-        return null;
+        return csvDataReader;
     }
 
     private void initializeTestCSVDataFile() throws Exception {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import kr.wise.demo.pivotgrid.model.SummaryContainer;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
-import kr.wise.demo.pivotgrid.repository.CSVDataSet;
+import kr.wise.demo.pivotgrid.repository.CSVDataReader;
 import kr.wise.demo.pivotgrid.repository.SalesDataRepository;
 import kr.wise.demo.pivotgrid.util.JacksonUtils;
 import kr.wise.demo.pivotgrid.util.ParamUtils;
@@ -45,8 +46,6 @@ public class SalesDataService {
             @RequestParam(name = "group", required = false) String group,
             @RequestParam(name = "groupSummary", required = false) String groupSummary,
             @RequestParam(name = "totalSummary", required = false) String totalSummary) {
-        final CSVDataSet csvDataSet = repository.findAll();
-
         FilterParam rootFilter = null;
         GroupParam[] groupParams = null;
         SummaryParam[] groupSummaryParams = null;
@@ -73,38 +72,47 @@ public class SalesDataService {
             log.error("Failed to parse params.", e);
         }
 
-        if (ArrayUtils.isNotEmpty(groupParams)) {
-            log.debug(
-                    "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
-                    filter, group, groupSummary, totalSummary);
+        CSVDataReader csvDataReader = null;
 
-            try {
-                DataFrame dataFrame = new CSVDataSetDataFrame(csvDataSet);
-                final DataAggregation aggregation = createDataAggregation(dataFrame, rootFilter,
-                        groupParams, groupSummaryParams, totalSummaryParams);
-                return aggregation;
+        try {
+            csvDataReader = repository.findAll();
+
+            if (ArrayUtils.isNotEmpty(groupParams)) {
+                log.debug(
+                        "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
+                        filter, group, groupSummary, totalSummary);
+
+                try {
+                    DataFrame dataFrame = new CSVDataReaderDataFrame(csvDataReader);
+                    final DataAggregation aggregation = createDataAggregation(dataFrame, rootFilter,
+                            groupParams, groupSummaryParams, totalSummaryParams);
+                    return aggregation;
+                }
+                catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
-            catch (Exception e) {
-                throw new RuntimeException(e);
+            else {
+                log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
+                final ArrayNode jsonArray = JacksonUtils.getObjectMapper().createArrayNode();
+                final List<String> headers = csvDataReader.getHeaders();
+                int rowIndex = 0;
+
+                for (Iterator<CSVRecord> recordIt = csvDataReader.iterator(); recordIt.hasNext(); ) {
+                    if (take > 0 && rowIndex >= take) {
+                        break;
+                    }
+
+                    final CSVRecord record = recordIt.next();
+                    jsonArray.add(JacksonUtils.csvRecordToObjectNode(record, headers));
+                    rowIndex++;
+                }
+
+                return jsonArray;
             }
+        } finally {
+            IOUtils.closeQuietly(csvDataReader);
         }
-
-        log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
-
-        final List<String> headers = csvDataSet.getHeaders();
-        final List<CSVRecord> records = csvDataSet.getRecords();
-
-        final ArrayNode jsonArray = JacksonUtils.getObjectMapper().createArrayNode();
-        int rowIndex = 0;
-        for (CSVRecord record : records) {
-            if (take > 0 && rowIndex >= take) {
-                break;
-            }
-            jsonArray.add(JacksonUtils.csvRecordToObjectNode(record, headers));
-            rowIndex++;
-        }
-
-        return jsonArray;
     }
 
     private boolean isIncludedByRootFilter(final DataRow row, final FilterParam rootFilter) {

@@ -6,16 +6,16 @@ import org.apache.commons.csv.CSVRecord;
 
 import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataRow;
-import kr.wise.demo.pivotgrid.repository.CSVDataSet;
+import kr.wise.demo.pivotgrid.repository.CSVDataReader;
 
-public class CSVDataSetDataFrame implements DataFrame {
+public class CSVDataReaderDataFrame implements DataFrame {
 
-    private final CSVDataSet csvDataSet;
+    private final CSVDataReader csvDataReader;
     private final String[] columnNames;
 
-    public CSVDataSetDataFrame(final CSVDataSet csvDataSet) {
-        this.csvDataSet = csvDataSet;
-        this.columnNames = csvDataSet.getHeaders().toArray(new String[0]);
+    public CSVDataReaderDataFrame(final CSVDataReader csvDataReader) {
+        this.csvDataReader = csvDataReader;
+        this.columnNames = csvDataReader.getHeaders().toArray(new String[0]);
     }
 
     public String[] getColumnNames() {
@@ -23,7 +23,7 @@ public class CSVDataSetDataFrame implements DataFrame {
     }
 
     public Iterator<DataRow> iterator() {
-        return new DataRowIterator(csvDataSet.getRecords().iterator());
+        return new DataRowIterator(csvDataReader.iterator());
     }
 
     private class DataRowIterator implements Iterator<DataRow> {

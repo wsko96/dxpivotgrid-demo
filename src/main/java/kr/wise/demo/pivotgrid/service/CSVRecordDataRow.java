@@ -30,11 +30,11 @@ public class CSVRecordDataRow implements DataRow {
     }
 
     public String getString(final String columnName, final String dateInterval) {
-        if (StringUtils.isEmpty(dateInterval)) {
-            return getString(columnName);
-        }
+        final String value = getString(columnName);
 
-        final String value = record.get(columnName);
+        if (StringUtils.isEmpty(dateInterval)) {
+            return value;
+        }
 
         if (StringUtils.isBlank(value)) {
             return null;
