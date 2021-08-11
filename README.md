@@ -1,29 +1,29 @@
 # dxpivotgrid-demo
 
-µ¥ºêÀÍ½ºÇÁ·¹½º ÇÇº¿±×¸®µåÀÇ ¾Æ·¡ µÎ °¡Áö ¿É¼Ç [1] ¼º´É ºñ±³:
-1. Local Operations: tabularÇÑ json µ¥ÀÌÅÍ¼ÂÀ» Å¬¶óÀÌ¾ğÆ®°¡ ·ÎµåÇÑ ´ÙÀ½, ÇÇº¿±×¸®µå¿¡ ±×³É Àü´ŞÇÏ°í ÇÇº¿±×¸®µå°¡ Å¬¶óÀÌ¾ğÆ® »çÀÌµå¿¡¼­ aggregationÀ» ¸ğµÎ ÇÏ´Â ¹æ½Ä.
-2. Remote Operations: `remoteOperation` ¿É¼ÇÀ» ÄÑ°í, ±âº» µ¥ÀÌÅÍ URLÀ» ¼³Á¤ÇÏ¸é, ÇÇº¿±×¸®µå°¡ aggregation ¿äÃ»µéÀ» ÆÄ¶ó¹ÌÅÍµé°ú ÇÔ²² ´Ù¼ö È£ÃâÇÏ´Â ¹æ½Ä. Áï, ¼­¹ö »çÀÌµå¿¡¼­ aggregation ¼öÇà
+ë°ë¸ŒìµìŠ¤í”„ë ˆìŠ¤ í”¼ë´‡ê·¸ë¦¬ë“œì˜ ì•„ë˜ ë‘ ê°€ì§€ ì˜µì…˜ [1] ì„±ëŠ¥ ë¹„êµ:
+1. Local Operations: tabularí•œ json ë°ì´í„°ì…‹ì„ í´ë¼ì´ì–¸íŠ¸ê°€ ë¡œë“œí•œ ë‹¤ìŒ, í”¼ë´‡ê·¸ë¦¬ë“œì— ê·¸ëƒ¥ ì „ë‹¬í•˜ê³  í”¼ë´‡ê·¸ë¦¬ë“œê°€ í´ë¼ì´ì–¸íŠ¸ ì‚¬ì´ë“œì—ì„œ aggregationì„ ëª¨ë‘ í•˜ëŠ” ë°©ì‹.
+2. Remote Operations: `remoteOperation` ì˜µì…˜ì„ ì¼œê³ , ê¸°ë³¸ ë°ì´í„° URLì„ ì„¤ì •í•˜ë©´, í”¼ë´‡ê·¸ë¦¬ë“œê°€ aggregation ìš”ì²­ë“¤ì„ íŒŒë¼ë¯¸í„°ë“¤ê³¼ í•¨ê»˜ ë‹¤ìˆ˜ í˜¸ì¶œí•˜ëŠ” ë°©ì‹. ì¦‰, ì„œë²„ ì‚¬ì´ë“œì—ì„œ aggregation ìˆ˜í–‰
 
 [1] https://js.devexpress.com/Documentation/18_2/Guide/Widgets/PivotGrid/Use_CustomStore/
 
-## ºôµå ¹× ½ÇÇà
+## ë¹Œë“œ ë° ì‹¤í–‰
 
     set MAVEN_OPTS=-Xmx1024m
     mvn clean verify jetty:run
 
-±×¸®°í http://localhost:8080 ¸¦ ¹æ¹®ÇÏ½Ê½Ã¿À.
+ê·¸ë¦¬ê³  http://localhost:8080 ë¥¼ ë°©ë¬¸í•˜ì‹­ì‹œì˜¤.
 
-## ¿¹Á¦ Sales Data REST API
+## ì˜ˆì œ Sales Data REST API
 
     http://localhost:8080/api/v1/sales
 
-- ¿¹Á¦ Å×½ºÆ® µ¥ÀÌÅÍ: µ¥ºêÀÍ½ºÇÁ·¹½º ÇÇº¿±×¸®µå µ¥¸ğ¿¡ Æ÷ÇÔµÇ¾î ÀÖ´Â `sales.js` ÆÄÀÏÀ»
-  [src/main/resources/kr/wise/demo/pivotgrid/repository/sales.json](src/main/resources/kr/wise/demo/pivotgrid/repository/sales.json) ÆÄÀÏ·Î º¯ÇüÇÑ µÚ,
-  [src/main/java/kr/wise/demo/pivotgrid/repository/SalesDataRepository.java](src/main/java/kr/wise/demo/pivotgrid/repository/SalesDataRepository.java) ¿¡¼­, ÀÎÀ§ÀûÀ¸·Î ¹é¸¸ °Ç ÀÌ»óÀ¸·Î º¯ÇüÇÏ¿© Å×½ºÆ® µ¥ÀÌÅÍ ±¸¼º.
+- ì˜ˆì œ í…ŒìŠ¤íŠ¸ ë°ì´í„°: ë°ë¸ŒìµìŠ¤í”„ë ˆìŠ¤ í”¼ë´‡ê·¸ë¦¬ë“œ ë°ëª¨ì— í¬í•¨ë˜ì–´ ìˆëŠ” `sales.js` íŒŒì¼ì„
+  [src/main/resources/kr/wise/demo/pivotgrid/repository/sales.json](src/main/resources/kr/wise/demo/pivotgrid/repository/sales.json) íŒŒì¼ë¡œ ì €ì¥í•˜ì˜€ê³ ,
+  [src/main/java/kr/wise/demo/pivotgrid/repository/SalesDataRepository.java](src/main/java/kr/wise/demo/pivotgrid/repository/SalesDataRepository.java) ì—ì„œ, ìµœì´ˆ ì‹œì‘ ì‹œ `target/sales.csv` íŒŒì¼ë¡œ ë³€í˜•í•˜ì—¬ ì €ì¥í•˜ëŠ”ë° ì´ ë•Œ ì¸ìœ„ì ìœ¼ë¡œ ë°±ë§Œ ê±´ ì´ìƒìœ¼ë¡œ ë ˆì½”ë“œ ê°œìˆ˜ë¥¼ í™•ì¥í•˜ì—¬ í…ŒìŠ¤íŠ¸ ë°ì´í„° êµ¬ì„±.
 
-- REST Service ¼Ò½º: [src/main/java/kr/wise/demo/pivotgrid/service/SalesDataService.java](src/main/java/kr/wise/demo/pivotgrid/service/SalesDataService.java)
+- REST Service ì†ŒìŠ¤: [src/main/java/kr/wise/demo/pivotgrid/service/SalesDataService.java](src/main/java/kr/wise/demo/pivotgrid/service/SalesDataService.java)
 
-- ÀÏºÎ raw µ¥ÀÌÅÍ¸¸ ¹Ş±â [1]
-  ¿¹) http://localhost:8080/api/v1/sales?take=20
+- ì¼ë¶€ raw ë°ì´í„°ë§Œ ë°›ê¸° [1]
+  ì˜ˆ) http://localhost:8080/api/v1/sales?take=20
 
-- Aggregation È£Ãâ URLµéÀº °ü·Ã ¹®¼­ [1] ¿Í, ºê¶ó¿ìÀú ³×Æ®¿öÅ© µğ¹ö°Å ÂüÁ¶.
+- Aggregation í˜¸ì¶œ URLë“¤ì€ ê´€ë ¨ ë¬¸ì„œ [1] ì™€, ë¸Œë¼ìš°ì € ë„¤íŠ¸ì›Œí¬ ë””ë²„ê±° ì°¸ì¡°.
