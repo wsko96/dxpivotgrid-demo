@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import kr.wise.demo.pivotgrid.model.SummaryContainer;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
+import kr.wise.demo.pivotgrid.repository.CSVDataSet;
 import kr.wise.demo.pivotgrid.repository.SalesDataRepository;
 import kr.wise.demo.pivotgrid.util.JacksonUtils;
 import kr.wise.demo.pivotgrid.util.ParamUtils;
@@ -32,9 +34,6 @@ import kr.wise.demo.pivotgrid.util.ParamUtils;
 public class SalesDataService {
 
     private static Logger log = LoggerFactory.getLogger(SalesDataService.class);
-
-    private static final String[] SALES_COLUMN_NAMES = { "id", "region", "country", "city",
-            "amount", "date", };
 
     @Autowired
     private SalesDataRepository repository;
@@ -46,7 +45,7 @@ public class SalesDataService {
             @RequestParam(name = "group", required = false) String group,
             @RequestParam(name = "groupSummary", required = false) String groupSummary,
             @RequestParam(name = "totalSummary", required = false) String totalSummary) {
-        ArrayNode dataArray = repository.findAll();
+        final CSVDataSet csvDataSet = repository.findAll();
 
         FilterParam rootFilter = null;
         GroupParam[] groupParams = null;
@@ -80,7 +79,7 @@ public class SalesDataService {
                     filter, group, groupSummary, totalSummary);
 
             try {
-                DataFrame dataFrame = new ArrayNodeDataFrame(dataArray, SALES_COLUMN_NAMES);
+                DataFrame dataFrame = new CSVDataSetDataFrame(csvDataSet);
                 final DataAggregation aggregation = createDataAggregation(dataFrame, rootFilter,
                         groupParams, groupSummaryParams, totalSummaryParams);
                 return aggregation;
@@ -92,22 +91,20 @@ public class SalesDataService {
 
         log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
 
-        final int size = dataArray.size();
+        final List<String> headers = csvDataSet.getHeaders();
+        final List<CSVRecord> records = csvDataSet.getRecords();
 
-        if (take > 0) {
-            final int beginIndex = Math.min(Math.max(skip, 0), size);
-            final int endIndex = Math.min(Math.max(take, 0), size - beginIndex);
-
-            if (beginIndex != 0 || endIndex != size) {
-                final ArrayNode subArray = JacksonUtils.getObjectMapper().createArrayNode();
-                for (int i = beginIndex; i < endIndex; i++) {
-                    subArray.add(dataArray.get(i));
-                }
-                return subArray;
+        final ArrayNode jsonArray = JacksonUtils.getObjectMapper().createArrayNode();
+        int rowIndex = 0;
+        for (CSVRecord record : records) {
+            if (take > 0 && rowIndex >= take) {
+                break;
             }
+            jsonArray.add(JacksonUtils.csvRecordToObjectNode(record, headers));
+            rowIndex++;
         }
 
-        return dataArray;
+        return jsonArray;
     }
 
     private boolean isIncludedByRootFilter(final DataRow row, final FilterParam rootFilter) {

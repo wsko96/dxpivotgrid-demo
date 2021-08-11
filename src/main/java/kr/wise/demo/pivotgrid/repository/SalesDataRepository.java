@@ -1,58 +1,50 @@
 package kr.wise.demo.pivotgrid.repository;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import kr.wise.demo.pivotgrid.util.JacksonUtils;
-
 @Service
 public class SalesDataRepository {
 
     private static Logger log = LoggerFactory.getLogger(SalesDataRepository.class);
 
-    private static final int EXPECTED_MIN_DATA_SIZE = 1000000;
+    private Resource salesCsvFile = new ClassPathResource("kr/wise/demo/pivotgrid/repository/sales.csv");
 
-    private ArrayNode dataArray;
+    public CSVDataSet findAll() {
+        InputStream is = null;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+        CSVParser csvParser = null;
 
-    private Resource salesJsonFile = new ClassPathResource(
-            "kr/wise/demo/pivotgrid/repository/sales.json");
+        try {
+            is = salesCsvFile.getInputStream();
+            isr = new InputStreamReader(is, "UTF-8");
+            br = new BufferedReader(isr);
+            csvParser = new CSVParser(br, CSVFormat.EXCEL.withHeader());
 
-    public SalesDataRepository() {
-        this.dataArray = JacksonUtils.getObjectMapper().createArrayNode();
-
-        try (InputStream input = this.salesJsonFile.getInputStream()) {
-            final ArrayNode sourceDataArray = (ArrayNode) JacksonUtils.getObjectMapper()
-                    .readTree(input);
-            final int size = sourceDataArray.size();
-            final int loopCount = 1 + EXPECTED_MIN_DATA_SIZE / size;
-            int baseId = 10000;
-
-            for (int i = 0; i < loopCount; i++) {
-                for (int j = 0; j < size; j++) {
-                    final ObjectNode dataNode = ((ObjectNode) sourceDataArray.get(j)).deepCopy();
-                    final int id = NumberUtils.toInt(dataNode.get("id").asText());
-                    dataNode.put("id", id + (baseId++));
-                    this.dataArray.add(dataNode);
-                }
-            }
-
-            log.debug("Test sales data (size: {}) loaded from {}.", this.dataArray.size(), salesJsonFile);
+            final List<String> headers = csvParser.getHeaderNames();
+            final List<CSVRecord> records = csvParser.getRecords();
+            return new CSVDataSet(headers, records);
         }
         catch (Exception e) {
-            log.error("Failed to load data array from the json.", e);
+            log.error("Failed to load data array from the csv.", e);
         }
-    }
+        finally {
+            IOUtils.closeQuietly(csvParser, br, isr, is);
+        }
 
-    public ArrayNode findAll() {
-        return dataArray;
+        return null;
     }
 }

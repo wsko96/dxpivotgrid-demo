@@ -15,6 +15,8 @@
   <properties>
 
     <commons-lang3.version>3.12.0</commons-lang3.version>
+    <commons-csv.version>1.9.0</commons-csv.version>
+    <commons-io.version>2.11.0</commons-io.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <spring.version>5.3.8</spring.version>
     <jackson.version>2.12.4</jackson.version>
@@ -40,6 +42,18 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>${commons-lang3.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>${commons-csv.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
     </dependency>
 
     <dependency>
