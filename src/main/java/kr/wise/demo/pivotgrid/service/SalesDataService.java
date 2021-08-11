@@ -72,46 +72,53 @@ public class SalesDataService {
             log.error("Failed to parse params.", e);
         }
 
-        CSVDataReader csvDataReader = null;
+        if (ArrayUtils.isNotEmpty(groupParams)) {
+            log.debug(
+                    "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
+                    filter, group, groupSummary, totalSummary);
 
-        try {
-            csvDataReader = repository.findAll();
+            CSVDataReader csvDataReader = null;
 
-            if (ArrayUtils.isNotEmpty(groupParams)) {
-                log.debug(
-                        "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
-                        filter, group, groupSummary, totalSummary);
-
-                try {
-                    DataFrame dataFrame = new CSVDataReaderDataFrame(csvDataReader);
-                    final DataAggregation aggregation = createDataAggregation(dataFrame, rootFilter,
-                            groupParams, groupSummaryParams, totalSummaryParams);
-                    return aggregation;
-                }
-                catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                csvDataReader = repository.findAll();
+                DataFrame dataFrame = new CSVDataReaderDataFrame(csvDataReader);
+                final DataAggregation aggregation = createDataAggregation(dataFrame, rootFilter,
+                        groupParams, groupSummaryParams, totalSummaryParams);
+                return aggregation;
             }
-            else {
-                log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
-                final ArrayNode jsonArray = JacksonUtils.getObjectMapper().createArrayNode();
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            finally {
+                IOUtils.closeQuietly(csvDataReader);
+            }
+        }
+        else {
+            log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
+
+            // NOTE: No need to close csvDataReader in finally;
+            // once CloseableCSVRecordIterator gets serialized by spring/jackson,
+            // the ClosingCSVRecordIteratorSerializer will close it.
+            CSVDataReader csvDataReader = null;
+
+            try {
+                // Option 1: custom json serializer without having to load csv records into memory...
+//                csvDataReader = repository.findAll();
+//                return new CloseableCSVRecordIterator(csvDataReader, skip, take);
+
+                // Option 2: load all into memory as ArrayNode...
+                csvDataReader = repository.findAll();
+                final ArrayNode array = JacksonUtils.getObjectMapper().createArrayNode();
                 final List<String> headers = csvDataReader.getHeaders();
-                int rowIndex = 0;
-
-                for (Iterator<CSVRecord> recordIt = csvDataReader.iterator(); recordIt.hasNext(); ) {
-                    if (take > 0 && rowIndex >= take) {
-                        break;
-                    }
-
-                    final CSVRecord record = recordIt.next();
-                    jsonArray.add(JacksonUtils.csvRecordToObjectNode(record, headers));
-                    rowIndex++;
+                for (Iterator<CSVRecord> it = csvDataReader.iterator(); it.hasNext(); ) {
+                    array.add(JacksonUtils.csvRecordToObjectNode(it.next(), headers));
                 }
-
-                return jsonArray;
+                return array;
             }
-        } finally {
-            IOUtils.closeQuietly(csvDataReader);
+            catch (Exception e) {
+                IOUtils.closeQuietly(csvDataReader);
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -124,7 +131,8 @@ public class SalesDataService {
 
         if (firstChild.hasChild()) {
             return isIncludedByContainerFilter(row, firstChild);
-        } else {
+        }
+        else {
             return isIncludedByLeafFilter(row, firstChild);
         }
     }
@@ -246,8 +254,8 @@ public class SalesDataService {
         return aggregation;
     }
 
-    private <T> void updateDataGroupSummary(final SummaryContainer<T> summaryContainer, final DataRow dataRow,
-            final SummaryParam[] summaryParams) {
+    private <T> void updateDataGroupSummary(final SummaryContainer<T> summaryContainer,
+            final DataRow dataRow, final SummaryParam[] summaryParams) {
         if (ArrayUtils.isEmpty(summaryParams)) {
             return;
         }

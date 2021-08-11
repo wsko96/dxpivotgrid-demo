@@ -1,7 +1,6 @@
 package kr.wise.demo.pivotgrid.repository;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +34,8 @@ public class SalesDataRepository {
 
     private static Logger log = LoggerFactory.getLogger(SalesDataRepository.class);
 
+    private static final int BUFFER_SIZE = 1024 * 1024;
+
     private final int EXPECTED_DATA_SIZE = 1000000;
     private Resource originalSalesJsonFile = new ClassPathResource("kr/wise/demo/pivotgrid/repository/sales.json");
     private File salesCsvFile;
@@ -46,21 +47,21 @@ public class SalesDataRepository {
 
     public CSVDataReader findAll() {
         InputStream is = null;
+        BufferedInputStream bis = null;
         InputStreamReader isr = null;
-        BufferedReader br = null;
         CSVParser csvParser = null;
 
         CSVDataReader csvDataReader = null;
 
         try {
             is = new FileInputStream(salesCsvFile);
-            isr = new InputStreamReader(is, "UTF-8");
-            br = new BufferedReader(isr);
-            csvParser = new CSVParser(br, CSVFormat.EXCEL.withHeader());
+            bis = new BufferedInputStream(is, BUFFER_SIZE);
+            isr = new InputStreamReader(bis, "UTF-8");
+            csvParser = new CSVParser(isr, CSVFormat.EXCEL.withHeader());
             csvDataReader = new CSVDataReader(csvParser, true);
         }
         catch (Exception e) {
-            IOUtils.closeQuietly(csvParser, br, isr, is);
+            IOUtils.closeQuietly(csvParser, isr, bis, is);
             log.error("Failed to load data array from the csv.", e);
         }
 

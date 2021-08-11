@@ -13,6 +13,7 @@ public class CSVDataReader implements Closeable {
 
     private final CSVParser csvParser;
     private final List<String> headers;
+    private boolean closed;
 
     public CSVDataReader(final CSVParser csvParser, final boolean withHeader) {
         this.csvParser = csvParser;
@@ -29,6 +30,9 @@ public class CSVDataReader implements Closeable {
 
     @Override
     public void close() throws IOException {
-        csvParser.close();
+        if (!this.closed) {
+            csvParser.close();
+            this.closed = true;
+        }
     }
 }

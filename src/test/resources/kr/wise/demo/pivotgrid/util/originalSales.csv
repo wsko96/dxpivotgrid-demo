@@ -1,0 +1,642 @@
+id,region,country,city,amount,date
+10248,North America,United States of America,New York,1740,2013-01-06
+10249,North America,United States of America,Los Angeles,850,2013-01-13
+10250,North America,United States of America,Denver,2235,2013-01-07
+10251,North America,Canada,Vancouver,1965,2013-01-03
+10252,North America,Canada,Edmonton,880,2013-01-10
+10253,South America,Brazil,Rio de Janeiro,5260,2013-01-17
+10254,South America,Argentina,Buenos Aires,2790,2013-01-21
+10255,South America,Paraguay,Asuncion,3140,2013-01-01
+10256,Europe,United Kingdom,London,6175,2013-01-24
+10257,Europe,Germany,Berlin,4575,2013-01-11
+10258,Europe,Spain,Madrid,3680,2013-01-12
+10259,Europe,Russian Federation,Moscow,2260,2013-01-01
+10260,Asia,China,Beijing,2910,2013-01-26
+10261,Asia,Japan,Tokyo,8400,2013-01-05
+10262,Asia,Republic of Korea,Seoul,1325,2013-01-14
+10263,Australia,Australia,Sydney,3920,2013-01-05
+10264,Australia,Australia,Melbourne,2220,2013-01-15
+10265,Africa,South Africa,Pretoria,940,2013-01-01
+10266,Africa,Egypt,Cairo,1630,2013-01-10
+10267,North America,Canada,Edmonton,2910,2013-01-23
+10268,North America,United States of America,Los Angeles,2600,2013-01-14
+10269,Europe,Spain,Madrid,4340,2013-01-26
+10270,Europe,United Kingdom,London,6650,2013-01-24
+10271,North America,Canada,Edmonton,490,2013-01-22
+10272,North America,United States of America,New York,3390,2013-01-25
+10273,North America,United States of America,New York,5160,2013-02-20
+10274,North America,United States of America,Los Angeles,5750,2013-02-12
+10275,North America,United States of America,Denver,2805,2013-02-13
+10276,North America,Canada,Vancouver,2505,2013-02-09
+10277,North America,Canada,Edmonton,930,2013-02-04
+10278,South America,Brazil,Rio de Janeiro,1240,2013-02-03
+10279,South America,Argentina,Buenos Aires,315,2013-02-04
+10280,South America,Paraguay,Asuncion,2870,2013-02-18
+10281,Europe,United Kingdom,London,5150,2013-02-18
+10282,Europe,Germany,Berlin,2725,2013-02-20
+10283,Europe,Spain,Madrid,2840,2013-02-04
+10284,Europe,Russian Federation,Moscow,5840,2013-02-13
+10285,Asia,China,Beijing,6750,2013-02-11
+10286,Asia,Japan,Tokyo,1200,2013-02-03
+10287,Asia,Republic of Korea,Seoul,4550,2013-02-08
+10288,Australia,Australia,Sydney,6040,2013-02-17
+10289,Australia,Australia,Melbourne,2205,2013-02-08
+10290,Africa,South Africa,Pretoria,990,2013-02-20
+10291,Africa,Egypt,Cairo,700,2013-02-11
+10292,Australia,Australia,Melbourne,2325,2013-02-15
+10293,South America,Argentina,Buenos Aires,930,2013-02-21
+10294,North America,Canada,Edmonton,1560,2013-02-04
+10295,North America,United States of America,New York,1740,2013-03-04
+10296,North America,United States of America,Los Angeles,3575,2013-03-20
+10297,North America,United States of America,Denver,4500,2013-03-04
+10298,North America,Canada,Vancouver,1605,2013-03-17
+10299,North America,Canada,Edmonton,800,2013-03-21
+10300,South America,Brazil,Rio de Janeiro,640,2013-03-08
+10301,South America,Argentina,Buenos Aires,735,2013-03-19
+10302,South America,Paraguay,Asuncion,2520,2013-03-20
+10303,Europe,United Kingdom,London,6675,2013-03-18
+10304,Europe,Germany,Berlin,3625,2013-03-25
+10305,Europe,Spain,Madrid,1200,2013-03-07
+10306,Europe,Russian Federation,Moscow,2000,2013-03-07
+10307,Asia,China,Beijing,1410,2013-03-10
+10308,Asia,Japan,Tokyo,2700,2013-03-19
+10309,Asia,Republic of Korea,Seoul,5950,2013-03-24
+10310,Australia,Australia,Sydney,5120,2013-03-08
+10311,Australia,Australia,Melbourne,1980,2013-03-17
+10312,Africa,South Africa,Pretoria,1110,2013-03-08
+10313,Africa,Egypt,Cairo,980,2013-03-21
+10314,Australia,Australia,Sydney,5460,2013-03-19
+10315,Europe,Germany,Berlin,3800,2013-03-12
+10316,Australia,Australia,Melbourne,2610,2013-03-04
+10317,Europe,Russian Federation,Moscow,3080,2013-03-22
+10318,Asia,Japan,Tokyo,2010,2013-03-23
+10319,Asia,China,Beijing,1200,2013-03-04
+10320,North America,United States of America,New York,7680,2013-04-15
+10321,North America,United States of America,Los Angeles,1325,2013-04-07
+10322,North America,United States of America,Denver,2835,2013-04-10
+10323,North America,Canada,Vancouver,3660,2013-04-10
+10324,North America,Canada,Edmonton,390,2013-04-12
+10325,South America,Brazil,Rio de Janeiro,4420,2013-04-08
+10326,South America,Argentina,Buenos Aires,1755,2013-04-13
+10327,South America,Paraguay,Asuncion,2580,2013-04-15
+10328,Europe,United Kingdom,London,850,2013-04-01
+10329,Europe,Germany,Berlin,2825,2013-04-10
+10330,Europe,Spain,Madrid,540,2013-04-06
+10331,Europe,Russian Federation,Moscow,1520,2013-04-08
+10332,Asia,China,Beijing,8760,2013-04-26
+10333,Asia,Japan,Tokyo,1110,2013-04-16
+10334,Asia,Republic of Korea,Seoul,6850,2013-04-19
+10335,Australia,Australia,Sydney,1940,2013-04-23
+10336,Australia,Australia,Melbourne,1980,2013-04-21
+10337,Africa,South Africa,Pretoria,3090,2013-04-03
+10338,Africa,Egypt,Cairo,1640,2013-04-24
+10339,Australia,Australia,Melbourne,3585,2013-04-01
+10340,North America,Canada,Vancouver,1770,2013-04-01
+10341,Australia,Australia,Melbourne,4005,2013-04-04
+10342,North America,Canada,Edmonton,2870,2013-04-02
+10343,North America,Canada,Edmonton,960,2013-04-20
+10344,North America,United States of America,New York,8640,2013-05-14
+10345,North America,United States of America,Los Angeles,5450,2013-05-24
+10346,North America,United States of America,Denver,2535,2013-05-07
+10347,North America,Canada,Vancouver,1155,2013-05-20
+10348,North America,Canada,Edmonton,3140,2013-05-18
+10349,South America,Brazil,Rio de Janeiro,2260,2013-05-19
+10350,South America,Argentina,Buenos Aires,1215,2013-05-23
+10351,South America,Paraguay,Asuncion,1210,2013-05-08
+10352,Europe,United Kingdom,London,875,2013-05-25
+10353,Europe,Germany,Berlin,5400,2013-05-03
+10354,Europe,Spain,Madrid,5940,2013-05-25
+10355,Europe,Russian Federation,Moscow,4700,2013-05-03
+10356,Asia,China,Beijing,5520,2013-05-12
+10357,Asia,Japan,Tokyo,9210,2013-05-22
+10358,Asia,Republic of Korea,Seoul,7950,2013-05-12
+10359,Australia,Australia,Sydney,3740,2013-05-24
+10360,Australia,Australia,Melbourne,990,2013-05-02
+10361,Africa,South Africa,Pretoria,3190,2013-05-03
+10362,Africa,Egypt,Cairo,2430,2013-05-11
+10363,North America,United States of America,New York,7380,2013-06-15
+10364,North America,United States of America,Los Angeles,4475,2013-06-08
+10365,North America,United States of America,Denver,1290,2013-06-10
+10366,North America,Canada,Vancouver,2250,2013-06-10
+10367,North America,Canada,Edmonton,350,2013-06-22
+10368,South America,Brazil,Rio de Janeiro,5480,2013-06-24
+10369,South America,Argentina,Buenos Aires,2355,2013-06-10
+10370,South America,Paraguay,Asuncion,1960,2013-06-23
+10371,Europe,United Kingdom,London,4125,2013-06-06
+10372,Europe,Germany,Berlin,7925,2013-06-12
+10373,Europe,Spain,Madrid,1120,2013-06-22
+10374,Europe,Russian Federation,Moscow,5100,2013-06-01
+10375,Asia,China,Beijing,1500,2013-06-25
+10376,Asia,Japan,Tokyo,5130,2013-06-10
+10377,Asia,Republic of Korea,Seoul,2475,2013-06-10
+10378,Australia,Australia,Sydney,2100,2013-06-06
+10379,Australia,Australia,Melbourne,3570,2013-06-10
+10380,Africa,South Africa,Pretoria,550,2013-06-02
+10381,Africa,Egypt,Cairo,2850,2013-06-26
+10382,Europe,Russian Federation,Moscow,4280,2013-06-19
+10383,Australia,Australia,Sydney,1460,2013-06-17
+10384,North America,Canada,Edmonton,960,2013-06-17
+10385,Africa,Egypt,Cairo,1520,2013-06-03
+10386,Asia,Japan,Tokyo,6750,2013-06-21
+10387,North America,United States of America,New York,7260,2013-07-14
+10388,North America,United States of America,Los Angeles,2450,2013-07-11
+10389,North America,United States of America,Denver,3540,2013-07-02
+10390,North America,Canada,Vancouver,1950,2013-07-03
+10391,North America,Canada,Edmonton,360,2013-07-07
+10392,South America,Brazil,Rio de Janeiro,4500,2013-07-03
+10393,South America,Argentina,Buenos Aires,4575,2013-07-21
+10394,South America,Paraguay,Asuncion,2310,2013-07-18
+10395,Europe,United Kingdom,London,7500,2013-07-04
+10396,Europe,Germany,Berlin,3575,2013-07-23
+10397,Europe,Spain,Madrid,760,2013-07-01
+10398,Europe,Russian Federation,Moscow,2400,2013-07-11
+10399,Asia,China,Beijing,3330,2013-07-04
+10400,Asia,Japan,Tokyo,3480,2013-07-23
+10401,Asia,Republic of Korea,Seoul,4875,2013-07-11
+10402,Australia,Australia,Sydney,4980,2013-07-19
+10403,Australia,Australia,Melbourne,2580,2013-07-04
+10404,Africa,South Africa,Pretoria,2650,2013-07-16
+10406,Asia,Japan,Tokyo,960,2013-07-26
+10405,Africa,Egypt,Cairo,1190,2013-07-02
+10407,North America,United States of America,New York,3600,2013-08-08
+10408,North America,United States of America,Los Angeles,2250,2013-08-01
+10409,North America,United States of America,Denver,1275,2013-08-02
+10410,North America,Canada,Vancouver,3885,2013-08-14
+10411,North America,Canada,Edmonton,1900,2013-08-05
+10412,South America,Brazil,Rio de Janeiro,2300,2013-08-09
+10413,South America,Argentina,Buenos Aires,2895,2013-08-15
+10414,South America,Paraguay,Asuncion,350,2013-08-20
+10415,Europe,United Kingdom,London,4200,2013-08-22
+10416,Europe,Germany,Berlin,7175,2013-08-14
+10417,Europe,Spain,Madrid,4420,2013-08-24
+10418,Europe,Russian Federation,Moscow,5200,2013-08-21
+10419,Asia,China,Beijing,7920,2013-08-17
+10420,Asia,Japan,Tokyo,6990,2013-08-22
+10421,Asia,Republic of Korea,Seoul,2125,2013-08-05
+10422,Australia,Australia,Sydney,2220,2013-08-16
+10423,Australia,Australia,Melbourne,1575,2013-08-23
+10424,Africa,South Africa,Pretoria,1880,2013-08-12
+10425,Africa,Egypt,Cairo,710,2013-08-25
+10426,North America,Canada,Vancouver,390,2013-08-20
+10427,Australia,Australia,Melbourne,4635,2013-08-04
+10428,North America,United States of America,Denver,4350,2013-08-19
+10429,South America,Brazil,Rio de Janeiro,6020,2013-08-02
+10430,North America,United States of America,New York,3660,2013-08-19
+10431,North America,United States of America,Los Angeles,4525,2013-08-24
+10432,North America,United States of America,New York,4410,2013-09-12
+10433,North America,United States of America,Los Angeles,1725,2013-09-07
+10434,North America,United States of America,Denver,2715,2013-09-14
+10435,North America,Canada,Vancouver,2820,2013-09-08
+10436,North America,Canada,Edmonton,2310,2013-09-12
+10437,South America,Brazil,Rio de Janeiro,780,2013-09-08
+10438,South America,Argentina,Buenos Aires,2370,2013-09-19
+10439,South America,Paraguay,Asuncion,1410,2013-09-09
+10440,Europe,United Kingdom,London,1825,2013-09-23
+10441,Europe,Germany,Berlin,4075,2013-09-06
+10442,Europe,Spain,Madrid,1020,2013-09-04
+10443,Europe,Russian Federation,Moscow,4320,2013-09-25
+10444,Asia,China,Beijing,7530,2013-09-13
+10445,Asia,Japan,Tokyo,2820,2013-09-08
+10446,Asia,Republic of Korea,Seoul,3050,2013-09-04
+10447,Australia,Australia,Sydney,5080,2013-09-25
+10448,Australia,Australia,Melbourne,1125,2013-09-13
+10449,Africa,South Africa,Pretoria,850,2013-09-24
+10450,Africa,Egypt,Cairo,1440,2013-09-19
+10451,North America,Canada,Vancouver,1950,2013-09-02
+10452,North America,United States of America,New York,6390,2013-10-11
+10453,North America,United States of America,Los Angeles,4625,2013-10-02
+10454,North America,United States of America,Denver,3510,2013-10-24
+10455,North America,Canada,Vancouver,2730,2013-10-15
+10456,North America,Canada,Edmonton,2070,2013-10-15
+10457,South America,Brazil,Rio de Janeiro,2320,2013-10-18
+10458,South America,Argentina,Buenos Aires,4260,2013-10-24
+10459,South America,Paraguay,Asuncion,840,2013-10-18
+10460,Europe,United Kingdom,London,7300,2013-10-24
+10461,Europe,Germany,Berlin,5950,2013-10-11
+10462,Europe,Spain,Madrid,3220,2013-10-25
+10463,Europe,Russian Federation,Moscow,3480,2013-10-08
+10464,Asia,China,Beijing,4830,2013-10-26
+10465,Asia,Japan,Tokyo,4470,2013-10-05
+10466,Asia,Republic of Korea,Seoul,3675,2013-10-23
+10467,Australia,Australia,Sydney,4260,2013-10-01
+10468,Australia,Australia,Melbourne,4245,2013-10-26
+10469,Africa,South Africa,Pretoria,1470,2013-10-01
+10470,Africa,Egypt,Cairo,1810,2013-10-02
+10471,North America,United States of America,New York,600,2013-10-23
+10472,North America,United States of America,New York,7500,2013-11-03
+10473,North America,United States of America,Los Angeles,4625,2013-11-02
+10474,North America,United States of America,Denver,2625,2013-11-09
+10475,North America,Canada,Vancouver,1440,2013-11-15
+10476,North America,Canada,Edmonton,2420,2013-11-15
+10477,South America,Brazil,Rio de Janeiro,4180,2013-11-15
+10478,South America,Argentina,Buenos Aires,3720,2013-11-25
+10479,South America,Paraguay,Asuncion,2730,2013-11-08
+10480,Europe,United Kingdom,London,3775,2013-11-17
+10481,Europe,Germany,Berlin,3525,2013-11-15
+10482,Europe,Spain,Madrid,5320,2013-11-08
+10483,Europe,Russian Federation,Moscow,5340,2013-11-13
+10484,Asia,China,Beijing,8850,2013-11-01
+10485,Asia,Japan,Tokyo,7050,2013-11-14
+10486,Asia,Republic of Korea,Seoul,4200,2013-11-18
+10487,Australia,Australia,Sydney,4960,2013-11-04
+10488,Australia,Australia,Melbourne,2280,2013-11-13
+10489,Africa,South Africa,Pretoria,590,2013-11-11
+10490,Africa,Egypt,Cairo,810,2013-11-12
+10491,Europe,United Kingdom,London,2625,2013-11-07
+10492,North America,United States of America,New York,8280,2013-12-01
+10493,North America,United States of America,Los Angeles,5650,2013-12-19
+10494,North America,United States of America,Denver,2760,2013-12-14
+10495,North America,Canada,Vancouver,2670,2013-12-03
+10496,North America,Canada,Edmonton,2520,2013-12-20
+10497,South America,Brazil,Rio de Janeiro,4080,2013-12-21
+10498,South America,Argentina,Buenos Aires,4140,2013-12-22
+10499,South America,Paraguay,Asuncion,390,2013-12-04
+10500,Europe,United Kingdom,London,1400,2013-12-19
+10501,Europe,Germany,Berlin,7275,2013-12-22
+10502,Europe,Spain,Madrid,4100,2013-12-20
+10503,Europe,Russian Federation,Moscow,5520,2013-12-25
+10504,Asia,China,Beijing,9210,2013-12-24
+10505,Asia,Japan,Tokyo,7290,2013-12-05
+10506,Asia,Republic of Korea,Seoul,625,2013-12-22
+10507,Australia,Australia,Sydney,4460,2013-12-12
+10508,Australia,Australia,Melbourne,3825,2013-12-13
+10509,Africa,South Africa,Pretoria,2850,2013-12-17
+10510,Africa,Egypt,Cairo,2780,2013-12-07
+10511,North America,United States of America,New York,840,2013-12-18
+10512,Africa,South Africa,Pretoria,2970,2013-12-23
+10513,North America,Canada,Vancouver,945,2013-12-06
+10514,North America,United States of America,Denver,2625,2013-12-04
+10515,North America,Canada,Vancouver,390,2013-12-01
+10516,Asia,China,Beijing,2250,2013-12-02
+10517,North America,United States of America,New York,7710,2014-01-18
+10518,North America,United States of America,Los Angeles,7975,2014-01-10
+10519,North America,United States of America,Denver,3285,2014-01-13
+10520,North America,Canada,Vancouver,2580,2014-01-22
+10521,North America,Canada,Edmonton,2160,2014-01-26
+10522,South America,Brazil,Rio de Janeiro,1100,2014-01-25
+10523,South America,Argentina,Buenos Aires,4425,2014-01-21
+10524,South America,Paraguay,Asuncion,1360,2014-01-22
+10525,Europe,United Kingdom,London,3250,2014-01-14
+10526,Europe,Germany,Berlin,5550,2014-01-21
+10527,Europe,Spain,Madrid,2860,2014-01-25
+10528,Europe,Russian Federation,Moscow,5320,2014-01-08
+10529,Asia,China,Beijing,4050,2014-01-14
+10530,Asia,Japan,Tokyo,3450,2014-01-24
+10531,Asia,Republic of Korea,Seoul,5425,2014-01-11
+10532,Australia,Australia,Sydney,4860,2014-01-12
+10533,Australia,Australia,Melbourne,4695,2014-01-16
+10534,Africa,South Africa,Pretoria,610,2014-01-05
+10535,Africa,Egypt,Cairo,1580,2014-01-15
+10536,North America,United States of America,New York,3780,2014-02-18
+10537,North America,United States of America,Los Angeles,5400,2014-02-21
+10538,North America,United States of America,Denver,630,2014-02-18
+10539,North America,Canada,Vancouver,3960,2014-02-04
+10540,North America,Canada,Edmonton,2010,2014-02-25
+10541,South America,Brazil,Rio de Janeiro,5000,2014-02-01
+10542,South America,Argentina,Buenos Aires,1995,2014-02-20
+10543,South America,Paraguay,Asuncion,860,2014-02-12
+10544,Europe,United Kingdom,London,2150,2014-02-10
+10545,Europe,Germany,Berlin,4050,2014-02-06
+10546,Europe,Spain,Madrid,2960,2014-02-18
+10547,Europe,Russian Federation,Moscow,1780,2014-02-26
+10548,Asia,China,Beijing,8700,2014-02-03
+10549,Asia,Japan,Tokyo,3390,2014-02-03
+10550,Asia,Republic of Korea,Seoul,4425,2014-02-15
+10551,Australia,Australia,Sydney,1180,2014-02-23
+10552,Australia,Australia,Melbourne,360,2014-02-08
+10553,Africa,South Africa,Pretoria,2310,2014-02-13
+10554,Africa,Egypt,Cairo,1770,2014-02-20
+10555,Asia,Japan,Tokyo,3060,2014-02-26
+10556,North America,Canada,Edmonton,1750,2014-02-12
+10557,North America,United States of America,New York,2280,2014-03-09
+10558,North America,United States of America,Los Angeles,7600,2014-03-25
+10559,North America,United States of America,Denver,1035,2014-03-23
+10560,North America,Canada,Vancouver,1245,2014-03-01
+10561,North America,Canada,Edmonton,2860,2014-03-19
+10562,South America,Brazil,Rio de Janeiro,440,2014-03-19
+10563,South America,Argentina,Buenos Aires,4665,2014-03-02
+10564,South America,Paraguay,Asuncion,2270,2014-03-15
+10565,Europe,United Kingdom,London,5000,2014-03-09
+10566,Europe,Germany,Berlin,5100,2014-03-23
+10567,Europe,Spain,Madrid,2120,2014-03-11
+10568,Europe,Russian Federation,Moscow,5140,2014-03-05
+10569,Asia,China,Beijing,6210,2014-03-19
+10570,Asia,Japan,Tokyo,9510,2014-03-19
+10571,Asia,Republic of Korea,Seoul,7600,2014-03-21
+10572,Australia,Australia,Sydney,5420,2014-03-15
+10573,Australia,Australia,Melbourne,1980,2014-03-05
+10574,Africa,South Africa,Pretoria,1820,2014-03-07
+10575,Africa,Egypt,Cairo,1670,2014-03-21
+10576,Europe,Germany,Berlin,4800,2014-03-08
+10577,North America,Canada,Vancouver,2925,2014-03-03
+10578,North America,United States of America,New York,2940,2014-04-11
+10579,North America,United States of America,Los Angeles,3525,2014-04-13
+10580,North America,United States of America,Denver,2475,2014-04-22
+10581,North America,Canada,Vancouver,3315,2014-04-08
+10582,North America,Canada,Edmonton,3140,2014-04-07
+10583,South America,Brazil,Rio de Janeiro,2520,2014-04-01
+10584,South America,Argentina,Buenos Aires,1200,2014-04-10
+10585,South America,Paraguay,Asuncion,2060,2014-04-21
+10586,Europe,United Kingdom,London,7875,2014-04-02
+10587,Europe,Germany,Berlin,1450,2014-04-07
+10588,Europe,Spain,Madrid,2640,2014-04-22
+10589,Europe,Russian Federation,Moscow,1960,2014-04-16
+10590,Asia,China,Beijing,2250,2014-04-23
+10591,Asia,Japan,Tokyo,4500,2014-04-05
+10592,Asia,Republic of Korea,Seoul,5050,2014-04-11
+10593,Australia,Australia,Sydney,2940,2014-04-02
+10594,Australia,Australia,Melbourne,2880,2014-04-14
+10595,Africa,South Africa,Pretoria,1050,2014-04-19
+10596,Africa,Egypt,Cairo,1850,2014-04-02
+10597,Europe,Spain,Madrid,3160,2014-04-01
+10598,Europe,United Kingdom,London,875,2014-04-04
+10599,Europe,Russian Federation,Moscow,3200,2014-04-08
+10600,Australia,Australia,Melbourne,1380,2014-04-21
+10601,North America,Canada,Edmonton,3060,2014-04-06
+10602,North America,United States of America,New York,6690,2014-05-19
+10603,North America,United States of America,Los Angeles,4525,2014-05-15
+10604,North America,United States of America,Denver,4665,2014-05-10
+10605,North America,Canada,Vancouver,4530,2014-05-18
+10606,North America,Canada,Edmonton,1330,2014-05-08
+10607,South America,Brazil,Rio de Janeiro,1720,2014-05-20
+10608,South America,Argentina,Buenos Aires,3750,2014-05-16
+10609,South America,Paraguay,Asuncion,1290,2014-05-10
+10610,Europe,United Kingdom,London,4925,2014-05-14
+10611,Europe,Germany,Berlin,4300,2014-05-22
+10612,Europe,Spain,Madrid,5740,2014-05-08
+10613,Europe,Russian Federation,Moscow,3760,2014-05-18
+10614,Asia,China,Beijing,7920,2014-05-22
+10615,Asia,Japan,Tokyo,1440,2014-05-21
+10616,Asia,Republic of Korea,Seoul,5975,2014-05-25
+10617,Australia,Australia,Sydney,4440,2014-05-05
+10618,Australia,Australia,Melbourne,2310,2014-05-24
+10619,Africa,South Africa,Pretoria,2250,2014-05-06
+10620,Africa,Egypt,Cairo,2320,2014-05-14
+10621,Asia,China,Beijing,8370,2014-05-06
+10622,North America,United States of America,New York,5190,2014-06-26
+10623,North America,United States of America,Los Angeles,925,2014-06-04
+10624,North America,United States of America,Denver,3240,2014-06-20
+10625,North America,Canada,Vancouver,3180,2014-06-23
+10626,North America,Canada,Edmonton,780,2014-06-13
+10627,South America,Brazil,Rio de Janeiro,4680,2014-06-08
+10628,South America,Argentina,Buenos Aires,2475,2014-06-25
+10629,South America,Paraguay,Asuncion,1920,2014-06-20
+10630,Europe,United Kingdom,London,7500,2014-06-25
+10631,Europe,Germany,Berlin,5025,2014-06-26
+10632,Europe,Spain,Madrid,2400,2014-06-08
+10633,Europe,Russian Federation,Moscow,1720,2014-06-09
+10634,Asia,China,Beijing,2880,2014-06-21
+10635,Asia,Japan,Tokyo,5430,2014-06-03
+10636,Asia,Republic of Korea,Seoul,4475,2014-06-19
+10637,Australia,Australia,Sydney,1420,2014-06-20
+10638,Australia,Australia,Melbourne,2670,2014-06-25
+10639,Africa,South Africa,Pretoria,1930,2014-06-02
+10640,Africa,Egypt,Cairo,580,2014-06-25
+10641,Africa,Egypt,Cairo,1620,2014-06-12
+10642,Australia,Australia,Melbourne,4530,2014-06-02
+10643,Europe,Germany,Berlin,6025,2014-06-23
+10644,North America,United States of America,New York,3540,2014-07-21
+10645,North America,United States of America,Los Angeles,3000,2014-07-01
+10646,North America,United States of America,Denver,3240,2014-07-26
+10647,North America,Canada,Vancouver,2265,2014-07-22
+10648,North America,Canada,Edmonton,400,2014-07-09
+10649,South America,Brazil,Rio de Janeiro,1460,2014-07-08
+10650,South America,Argentina,Buenos Aires,1620,2014-07-18
+10651,South America,Paraguay,Asuncion,2400,2014-07-25
+10652,Europe,United Kingdom,London,5275,2014-07-04
+10653,Europe,Germany,Berlin,4475,2014-07-03
+10654,Europe,Spain,Madrid,3980,2014-07-21
+10655,Europe,Russian Federation,Moscow,5240,2014-07-11
+10656,Asia,China,Beijing,1200,2014-07-21
+10657,Asia,Japan,Tokyo,5700,2014-07-18
+10658,Asia,Republic of Korea,Seoul,5575,2014-07-01
+10659,Australia,Australia,Sydney,2160,2014-07-02
+10660,Australia,Australia,Melbourne,960,2014-07-09
+10661,Africa,South Africa,Pretoria,1280,2014-07-04
+10662,Africa,Egypt,Cairo,1040,2014-07-02
+10663,Asia,China,Beijing,5520,2014-07-21
+10664,South America,Paraguay,Asuncion,1760,2014-07-25
+10665,North America,Canada,Vancouver,4080,2014-07-07
+10666,Africa,Egypt,Cairo,1000,2014-07-21
+10667,Asia,China,Beijing,3270,2014-07-12
+10668,North America,United States of America,New York,1770,2014-08-23
+10669,North America,United States of America,Los Angeles,2700,2014-08-09
+10670,North America,United States of America,Denver,2175,2014-08-03
+10671,North America,Canada,Vancouver,3375,2014-08-11
+10672,North America,Canada,Edmonton,2040,2014-08-01
+10673,South America,Brazil,Rio de Janeiro,3000,2014-08-21
+10674,South America,Argentina,Buenos Aires,3900,2014-08-16
+10675,South America,Paraguay,Asuncion,1370,2014-08-20
+10676,Europe,United Kingdom,London,5700,2014-08-01
+10677,Europe,Germany,Berlin,1275,2014-08-22
+10678,Europe,Spain,Madrid,4060,2014-08-13
+10679,Europe,Russian Federation,Moscow,2320,2014-08-18
+10680,Asia,China,Beijing,7590,2014-08-24
+10681,Asia,Japan,Tokyo,4560,2014-08-20
+10682,Asia,Republic of Korea,Seoul,7575,2014-08-20
+10683,Australia,Australia,Sydney,700,2014-08-25
+10684,Australia,Australia,Melbourne,2400,2014-08-16
+10685,Africa,South Africa,Pretoria,1390,2014-08-15
+10686,Africa,Egypt,Cairo,1320,2014-08-09
+10687,North America,United States of America,Denver,1680,2014-08-09
+10688,South America,Argentina,Buenos Aires,1500,2014-08-11
+10689,North America,United States of America,New York,6150,2014-09-21
+10690,North America,United States of America,Los Angeles,3675,2014-09-02
+10691,North America,United States of America,Denver,2250,2014-09-05
+10692,North America,Canada,Vancouver,3585,2014-09-10
+10693,North America,Canada,Edmonton,1470,2014-09-01
+10694,South America,Brazil,Rio de Janeiro,2260,2014-09-02
+10695,South America,Argentina,Buenos Aires,3765,2014-09-03
+10696,South America,Paraguay,Asuncion,1640,2014-09-04
+10697,Europe,United Kingdom,London,4475,2014-09-09
+10698,Europe,Germany,Berlin,5975,2014-09-04
+10699,Europe,Spain,Madrid,1100,2014-09-16
+10700,Europe,Russian Federation,Moscow,1320,2014-09-18
+10701,Asia,China,Beijing,8610,2014-09-19
+10702,Asia,Japan,Tokyo,9210,2014-09-09
+10703,Asia,Republic of Korea,Seoul,3700,2014-09-01
+10704,Australia,Australia,Sydney,3620,2014-09-19
+10705,Australia,Australia,Melbourne,4275,2014-09-01
+10706,Africa,South Africa,Pretoria,2370,2014-09-03
+10707,Africa,Egypt,Cairo,1870,2014-09-10
+10708,Africa,South Africa,Pretoria,2070,2014-09-25
+10709,Europe,Germany,Berlin,5025,2014-09-19
+10710,North America,United States of America,New York,1080,2014-10-15
+10711,North America,United States of America,Los Angeles,1400,2014-10-22
+10712,North America,United States of America,Denver,4260,2014-10-01
+10713,North America,Canada,Vancouver,2745,2014-10-01
+10714,North America,Canada,Edmonton,2920,2014-10-23
+10715,South America,Brazil,Rio de Janeiro,3520,2014-10-11
+10716,South America,Argentina,Buenos Aires,4035,2014-10-20
+10717,South America,Paraguay,Asuncion,1730,2014-10-05
+10718,Europe,United Kingdom,London,975,2014-10-06
+10719,Europe,Germany,Berlin,5700,2014-10-06
+10720,Europe,Spain,Madrid,5080,2014-10-18
+10721,Europe,Russian Federation,Moscow,2940,2014-10-24
+10722,Asia,China,Beijing,2670,2014-10-04
+10723,Asia,Japan,Tokyo,1230,2014-10-11
+10724,Asia,Republic of Korea,Seoul,600,2014-10-08
+10725,Australia,Australia,Sydney,3700,2014-10-08
+10726,Australia,Australia,Melbourne,3375,2014-10-11
+10727,Africa,South Africa,Pretoria,1500,2014-10-17
+10728,Africa,Egypt,Cairo,370,2014-10-05
+10729,South America,Paraguay,Asuncion,2340,2014-10-16
+10730,Asia,Japan,Tokyo,1080,2014-10-08
+10731,Asia,Republic of Korea,Seoul,2775,2014-10-21
+10732,North America,United States of America,New York,4380,2014-11-09
+10733,North America,United States of America,Los Angeles,5500,2014-11-21
+10734,North America,United States of America,Denver,1920,2014-11-24
+10735,North America,Canada,Vancouver,765,2014-11-24
+10736,North America,Canada,Edmonton,370,2014-11-18
+10737,South America,Brazil,Rio de Janeiro,3500,2014-11-25
+10738,South America,Argentina,Buenos Aires,825,2014-11-09
+10739,South America,Paraguay,Asuncion,490,2014-11-23
+10740,Europe,United Kingdom,London,7075,2014-11-20
+10741,Europe,Germany,Berlin,1350,2014-11-25
+10742,Europe,Spain,Madrid,1440,2014-11-15
+10743,Europe,Russian Federation,Moscow,2820,2014-11-13
+10744,Asia,China,Beijing,2280,2014-11-12
+10745,Asia,Japan,Tokyo,1110,2014-11-03
+10746,Asia,Republic of Korea,Seoul,1150,2014-11-23
+10747,Australia,Australia,Sydney,2040,2014-11-20
+10748,Australia,Australia,Melbourne,3090,2014-11-24
+10749,Africa,South Africa,Pretoria,1940,2014-11-24
+10750,Africa,Egypt,Cairo,3090,2014-11-16
+10751,Asia,Republic of Korea,Seoul,4900,2014-11-05
+10752,North America,United States of America,Denver,3465,2014-11-07
+10753,Africa,South Africa,Pretoria,1110,2014-11-20
+10754,Australia,Australia,Melbourne,1650,2014-11-02
+10755,North America,United States of America,New York,5280,2014-12-04
+10756,North America,United States of America,Los Angeles,3075,2014-12-02
+10757,North America,United States of America,Denver,690,2014-12-07
+10758,North America,Canada,Vancouver,1305,2014-12-15
+10759,North America,Canada,Edmonton,1970,2014-12-01
+10760,South America,Brazil,Rio de Janeiro,3760,2014-12-18
+10761,South America,Argentina,Buenos Aires,1920,2014-12-22
+10762,South America,Paraguay,Asuncion,1360,2014-12-12
+10763,Europe,United Kingdom,London,2525,2014-12-06
+10764,Europe,Germany,Berlin,5575,2014-12-20
+10765,Europe,Spain,Madrid,5560,2014-12-10
+10766,Europe,Russian Federation,Moscow,4880,2014-12-13
+10767,Asia,China,Beijing,8850,2014-12-03
+10768,Asia,Japan,Tokyo,2820,2014-12-10
+10769,Asia,Republic of Korea,Seoul,4000,2014-12-12
+10770,Australia,Australia,Sydney,5820,2014-12-02
+10771,Australia,Australia,Melbourne,1275,2014-12-12
+10772,Africa,South Africa,Pretoria,1310,2014-12-01
+10773,Africa,Egypt,Cairo,2180,2014-12-26
+10774,South America,Argentina,Buenos Aires,4470,2014-12-17
+10775,North America,Canada,Edmonton,2990,2014-12-15
+10776,Europe,United Kingdom,London,7650,2014-12-18
+10777,Asia,Japan,Tokyo,780,2014-12-02
+10778,South America,Paraguay,Asuncion,2970,2014-12-13
+10779,South America,Argentina,Buenos Aires,1155,2014-12-05
+10780,North America,United States of America,New York,4470,2015-01-10
+10781,North America,United States of America,Los Angeles,1125,2015-01-21
+10782,North America,United States of America,Denver,645,2015-01-17
+10783,North America,Canada,Vancouver,675,2015-01-05
+10784,North America,Canada,Edmonton,2840,2015-01-05
+10785,South America,Brazil,Rio de Janeiro,2660,2015-01-04
+10786,South America,Argentina,Buenos Aires,4560,2015-01-12
+10787,South America,Paraguay,Asuncion,2880,2015-01-20
+10788,Europe,United Kingdom,London,500,2015-01-02
+10789,Europe,Germany,Berlin,3925,2015-01-07
+10790,Europe,Spain,Madrid,5660,2015-01-18
+10791,Europe,Russian Federation,Moscow,1460,2015-01-22
+10792,Asia,China,Beijing,5040,2015-01-10
+10793,Asia,Japan,Tokyo,4830,2015-01-13
+10794,Asia,Republic of Korea,Seoul,3075,2015-01-22
+10795,Australia,Australia,Sydney,3120,2015-01-14
+10796,Australia,Australia,Melbourne,3525,2015-01-23
+10797,Africa,South Africa,Pretoria,1930,2015-01-09
+10798,Africa,Egypt,Cairo,2890,2015-01-02
+10799,South America,Argentina,Buenos Aires,1545,2015-01-17
+10800,Australia,Australia,Melbourne,3630,2015-01-20
+10801,North America,Canada,Vancouver,4035,2015-01-14
+10802,Australia,Australia,Melbourne,345,2015-01-06
+10803,Asia,Republic of Korea,Seoul,7000,2015-01-07
+10804,North America,United States of America,New York,3060,2015-02-13
+10805,North America,United States of America,Los Angeles,6425,2015-02-04
+10806,North America,United States of America,Denver,615,2015-02-22
+10807,North America,Canada,Vancouver,1755,2015-02-07
+10808,North America,Canada,Edmonton,1540,2015-02-21
+10809,South America,Brazil,Rio de Janeiro,2820,2015-02-24
+10810,South America,Argentina,Buenos Aires,4305,2015-02-10
+10811,South America,Paraguay,Asuncion,1520,2015-02-26
+10812,Europe,United Kingdom,London,4725,2015-02-18
+10813,Europe,Germany,Berlin,6750,2015-02-16
+10814,Europe,Spain,Madrid,5540,2015-02-07
+10815,Europe,Russian Federation,Moscow,1880,2015-02-24
+10816,Asia,China,Beijing,6180,2015-02-26
+10817,Asia,Japan,Tokyo,9300,2015-02-03
+10818,Asia,Republic of Korea,Seoul,3700,2015-02-26
+10819,Australia,Australia,Sydney,740,2015-02-01
+10820,Australia,Australia,Melbourne,4755,2015-02-23
+10821,Africa,South Africa,Pretoria,2570,2015-02-20
+10822,Africa,Egypt,Cairo,2860,2015-02-19
+10823,North America,United States of America,New York,5430,2015-03-21
+10824,North America,United States of America,Los Angeles,4525,2015-03-21
+10825,North America,United States of America,Denver,1515,2015-03-10
+10826,North America,Canada,Vancouver,630,2015-03-15
+10827,North America,Canada,Edmonton,1310,2015-03-01
+10828,South America,Brazil,Rio de Janeiro,3200,2015-03-17
+10829,South America,Argentina,Buenos Aires,3945,2015-03-20
+10830,South America,Paraguay,Asuncion,2990,2015-03-18
+10831,Europe,United Kingdom,London,1125,2015-03-22
+10832,Europe,Germany,Berlin,7950,2015-03-17
+10833,Europe,Spain,Madrid,2960,2015-03-25
+10834,Europe,Russian Federation,Moscow,6300,2015-03-20
+10835,Asia,China,Beijing,8670,2015-03-07
+10836,Asia,Japan,Tokyo,3930,2015-03-23
+10837,Asia,Republic of Korea,Seoul,6975,2015-03-02
+10838,Australia,Australia,Sydney,4220,2015-03-17
+10839,Australia,Australia,Melbourne,3090,2015-03-25
+10840,Africa,South Africa,Pretoria,2380,2015-03-01
+10841,Africa,Egypt,Cairo,1510,2015-03-07
+10842,Asia,Japan,Tokyo,1020,2015-03-19
+10843,Asia,Republic of Korea,Seoul,6700,2015-03-26
+10844,North America,United States of America,New York,4890,2015-04-02
+10845,North America,United States of America,Los Angeles,7225,2015-04-13
+10846,North America,United States of America,Denver,795,2015-04-07
+10847,North America,Canada,Vancouver,1785,2015-04-03
+10848,North America,Canada,Edmonton,1850,2015-04-03
+10849,South America,Brazil,Rio de Janeiro,5120,2015-04-12
+10850,South America,Argentina,Buenos Aires,615,2015-04-07
+10851,South America,Paraguay,Asuncion,2860,2015-04-05
+10852,Europe,United Kingdom,London,1525,2015-04-24
+10853,Europe,Germany,Berlin,7425,2015-04-15
+10854,Europe,Spain,Madrid,6080,2015-04-13
+10855,Europe,Russian Federation,Moscow,2940,2015-04-04
+10856,Asia,China,Beijing,5580,2015-04-16
+10857,Asia,Japan,Tokyo,9390,2015-04-19
+10858,Asia,Republic of Korea,Seoul,3200,2015-04-26
+10859,Australia,Australia,Sydney,4380,2015-04-05
+10860,Australia,Australia,Melbourne,4725,2015-04-06
+10861,Africa,South Africa,Pretoria,930,2015-04-25
+10862,Africa,Egypt,Cairo,1910,2015-04-05
+10863,Europe,United Kingdom,London,2725,2015-04-16
+10864,Australia,Australia,Sydney,4720,2015-04-02
+10865,Asia,China,Beijing,5190,2015-04-10
+10866,Africa,South Africa,Pretoria,2800,2015-04-26
+10867,Asia,Japan,Tokyo,3780,2015-04-24
+10868,North America,Canada,Edmonton,2340,2015-04-17
+10869,North America,United States of America,New York,4830,2015-05-12
+10870,North America,United States of America,Los Angeles,2075,2015-05-23
+10871,North America,United States of America,Denver,3420,2015-05-21
+10872,North America,Canada,Vancouver,1440,2015-05-10
+10873,North America,Canada,Edmonton,1680,2015-05-15
+10874,South America,Brazil,Rio de Janeiro,3440,2015-05-16
+10875,South America,Argentina,Buenos Aires,4695,2015-05-10
+10876,South America,Paraguay,Asuncion,2380,2015-05-06
+10877,Europe,United Kingdom,London,1875,2015-05-25
+10878,Europe,Germany,Berlin,7550,2015-05-14
+10879,Europe,Spain,Madrid,3340,2015-05-01
+10880,Europe,Russian Federation,Moscow,1400,2015-05-22
+10881,Asia,China,Beijing,6060,2015-05-22
+10882,Asia,Japan,Tokyo,8370,2015-05-13
+10883,Asia,Republic of Korea,Seoul,3550,2015-05-26
+10884,Australia,Australia,Sydney,2620,2015-05-17
+10885,Australia,Australia,Melbourne,2400,2015-05-21
+10886,Africa,South Africa,Pretoria,1740,2015-05-21
+10887,Africa,Egypt,Cairo,500,2015-05-26
+10888,South America,Argentina,Buenos Aires,780,2015-05-07
