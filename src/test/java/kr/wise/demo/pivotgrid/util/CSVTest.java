@@ -44,7 +44,7 @@ public class CSVTest {
     public void testCSVRecordMapIterable() throws Exception {
         final CSVParser csvParser = new CSVParser(
                 new InputStreamReader(originalSalesCsvFile.getInputStream(), "UTF-8"),
-                CSVFormat.EXCEL.withHeader());
+                CSVFormat.EXCEL.builder().setHeader().build());
         final CSVDataReader csvDataReader = new CSVDataReader(csvParser, true);
         final CloseableCSVRecordIterator it = new CloseableCSVRecordIterator(csvDataReader, 0, 0);
 
@@ -80,7 +80,7 @@ public class CSVTest {
     public void testCSVRecordMapIterableWithLimit() throws Exception {
         final CSVParser csvParser = new CSVParser(
                 new InputStreamReader(originalSalesCsvFile.getInputStream(), "UTF-8"),
-                CSVFormat.EXCEL.withHeader());
+                CSVFormat.EXCEL.builder().setHeader().build());
         final CSVDataReader csvDataReader = new CSVDataReader(csvParser, true);
         final CloseableCSVRecordIterator it = new CloseableCSVRecordIterator(csvDataReader, 0, 2);
 

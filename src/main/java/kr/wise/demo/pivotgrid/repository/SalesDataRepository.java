@@ -57,7 +57,7 @@ public class SalesDataRepository {
             is = new FileInputStream(salesCsvFile);
             bis = new BufferedInputStream(is, BUFFER_SIZE);
             isr = new InputStreamReader(bis, "UTF-8");
-            csvParser = new CSVParser(isr, CSVFormat.EXCEL.withHeader());
+            csvParser = new CSVParser(isr, CSVFormat.EXCEL.builder().setHeader().build());
             csvDataReader = new CSVDataReader(csvParser, true);
         }
         catch (Exception e) {
