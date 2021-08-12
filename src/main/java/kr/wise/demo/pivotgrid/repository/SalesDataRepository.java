@@ -20,25 +20,28 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import kr.wise.demo.pivotgrid.util.JacksonUtils;
 
 @Service
 public class SalesDataRepository {
 
     private static Logger log = LoggerFactory.getLogger(SalesDataRepository.class);
 
-    private static final int BUFFER_SIZE = 1024 * 1024;
+    private static final int BUFFER_SIZE = 256 * 1024;
 
     private final int EXPECTED_DATA_SIZE = 1000000;
     private Resource originalSalesJsonFile = new ClassPathResource("kr/wise/demo/pivotgrid/repository/sales.json");
     private File salesCsvFile;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @PostConstruct
     public void init() throws Exception {
@@ -92,8 +95,7 @@ public class SalesDataRepository {
             bw = new BufferedWriter(osw);
             csvPrinter = new CSVPrinter(bw, CSVFormat.EXCEL.builder().setHeader(headers).build());
 
-            final ArrayNode sourceDataArray = (ArrayNode) JacksonUtils.getObjectMapper()
-                    .readTree(bis);
+            final ArrayNode sourceDataArray = (ArrayNode) objectMapper.readTree(bis);
             final int originalSize = sourceDataArray.size();
 
             for (int i = 0; i < originalSize; i++) {

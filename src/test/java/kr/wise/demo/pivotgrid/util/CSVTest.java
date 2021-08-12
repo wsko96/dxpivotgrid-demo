@@ -26,11 +26,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import kr.wise.demo.pivotgrid.repository.CSVDataReader;
-import kr.wise.demo.pivotgrid.service.CloseableCSVRecordIterator;
+import kr.wise.demo.pivotgrid.service.PagedCSVRecordIterator;
 
 public class CSVTest {
 
@@ -40,13 +41,15 @@ public class CSVTest {
 
     private static final int EXPECTED_DATA_SIZE = 1000000;
 
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
     @Test
     public void testCSVRecordMapIterable() throws Exception {
         final CSVParser csvParser = new CSVParser(
                 new InputStreamReader(originalSalesCsvFile.getInputStream(), "UTF-8"),
                 CSVFormat.EXCEL.builder().setHeader().build());
         final CSVDataReader csvDataReader = new CSVDataReader(csvParser, true);
-        final CloseableCSVRecordIterator it = new CloseableCSVRecordIterator(csvDataReader, 0, 0);
+        final PagedCSVRecordIterator it = new PagedCSVRecordIterator(csvDataReader.iterator(), 0, 0);
 
         assertTrue(it.hasNext());
         CSVRecord record = it.next();
@@ -74,6 +77,8 @@ public class CSVTest {
         assertEquals("Denver", record.get("city"));
         assertEquals("2235", record.get("amount"));
         assertEquals("2013-01-07", record.get("date"));
+
+        csvDataReader.close();
     }
 
     @Test
@@ -82,7 +87,7 @@ public class CSVTest {
                 new InputStreamReader(originalSalesCsvFile.getInputStream(), "UTF-8"),
                 CSVFormat.EXCEL.builder().setHeader().build());
         final CSVDataReader csvDataReader = new CSVDataReader(csvParser, true);
-        final CloseableCSVRecordIterator it = new CloseableCSVRecordIterator(csvDataReader, 0, 2);
+        final PagedCSVRecordIterator it = new PagedCSVRecordIterator(csvDataReader.iterator(), 0, 2);
 
         assertTrue(it.hasNext());
         CSVRecord record = it.next();
@@ -103,6 +108,8 @@ public class CSVTest {
         assertEquals("2013-01-13", record.get("date"));
 
         assertFalse(it.hasNext());
+
+        csvDataReader.close();
     }
 
     @Test
@@ -128,8 +135,7 @@ public class CSVTest {
             bw = new BufferedWriter(osw);
             csvPrinter = new CSVPrinter(bw, CSVFormat.EXCEL.builder().setHeader(headers).build());
 
-            final ArrayNode sourceDataArray = (ArrayNode) JacksonUtils.getObjectMapper()
-                    .readTree(bis);
+            final ArrayNode sourceDataArray = (ArrayNode) objectMapper.readTree(bis);
             final int originalSize = sourceDataArray.size();
 
             for (int i = 0; i < originalSize; i++) {

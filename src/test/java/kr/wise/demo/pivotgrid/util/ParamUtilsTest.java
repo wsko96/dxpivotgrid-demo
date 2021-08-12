@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
@@ -19,9 +20,11 @@ public class ParamUtilsTest {
 
     private static Logger log = LoggerFactory.getLogger(ParamUtilsTest.class);
 
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
     @Test
     public void testSimpleFilterParamParsing() throws Exception {
-        ArrayNode filterNode = (ArrayNode) JacksonUtils.getObjectMapper()
+        ArrayNode filterNode = (ArrayNode) objectMapper
                 .readTree("[[\"date.Year\",\"=\",\"2013\"]]");
         FilterParam rootFilter = ParamUtils.toFilterParam(filterNode);
         assertNotNull(rootFilter);
@@ -40,7 +43,7 @@ public class ParamUtilsTest {
 
     @Test
     public void testCompositeFilterParamParsing() throws Exception {
-        ArrayNode filterNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+        ArrayNode filterNode = (ArrayNode) objectMapper.readTree(
                 "[[[\"date.Year\",\"=\",\"2013\"]],\"and\",[[\"region\",\"=\",\"Africa\"]]]");
         FilterParam rootFilter = ParamUtils.toFilterParam(filterNode);
         assertNotNull(rootFilter);
@@ -66,7 +69,7 @@ public class ParamUtilsTest {
 
     @Test
     public void testMoreComplexFilterParamParsing() throws Exception {
-        ArrayNode filterNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+        ArrayNode filterNode = (ArrayNode) objectMapper.readTree(
                 "[[[\"date.Year\",\"=\",\"2013\"]],\"and\",[[\"region\",\"=\",\"Africa\"],\"or\",[\"region\",\"=\",\"Australia\"]]]");
         FilterParam rootFilter = ParamUtils.toFilterParam(filterNode);
         assertNotNull(rootFilter);
@@ -107,9 +110,9 @@ public class ParamUtilsTest {
 
     @Test
     public void testSingleGroupParamParsing() throws Exception {
-        ArrayNode groupParamsNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+        ArrayNode groupParamsNode = (ArrayNode) objectMapper.readTree(
                 "[{\"selector\":\"date\",\"groupInterval\":\"year\",\"isExpanded\":false}]");
-        GroupParam[] groupParams = ParamUtils.toGroupParams(groupParamsNode);
+        GroupParam[] groupParams = ParamUtils.toGroupParams(objectMapper, groupParamsNode);
         assertEquals(1, groupParams.length);
 
         GroupParam groupParam = groupParams[0];
@@ -120,9 +123,9 @@ public class ParamUtilsTest {
 
     @Test
     public void testDoubleGroupParamParsing() throws Exception {
-        ArrayNode groupParamsNode = (ArrayNode) JacksonUtils.getObjectMapper().readTree(
+        ArrayNode groupParamsNode = (ArrayNode) objectMapper.readTree(
                 "[{\"selector\":\"region\",\"isExpanded\":false},{\"selector\":\"date\",\"groupInterval\":\"year\",\"isExpanded\":false}]");
-        GroupParam[] groupParams = ParamUtils.toGroupParams(groupParamsNode);
+        GroupParam[] groupParams = ParamUtils.toGroupParams(objectMapper, groupParamsNode);
         assertEquals(2, groupParams.length);
 
         GroupParam groupParam = groupParams[0];

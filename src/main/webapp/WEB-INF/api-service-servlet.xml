@@ -11,6 +11,8 @@
 
     <mvc:annotation-driven />
 
-    <context:component-scan base-package="kr.wise.demo.pivotgrid.repository, kr.wise.demo.pivotgrid.service" />
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
+
+    <context:component-scan base-package="kr.wise.demo.pivotgrid.repository, kr.wise.demo.pivotgrid.service, kr.wise.demo.pivotgrid.aggregator" />
 
 </beans>

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
@@ -74,7 +75,7 @@ public final class ParamUtils {
         }
     }
 
-    public static GroupParam[] toGroupParams(final ArrayNode groupParamsNode) {
+    public static GroupParam[] toGroupParams(final ObjectMapper objectMapper, final ArrayNode groupParamsNode) {
         if (groupParamsNode == null) {
             return null;
         }
@@ -83,29 +84,29 @@ public final class ParamUtils {
         final int size = groupParamsNode != null ? groupParamsNode.size() : 0;
 
         for (int i = 0; i < size; i++) {
-            params.add(toGroupParam(groupParamsNode.get(i)));
+            params.add(toGroupParam(objectMapper, groupParamsNode.get(i)));
         }
 
         return params.toArray(new GroupParam[params.size()]);
     }
 
-    public static GroupParam toGroupParam(final Object groupParamNode) {
-        return JacksonUtils.getObjectMapper().convertValue(groupParamNode, GroupParam.class);
+    public static GroupParam toGroupParam(final ObjectMapper objectMapper, final Object groupParamNode) {
+        return objectMapper.convertValue(groupParamNode, GroupParam.class);
     }
 
-    public static SummaryParam[] toSummaryParams(final ArrayNode summaryParamsNode) {
+    public static SummaryParam[] toSummaryParams(final ObjectMapper objectMapper, final ArrayNode summaryParamsNode) {
         final List<SummaryParam> params = new ArrayList<>();
         final int size = summaryParamsNode != null ? summaryParamsNode.size() : 0;
 
         for (int i = 0; i < size; i++) {
-            params.add(toSummaryParam(summaryParamsNode.get(i)));
+            params.add(toSummaryParam(objectMapper, summaryParamsNode.get(i)));
         }
 
         return params.toArray(new SummaryParam[params.size()]);
     }
 
-    public static SummaryParam toSummaryParam(final Object summaryParamNode) {
-        return JacksonUtils.getObjectMapper().convertValue(summaryParamNode,
+    public static SummaryParam toSummaryParam(final ObjectMapper objectMapper, final Object summaryParamNode) {
+        return objectMapper.convertValue(summaryParamNode,
                 SummaryParam.class);
     }
 
