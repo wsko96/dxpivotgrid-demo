@@ -11,6 +11,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import kr.wise.demo.pivotgrid.param.GroupParam;
+
 abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T> {
 
     private List<BigDecimal> summary;
@@ -84,8 +86,8 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         }
     }
 
-    public DataGroup addChildDataGroup(final String key) {
-        final DataGroup group = new DataGroup(key);
+    public DataGroup addChildDataGroup(final GroupParam groupParam, final String key) {
+        final DataGroup group = new DataGroup(groupParam, key);
         addChildDataGroup(group);
         return group;
     }

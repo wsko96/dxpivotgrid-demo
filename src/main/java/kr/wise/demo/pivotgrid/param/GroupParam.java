@@ -6,6 +6,15 @@ public class GroupParam {
     private String groupInterval;
     private boolean isExpanded;
 
+    public GroupParam() {
+    }
+
+    public GroupParam(final String selector, final String groupInterval, final boolean isExpanded) {
+        this.selector = selector;
+        this.groupInterval = groupInterval;
+        this.isExpanded = isExpanded;
+    }
+
     public String getSelector() {
         return selector;
     }

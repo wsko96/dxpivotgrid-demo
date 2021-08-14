@@ -13,6 +13,12 @@ public class PagingParam {
     public PagingParam() {
     }
 
+    public PagingParam(final int offset, final int limit, final List<GroupParam> rowGroupParams) {
+        this.offset = offset;
+        this.limit = limit;
+        this.rowGroupParams = rowGroupParams;
+    }
+
     public int getOffset() {
         return offset;
     }

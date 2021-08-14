@@ -9,6 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import kr.wise.demo.pivotgrid.param.GroupParam;
+
 public class DataAggregationTest {
 
     private DataAggregation dataAggregation;
@@ -17,44 +19,47 @@ public class DataAggregationTest {
     public void setUp() throws Exception {
         dataAggregation = new DataAggregation();
 
-        DataGroup group = dataAggregation.addChildDataGroup("North America");
-        group.addChildDataGroup("New York")
+        GroupParam regionGroupParam = new GroupParam("region", null, true);
+        GroupParam cityGroupParam = new GroupParam("city", null, false);
+
+        DataGroup group = dataAggregation.addChildDataGroup(regionGroupParam, "North America");
+        group.addChildDataGroup(cityGroupParam, "New York")
                 .addSummaryValue(1)
                 .addSummaryValue(2)
                 .addSummaryValue(3);
-        group.addChildDataGroup("Los Angeles")
+        group.addChildDataGroup(cityGroupParam, "Los Angeles")
                 .addSummaryValue(4)
                 .addSummaryValue(5)
                 .addSummaryValue(6);
-        group.addChildDataGroup("Denver")
+        group.addChildDataGroup(cityGroupParam, "Denver")
                 .addSummaryValue(7)
                 .addSummaryValue(8)
                 .addSummaryValue(9);
 
-        group = dataAggregation.addChildDataGroup("South America");
-        group.addChildDataGroup("Rio de Janeiro")
+        group = dataAggregation.addChildDataGroup(regionGroupParam, "South America");
+        group.addChildDataGroup(cityGroupParam, "Rio de Janeiro")
                 .addSummaryValue(1)
                 .addSummaryValue(2)
                 .addSummaryValue(3);
-        group.addChildDataGroup("Buenos Aires")
+        group.addChildDataGroup(cityGroupParam, "Buenos Aires")
                 .addSummaryValue(4)
                 .addSummaryValue(5)
                 .addSummaryValue(6);
-        group.addChildDataGroup("Asuncion")
+        group.addChildDataGroup(cityGroupParam, "Asuncion")
                 .addSummaryValue(7)
                 .addSummaryValue(8)
                 .addSummaryValue(9);
 
-        group = dataAggregation.addChildDataGroup("Europe");
-        group.addChildDataGroup("London")
+        group = dataAggregation.addChildDataGroup(regionGroupParam, "Europe");
+        group.addChildDataGroup(cityGroupParam, "London")
                 .addSummaryValue(1)
                 .addSummaryValue(2)
                 .addSummaryValue(3);
-        group.addChildDataGroup("Berlin")
+        group.addChildDataGroup(cityGroupParam, "Berlin")
                 .addSummaryValue(4)
                 .addSummaryValue(5)
                 .addSummaryValue(6);
-        group.addChildDataGroup("Madrid")
+        group.addChildDataGroup(cityGroupParam, "Madrid")
                 .addSummaryValue(7)
                 .addSummaryValue(8)
                 .addSummaryValue(9);

@@ -5,6 +5,15 @@ public class SummaryParam {
     private String selector;
     private String summaryType;
 
+    public SummaryParam() {
+
+    }
+
+    public SummaryParam(final String selector, final String summaryType) {
+        this.selector = selector;
+        this.summaryType = summaryType;
+    }
+
     public String getSelector() {
         return selector;
     }
