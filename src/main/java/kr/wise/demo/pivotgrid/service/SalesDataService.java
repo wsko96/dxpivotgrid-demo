@@ -123,16 +123,18 @@ public class SalesDataService {
                 // 1. sort any child groups before writing.
 
                 // 2. cut groups to include only paginated groups
-                final int offset = pagingParam.getOffset();
-                final int limit = pagingParam.getLimit();
-                final int rowGroupCount = pagingParam.getRowGroupCount();
-                if (pagingParam != null && offset >= 0 && limit > 0 && rowGroupCount > 0) {
-                    final Set<String> groupParamsInfoSet = new HashSet<>();
-                    Arrays.stream(groupParams).forEach((param) -> groupParamsInfoSet.add(param.getSelector()));
-                    if (pagingParam.getRowGroupParams().stream()
-                            .noneMatch((param) -> !groupParamsInfoSet.contains(param.getSelector()))) {
-                        aggregation.getPaging().setOffset(pagingParam.getOffset());
-                        aggregation.getPaging().setLimit(pagingParam.getLimit());
+                if (pagingParam != null) {
+                    final int offset = pagingParam.getOffset();
+                    final int limit = pagingParam.getLimit();
+                    final int rowGroupCount = pagingParam.getRowGroupCount();
+                    if (offset >= 0 && limit > 0 && rowGroupCount > 0) {
+                        final Set<String> groupParamsInfoSet = new HashSet<>();
+                        Arrays.stream(groupParams).forEach((param) -> groupParamsInfoSet.add(param.getSelector()));
+                        if (pagingParam.getRowGroupParams().stream()
+                                .noneMatch((param) -> !groupParamsInfoSet.contains(param.getSelector()))) {
+                            aggregation.getPaging().setOffset(pagingParam.getOffset());
+                            aggregation.getPaging().setLimit(pagingParam.getLimit());
+                        }
                     }
                 }
 
