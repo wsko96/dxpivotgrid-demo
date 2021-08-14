@@ -24,10 +24,10 @@ $(function() {
         allowSortingBySummary: true,
         allowFiltering: true,
         showBorders: true,
-        showColumnGrandTotals: false,
-        showRowGrandTotals: false,
-        showRowTotals: false,
-        showColumnTotals: false,
+        showColumnGrandTotals: true,
+        showRowGrandTotals: true,
+        showRowTotals: true,
+        showColumnTotals: true,
         fieldChooser: {
             enabled: true,
             height: 400
@@ -38,7 +38,8 @@ $(function() {
                 width: 120,
                 dataField: "region",
                 area: "row",
-                sortBySummaryField: "Total"
+                sortBySummaryField: "Total",
+                expanded: true
             }, {
                 caption: "City",
                 dataField: "city",
@@ -47,7 +48,8 @@ $(function() {
             }, {
                 dataField: "date",
                 dataType: "date",
-                area: "column"
+                area: "column",
+                expanded: true
             }, {
                 groupName: "date",
                 groupInterval: "month",
@@ -91,12 +93,4 @@ $(function() {
         dataFieldsDisplayMode: "splitPanes",
         alternateDataFields: false
     });
-
-    function expand() {
-        var dataSource = pivotGrid.getDataSource();
-        dataSource.expandHeaderItem("row", ["North America"]);
-        dataSource.expandHeaderItem("column", [2013]);
-    }
-
-    setTimeout(expand, 0);
 });
