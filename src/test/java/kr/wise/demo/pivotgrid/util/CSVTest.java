@@ -1,23 +1,16 @@
 package kr.wise.demo.pivotgrid.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.Test;
@@ -30,9 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import kr.wise.demo.pivotgrid.repository.CSVDataReader;
-import kr.wise.demo.pivotgrid.service.PagedCSVRecordIterator;
-
 public class CSVTest {
 
     private static Logger log = LoggerFactory.getLogger(CSVTest.class);
@@ -42,75 +32,6 @@ public class CSVTest {
     private static final int EXPECTED_DATA_SIZE = 1000000;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
-
-    @Test
-    public void testCSVRecordMapIterable() throws Exception {
-        final CSVParser csvParser = new CSVParser(
-                new InputStreamReader(originalSalesCsvFile.getInputStream(), "UTF-8"),
-                CSVFormat.EXCEL.builder().setHeader().build());
-        final CSVDataReader csvDataReader = new CSVDataReader(csvParser, true);
-        final PagedCSVRecordIterator it = new PagedCSVRecordIterator(csvDataReader.iterator(), 0, 0);
-
-        assertTrue(it.hasNext());
-        CSVRecord record = it.next();
-        assertEquals("10248", record.get("id"));
-        assertEquals("North America", record.get("region"));
-        assertEquals("United States of America", record.get("country"));
-        assertEquals("New York", record.get("city"));
-        assertEquals("1740", record.get("amount"));
-        assertEquals("2013-01-06", record.get("date"));
-
-        assertTrue(it.hasNext());
-        record = it.next();
-        assertEquals("10249", record.get("id"));
-        assertEquals("North America", record.get("region"));
-        assertEquals("United States of America", record.get("country"));
-        assertEquals("Los Angeles", record.get("city"));
-        assertEquals("850", record.get("amount"));
-        assertEquals("2013-01-13", record.get("date"));
-
-        assertTrue(it.hasNext());
-        record = it.next();
-        assertEquals("10250", record.get("id"));
-        assertEquals("North America", record.get("region"));
-        assertEquals("United States of America", record.get("country"));
-        assertEquals("Denver", record.get("city"));
-        assertEquals("2235", record.get("amount"));
-        assertEquals("2013-01-07", record.get("date"));
-
-        csvDataReader.close();
-    }
-
-    @Test
-    public void testCSVRecordMapIterableWithLimit() throws Exception {
-        final CSVParser csvParser = new CSVParser(
-                new InputStreamReader(originalSalesCsvFile.getInputStream(), "UTF-8"),
-                CSVFormat.EXCEL.builder().setHeader().build());
-        final CSVDataReader csvDataReader = new CSVDataReader(csvParser, true);
-        final PagedCSVRecordIterator it = new PagedCSVRecordIterator(csvDataReader.iterator(), 0, 2);
-
-        assertTrue(it.hasNext());
-        CSVRecord record = it.next();
-        assertEquals("10248", record.get("id"));
-        assertEquals("North America", record.get("region"));
-        assertEquals("United States of America", record.get("country"));
-        assertEquals("New York", record.get("city"));
-        assertEquals("1740", record.get("amount"));
-        assertEquals("2013-01-06", record.get("date"));
-
-        assertTrue(it.hasNext());
-        record = it.next();
-        assertEquals("10249", record.get("id"));
-        assertEquals("North America", record.get("region"));
-        assertEquals("United States of America", record.get("country"));
-        assertEquals("Los Angeles", record.get("city"));
-        assertEquals("850", record.get("amount"));
-        assertEquals("2013-01-13", record.get("date"));
-
-        assertFalse(it.hasNext());
-
-        csvDataReader.close();
-    }
 
     @Test
     public void testGenerateTestCsvFromJson() throws Exception {

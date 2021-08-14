@@ -8,12 +8,12 @@ import java.util.Date;
  */
 public interface DataRow {
 
-    public String getString(final String columnName);
+    public String getStringValue(final String columnName);
 
-    public String getString(final String columnName, final String dateInterval);
+    public String getStringValue(final String columnName, final String dateInterval);
 
-    public Date getDate(final String columnName);
+    public Date getDateValue(final String columnName);
 
-    public BigDecimal getBigDecimal(final String columnName);
+    public BigDecimal getBigDecimalValue(final String columnName);
 
 }

@@ -40,11 +40,11 @@ public class DataAggregator {
             final GroupParam firstGroupParam = groupParams[0];
             String columnName = firstGroupParam.getSelector();
             String dateInterval = firstGroupParam.getGroupInterval();
-            String key = row.getString(columnName, dateInterval);
+            String key = row.getStringValue(columnName, dateInterval);
 
-            DataGroup firstGroup = aggregation.getGroup(key);
+            DataGroup firstGroup = aggregation.getChildDataGroup(key);
             if (firstGroup == null) {
-                firstGroup = aggregation.addGroup(key);
+                firstGroup = aggregation.addChildDataGroup(key);
             }
 
             firstGroup.incrementRowCount();
@@ -56,11 +56,11 @@ public class DataAggregator {
                 final GroupParam groupParam = groupParams[i];
                 columnName = groupParam.getSelector();
                 dateInterval = groupParam.getGroupInterval();
-                key = row.getString(columnName, dateInterval);
+                key = row.getStringValue(columnName, dateInterval);
 
-                DataGroup itemGroup = parentGroup.getItem(key);
+                DataGroup itemGroup = parentGroup.getChildDataGroup(key);
                 if (itemGroup == null) {
-                    itemGroup = parentGroup.addItem(key);
+                    itemGroup = parentGroup.addChildDataGroup(key);
                 }
 
                 itemGroup.incrementRowCount();
@@ -93,7 +93,7 @@ public class DataAggregator {
             final String summaryType = groupSummaryParam.getSummaryType();
 
             final BigDecimal summaryValue = groupSummary.get(i);
-            final BigDecimal rowValue = dataRow.getBigDecimal(summaryColumnName);
+            final BigDecimal rowValue = dataRow.getBigDecimalValue(summaryColumnName);
 
             if ("sum".equals(summaryType)) {
                 groupSummary.set(i, summaryValue.add(rowValue));
@@ -164,7 +164,7 @@ public class DataAggregator {
         final String dateInterval = selectorTokens.length > 1 ? selectorTokens[1] : null;
         final String comparingValue = leafFilter.getComparingValue();
 
-        final String rowValue = row.getString(columnName, dateInterval);
+        final String rowValue = row.getStringValue(columnName, dateInterval);
 
         if ("=".equals(operator)) {
             if (!Objects.equals(comparingValue, rowValue)) {

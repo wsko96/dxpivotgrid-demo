@@ -2,12 +2,11 @@ package kr.wise.demo.pivotgrid.service;
 
 import java.io.BufferedOutputStream;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Iterator;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import kr.wise.demo.pivotgrid.aggregator.DataAggregator;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataFrame;
+import kr.wise.demo.pivotgrid.model.DataRow;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
@@ -83,24 +83,6 @@ public class SalesDataService {
             log.error("Failed to parse params.", e);
         }
 
-        if (ArrayUtils.isNotEmpty(groupParams)) {
-            log.debug(
-                    "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
-                    filter, group, groupSummary, totalSummary);
-            writeAggregatedDataResponse(response, rootFilter, groupParams, groupSummaryParams,
-                    totalSummaryParams);
-        }
-        else {
-            log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
-            writeTabularDataResponse(response, skip, take);
-        }
-    }
-
-    private void writeAggregatedDataResponse(final HttpServletResponse response,
-            final FilterParam rootFilter, final GroupParam[] groupParams,
-            final SummaryParam[] groupSummaryParams, final SummaryParam[] totalSummaryParams) {
-        response.setContentType("application/json");
-
         CSVDataReader csvDataReader = null;
         ServletOutputStream sos = null;
         BufferedOutputStream bos = null;
@@ -109,14 +91,22 @@ public class SalesDataService {
         try {
             sos = response.getOutputStream();
             bos = new BufferedOutputStream(sos);
+            gen = objectMapper.createGenerator(bos);
 
             csvDataReader = repository.findAll();
             final DataFrame dataFrame = new CSVDataReaderDataFrame(csvDataReader);
-            final DataAggregation aggregation = dataAggregator.createDataAggregation(dataFrame,
-                    rootFilter, groupParams, groupSummaryParams, totalSummaryParams);
 
-            gen = objectMapper.createGenerator(bos);
-            gen.writeObject(aggregation);
+            if (ArrayUtils.isNotEmpty(groupParams)) {
+                log.debug(
+                        "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
+                        filter, group, groupSummary, totalSummary);
+                writeAggregatedDataResponse(gen, dataFrame, rootFilter, groupParams,
+                        groupSummaryParams, totalSummaryParams);
+            }
+            else {
+                log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
+                writeTabularDataResponse(gen, dataFrame, skip, take);
+            }
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -127,55 +117,53 @@ public class SalesDataService {
         }
     }
 
-    private void writeTabularDataResponse(final HttpServletResponse response, final int skip,
-            final int take) {
-        response.setContentType("application/json");
+    private void writeAggregatedDataResponse(final JsonGenerator gen, final DataFrame dataFrame,
+            final FilterParam rootFilter, final GroupParam[] groupParams,
+            final SummaryParam[] groupSummaryParams, final SummaryParam[] totalSummaryParams)
+            throws Exception {
+        final DataAggregation aggregation = dataAggregator.createDataAggregation(dataFrame,
+                rootFilter, groupParams, groupSummaryParams, totalSummaryParams);
+        gen.writeObject(aggregation);
+    }
 
-        CSVDataReader csvDataReader = null;
-        ServletOutputStream sos = null;
-        BufferedOutputStream bos = null;
-        JsonGenerator gen = null;
+    private void writeTabularDataResponse(final JsonGenerator gen, final DataFrame dataFrame,
+            final int skip, final int take) throws Exception {
+        gen.writeStartArray();
 
-        try {
-            csvDataReader = repository.findAll();
+        final Iterator<DataRow> it = dataFrame.iterator();
 
-            sos = response.getOutputStream();
-            bos = new BufferedOutputStream(sos);
-            gen = objectMapper.createGenerator(bos);
+        if (skip > 0) {
+            for (int i = 0; i < skip && it.hasNext(); i++) {
+                it.next();
+            }
+        }
 
-            gen.writeStartArray();
+        final String[] columnNames = dataFrame.getColumnNames();
+        int iterCount = 0;
 
-            final PagedCSVRecordIterator recordIt = new PagedCSVRecordIterator(
-                    csvDataReader.iterator(), skip, take);
-            final List<String> headers = csvDataReader.getHeaders();
+        while (it.hasNext()) {
+            final DataRow row = it.next();
 
-            while (recordIt.hasNext()) {
-                final CSVRecord record = recordIt.next();
-
-                gen.writeStartObject();
-
-                for (String header : headers) {
-                    final String value = record.get(header);
-
-                    if (NumberUtils.isParsable(value)) {
-                        gen.writeNumberField(header, new BigDecimal(value));
-                    }
-                    else {
-                        gen.writeStringField(header, value);
-                    }
-                }
-
-                gen.writeEndObject();
+            if (take > 0 && ++iterCount > take) {
+                break;
             }
 
-            gen.writeEndArray();
+            gen.writeStartObject();
+
+            for (String columnName : columnNames) {
+                final String value = row.getStringValue(columnName);
+
+                if (NumberUtils.isParsable(value)) {
+                    gen.writeNumberField(columnName, new BigDecimal(value));
+                }
+                else {
+                    gen.writeStringField(columnName, value);
+                }
+            }
+
+            gen.writeEndObject();
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            IOUtils.closeQuietly(gen, bos, sos);
-            IOUtils.closeQuietly(csvDataReader);
-        }
+
+        gen.writeEndArray();
     }
 }
