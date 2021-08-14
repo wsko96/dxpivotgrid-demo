@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import kr.wise.demo.pivotgrid.aggregator.DataAggregator;
-import kr.wise.demo.pivotgrid.csv.CSVDataReader;
-import kr.wise.demo.pivotgrid.csv.CSVDataReaderDataFrame;
+import kr.wise.demo.pivotgrid.impl.csv.CSVDataReader;
+import kr.wise.demo.pivotgrid.impl.csv.CSVDataReaderDataFrame;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataRow;

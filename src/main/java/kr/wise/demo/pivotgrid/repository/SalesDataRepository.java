@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import kr.wise.demo.pivotgrid.csv.CSVDataReader;
+import kr.wise.demo.pivotgrid.impl.csv.CSVDataReader;
 
 @Service
 public class SalesDataRepository {
