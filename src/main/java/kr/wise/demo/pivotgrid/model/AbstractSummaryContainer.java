@@ -20,6 +20,10 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
     private List<DataGroup> unmodifiableChildDataGroups;
     private Map<String, DataGroup> childDataGroupsMap;
 
+    public AbstractSummaryContainer() {
+        
+    }
+
     @Override
     public T addSummaryValue(final int value) {
         return addSummaryValue(new BigDecimal(value));
@@ -55,6 +59,10 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         return summary;
     }
 
+    protected void setSummary(final List<BigDecimal> summary) {
+        this.summary = summary;
+    }
+
     @JsonIgnore
     @Override
     public int getRowCount() {
@@ -66,6 +74,10 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         return ++rowCount;
     }
 
+    protected void setRowCount(final int rowCount) {
+        this.rowCount = rowCount;
+    }
+
     public void sortChildDataGroups(final Comparator<DataGroup> comparator) {
         if (childDataGroups != null) {
             Collections.sort(childDataGroups, comparator);
@@ -74,7 +86,11 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
     public DataGroup addChildDataGroup(final String key) {
         final DataGroup group = new DataGroup(key);
+        addChildDataGroup(group);
+        return group;
+    }
 
+    public void addChildDataGroup(final DataGroup group) {
         if (childDataGroups == null) {
             childDataGroups = new LinkedList<>();
             unmodifiableChildDataGroups = Collections.unmodifiableList(childDataGroups);
@@ -82,9 +98,7 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         }
 
         childDataGroups.add(group);
-        childDataGroupsMap.put(key, group);
-
-        return group;
+        childDataGroupsMap.put(group.getKey(), group);
     }
 
     public DataGroup getChildDataGroup(final String key) {

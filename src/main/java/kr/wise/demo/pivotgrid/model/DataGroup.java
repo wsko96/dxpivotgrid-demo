@@ -16,6 +16,7 @@ public class DataGroup extends AbstractSummaryContainer<DataGroup> {
     }
 
     public DataGroup(final String key) {
+        super();
         this.key = key;
     }
 
@@ -25,5 +26,12 @@ public class DataGroup extends AbstractSummaryContainer<DataGroup> {
 
     public List<DataGroup> getItems() {
         return super.getChildDataGroups();
+    }
+
+    public DataGroup cloneWithoutChildDataGroups() {
+        final DataGroup clone = new DataGroup(key);
+        clone.setSummary(getSummary());
+        clone.setRowCount(getRowCount());
+        return clone;
     }
 }

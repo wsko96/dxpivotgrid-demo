@@ -14,44 +14,24 @@ import java.util.List;
  */
 public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
 
-    private int offset;
-    private int limit;
-    private int rowCount;
     private final Paging paging = new Paging();
 
     public DataAggregation() {
+        super();
     }
 
     public List<DataGroup> getData() {
         return super.getChildDataGroups();
     }
 
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    public int getRowCount() {
-        return rowCount;
-    }
-
-    public void setRowCount(int rowCount) {
-        this.rowCount = rowCount;
-    }
-
     public Paging getPaging() {
         return paging;
     }
 
+    public DataAggregation cloneWithoutChildDataGroups() {
+        final DataAggregation clone = new DataAggregation();
+        clone.setSummary(getSummary());
+        clone.setRowCount(getRowCount());
+        return clone;
+    }
 }
