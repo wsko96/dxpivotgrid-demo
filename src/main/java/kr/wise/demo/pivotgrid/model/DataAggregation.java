@@ -9,9 +9,15 @@ import java.util.List;
  * <P>
  * 이 모델은 DevExpress Pivot Grid가 요구하는 JSON 모델과 동일한 방식이다.
  * <P>
- * 참고자료: <a href="https://js.devexpress.com/Documentation/18_2/Guide/Widgets/PivotGrid/Use_CustomStore/">https://js.devexpress.com/Documentation/18_2/Guide/Widgets/PivotGrid/Use_CustomStore/</a>
+ * 참고자료: <a href=
+ * "https://js.devexpress.com/Documentation/18_2/Guide/Widgets/PivotGrid/Use_CustomStore/">https://js.devexpress.com/Documentation/18_2/Guide/Widgets/PivotGrid/Use_CustomStore/</a>
  */
 public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
+
+    private int offset;
+    private int limit;
+    private int rowCount;
+    private final Paging paging = new Paging();
 
     public DataAggregation() {
     }
@@ -19,4 +25,33 @@ public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
     public List<DataGroup> getData() {
         return super.getChildDataGroups();
     }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    public void setRowCount(int rowCount) {
+        this.rowCount = rowCount;
+    }
+
+    public Paging getPaging() {
+        return paging;
+    }
+
 }

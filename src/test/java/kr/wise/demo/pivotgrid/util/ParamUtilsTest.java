@@ -146,10 +146,10 @@ public class ParamUtilsTest {
     @Test
     public void testToPagingParams() throws Exception {
         ObjectNode pagingParamNode = (ObjectNode) objectMapper.readTree(
-                "{ \"index\": 1, \"size\": 5, \"rowGroups\": [ { \"selector\": \"region\" }, { \"selector\": \"city\" } ] }");
+                "{ \"offset\": 0, \"limit\": 5, \"rowGroups\": [ { \"selector\": \"region\" }, { \"selector\": \"city\" } ] }");
         PagingParam pagingParam = ParamUtils.toPagingParam(objectMapper, pagingParamNode);
-        assertEquals(1, pagingParam.getIndex());
-        assertEquals(5, pagingParam.getSize());
+        assertEquals(0, pagingParam.getOffset());
+        assertEquals(5, pagingParam.getLimit());
 
         List<GroupParam> rowGroupParams = pagingParam.getRowGroupParams();
         assertEquals(2, rowGroupParams.size());

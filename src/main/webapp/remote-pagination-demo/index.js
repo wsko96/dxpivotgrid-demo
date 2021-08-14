@@ -20,7 +20,7 @@ $(function() {
         }
     }).dxChart("instance");
 
-    var pivotGridPaging = { index: 1, size: 5, rowGroups: [ { selector: 'region' }, { selector: 'city' } ] };
+    var pivotGridPaging = { offset: 0, limit: 5, rowGroups: [ { selector: 'region' }, { selector: 'city' } ] };
 
     var pivotGrid = $("#pivotgrid").dxPivotGrid({
         allowSortingBySummary: true,

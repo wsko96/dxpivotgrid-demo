@@ -1,8 +1,13 @@
 package kr.wise.demo.pivotgrid.service;
 
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -26,9 +31,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import kr.wise.demo.pivotgrid.aggregator.DataAggregator;
 import kr.wise.demo.pivotgrid.impl.csv.CSVDataReader;
 import kr.wise.demo.pivotgrid.impl.csv.CSVDataReaderDataFrame;
+import kr.wise.demo.pivotgrid.model.AbstractSummaryContainer;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataFrame;
+import kr.wise.demo.pivotgrid.model.DataGroup;
 import kr.wise.demo.pivotgrid.model.DataRow;
+import kr.wise.demo.pivotgrid.model.Paging;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.PagingParam;
@@ -109,12 +117,29 @@ public class SalesDataService {
                 log.debug(
                         "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}, paging: {}",
                         filter, group, groupSummary, totalSummary, paging);
-                writeAggregatedDataResponse(gen, dataFrame, rootFilter, groupParams,
-                        groupSummaryParams, totalSummaryParams);
+                final DataAggregation aggregation = dataAggregator.createDataAggregation(dataFrame,
+                        rootFilter, groupParams, groupSummaryParams, totalSummaryParams);
+
+                // 1. sort any child groups before writing.
+
+                // 2. cut groups to include only paginated groups
+                if (pagingParam != null && pagingParam.getOffset() >= 0 && pagingParam.getLimit() > 0
+                        && pagingParam.getRowGroupCount() > 0) {
+                    final Set<String> groupParamsInfoSet = new HashSet<>();
+                    Arrays.stream(groupParams)
+                            .forEach((param) -> groupParamsInfoSet.add(param.getSelector()));
+                    if (pagingParam.getRowGroupParams().stream()
+                            .noneMatch((param) -> !groupParamsInfoSet.contains(param.getSelector()))) {
+                        aggregation.setOffset(pagingParam.getOffset());
+                        aggregation.setLimit(pagingParam.getLimit());
+                    }
+                }
+
+                writeSummaryContainerToJson(gen, aggregation, null, "data", aggregation.getPaging());
             }
             else {
                 log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
-                writeTabularDataResponse(gen, dataFrame, skip, take);
+                writeTabularDataToJson(gen, dataFrame, skip, take);
             }
         }
         catch (Exception e) {
@@ -126,17 +151,53 @@ public class SalesDataService {
         }
     }
 
-    private void writeAggregatedDataResponse(final JsonGenerator gen, final DataFrame dataFrame,
-            final FilterParam rootFilter, final GroupParam[] groupParams,
-            final SummaryParam[] groupSummaryParams, final SummaryParam[] totalSummaryParams)
-            throws Exception {
-        final DataAggregation aggregation = dataAggregator.createDataAggregation(dataFrame,
-                rootFilter, groupParams, groupSummaryParams, totalSummaryParams);
-        gen.writeObject(aggregation);
+    private void writeSummaryContainerToJson(final JsonGenerator gen,
+            final AbstractSummaryContainer<?> summaryContainer, final String key,
+            final String childDataGroupArrayFieldName, final Paging paging) throws IOException {
+        gen.writeStartObject();
+
+        if (key != null) {
+            gen.writeStringField("key", key);
+        }
+
+        gen.writeFieldName("summary");
+
+        gen.writeStartArray();
+        final List<BigDecimal> summary = summaryContainer.getSummary();
+        if (summary != null) {
+            for (BigDecimal value : summary) {
+                gen.writeNumber(value);
+            }
+        }
+        gen.writeEndArray();
+
+        if (paging != null) {
+            gen.writeFieldName("paging");
+            gen.writeStartObject();
+            gen.writeNumberField("offset", paging.getOffset());
+            gen.writeNumberField("limit", paging.getLimit());
+            gen.writeNumberField("total", paging.getTotal());
+            gen.writeEndObject();
+        }
+
+        gen.writeFieldName(childDataGroupArrayFieldName);
+        final List<DataGroup> childDataGroups = summaryContainer.getChildDataGroups();
+        if (childDataGroups == null) {
+            gen.writeNull();
+        }
+        else {
+            gen.writeStartArray();
+            for (DataGroup childDataGroup : childDataGroups) {
+                writeSummaryContainerToJson(gen, childDataGroup, childDataGroup.getKey(), "items", null);
+            }
+            gen.writeEndArray();
+        }
+
+        gen.writeEndObject();
     }
 
-    private void writeTabularDataResponse(final JsonGenerator gen, final DataFrame dataFrame,
-            final int skip, final int take) throws Exception {
+    private void writeTabularDataToJson(final JsonGenerator gen, final DataFrame dataFrame,
+            final int skip, final int take) throws IOException {
         gen.writeStartArray();
 
         final Iterator<DataRow> it = dataFrame.iterator();

@@ -6,27 +6,31 @@ import java.util.List;
 
 public class PagingParam {
 
-    private int index;
-    private int size;
+    private int offset;
+    private int limit;
     private List<GroupParam> rowGroupParams;
 
     public PagingParam() {
     }
 
-    public int getIndex() {
-        return index;
+    public int getOffset() {
+        return offset;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
-    public int getSize() {
-        return size;
+    public int getLimit() {
+        return limit;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getRowGroupCount() {
+        return rowGroupParams != null ? rowGroupParams.size() : 0;
     }
 
     public void addRowGroupParam(final GroupParam rowGroupParam) {

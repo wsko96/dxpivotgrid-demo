@@ -91,7 +91,8 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         return childDataGroupsMap != null ? childDataGroupsMap.get(key) : null;
     }
 
-    protected List<DataGroup> getChildDataGroups() {
+    @JsonIgnore
+    public List<DataGroup> getChildDataGroups() {
         return unmodifiableChildDataGroups;
     }
 }

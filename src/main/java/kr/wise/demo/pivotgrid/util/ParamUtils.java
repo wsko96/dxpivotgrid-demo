@@ -119,12 +119,12 @@ public final class ParamUtils {
 
         final PagingParam pagingParam = new PagingParam();
 
-        if (pagingParamNode.has("index")) {
-            pagingParam.setIndex(pagingParamNode.get("index").asInt());
+        if (pagingParamNode.has("offset")) {
+            pagingParam.setOffset(pagingParamNode.get("offset").asInt());
         }
 
-        if (pagingParamNode.has("size")) {
-            pagingParam.setSize(pagingParamNode.get("size").asInt());
+        if (pagingParamNode.has("limit")) {
+            pagingParam.setLimit(pagingParamNode.get("limit").asInt());
         }
 
         if (pagingParamNode.has("rowGroups")) {
