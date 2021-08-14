@@ -3,6 +3,7 @@ package kr.wise.demo.pivotgrid.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +66,12 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         return ++rowCount;
     }
 
+    public void sortChildDataGroups(final Comparator<DataGroup> comparator) {
+        if (childDataGroups != null) {
+            Collections.sort(childDataGroups, comparator);
+        }
+    }
+
     public DataGroup addChildDataGroup(final String key) {
         final DataGroup group = new DataGroup(key);
 
@@ -85,6 +92,6 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
     }
 
     protected List<DataGroup> getChildDataGroups() {
-        return unmodifiableChildDataGroups != null ? unmodifiableChildDataGroups : Collections.emptyList();
+        return unmodifiableChildDataGroups;
     }
 }

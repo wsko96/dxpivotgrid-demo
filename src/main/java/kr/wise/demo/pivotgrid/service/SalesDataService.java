@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import kr.wise.demo.pivotgrid.aggregator.DataAggregator;
 import kr.wise.demo.pivotgrid.impl.csv.CSVDataReader;
@@ -30,6 +31,7 @@ import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataRow;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
+import kr.wise.demo.pivotgrid.param.PagingParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
 import kr.wise.demo.pivotgrid.repository.SalesDataRepository;
 import kr.wise.demo.pivotgrid.util.ParamUtils;
@@ -55,13 +57,15 @@ public class SalesDataService {
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "group", required = false) String group,
             @RequestParam(name = "groupSummary", required = false) String groupSummary,
-            @RequestParam(name = "totalSummary", required = false) String totalSummary) {
+            @RequestParam(name = "totalSummary", required = false) String totalSummary,
+            @RequestParam(name = "paging", required = false) String paging) {
         response.setContentType("application/json");
 
         FilterParam rootFilter = null;
         GroupParam[] groupParams = null;
         SummaryParam[] groupSummaryParams = null;
         SummaryParam[] totalSummaryParams = null;
+        PagingParam pagingParam = null;
 
         try {
             final ArrayNode filterParamsNode = StringUtils.isNotBlank(filter)
@@ -79,6 +83,10 @@ public class SalesDataService {
             final ArrayNode totalSummaryParamsNode = StringUtils.isNotBlank(totalSummary)
                     ? (ArrayNode) objectMapper.readTree(totalSummary) : null;
             totalSummaryParams = ParamUtils.toSummaryParams(objectMapper, totalSummaryParamsNode);
+
+            final ObjectNode pagingParamNode = StringUtils.isNotBlank(paging)
+                    ? (ObjectNode) objectMapper.readTree(paging) : null;
+            pagingParam = ParamUtils.toPagingParam(objectMapper, pagingParamNode);
         }
         catch (Exception e) {
             log.error("Failed to parse params.", e);
@@ -99,8 +107,8 @@ public class SalesDataService {
 
             if (ArrayUtils.isNotEmpty(groupParams)) {
                 log.debug(
-                        "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}",
-                        filter, group, groupSummary, totalSummary);
+                        "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}, paging: {}",
+                        filter, group, groupSummary, totalSummary, paging);
                 writeAggregatedDataResponse(gen, dataFrame, rootFilter, groupParams,
                         groupSummaryParams, totalSummaryParams);
             }

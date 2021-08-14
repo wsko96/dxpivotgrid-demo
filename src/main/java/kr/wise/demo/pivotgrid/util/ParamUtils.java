@@ -10,9 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
+import kr.wise.demo.pivotgrid.param.PagingParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
 
 public final class ParamUtils {
@@ -110,4 +112,30 @@ public final class ParamUtils {
                 SummaryParam.class);
     }
 
+    public static PagingParam toPagingParam(final ObjectMapper objectMapper, final ObjectNode pagingParamNode) {
+        if (pagingParamNode == null) {
+            return null;
+        }
+
+        final PagingParam pagingParam = new PagingParam();
+
+        if (pagingParamNode.has("index")) {
+            pagingParam.setIndex(pagingParamNode.get("index").asInt());
+        }
+
+        if (pagingParamNode.has("size")) {
+            pagingParam.setSize(pagingParamNode.get("size").asInt());
+        }
+
+        if (pagingParamNode.has("rowGroups")) {
+            final ArrayNode rowGroupsArrayNode = (ArrayNode) pagingParamNode.get("rowGroups");
+            final int arrSize = rowGroupsArrayNode.size();
+
+            for (int i = 0; i < arrSize ; i++) {
+                pagingParam.addRowGroupParam(toGroupParam(objectMapper, rowGroupsArrayNode.get(i)));
+            }
+        }
+
+        return pagingParam;
+    }
 }

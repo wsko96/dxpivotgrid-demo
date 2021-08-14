@@ -27,8 +27,6 @@ public class CSVTest {
 
     private static Logger log = LoggerFactory.getLogger(CSVTest.class);
 
-    private Resource originalSalesCsvFile = new ClassPathResource("kr/wise/demo/pivotgrid/util/originalSales.csv");
-
     private static final int EXPECTED_DATA_SIZE = 1000000;
 
     private static ObjectMapper objectMapper = new ObjectMapper();

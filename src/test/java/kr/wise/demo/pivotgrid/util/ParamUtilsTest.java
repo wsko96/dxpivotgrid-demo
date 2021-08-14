@@ -6,15 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
+import kr.wise.demo.pivotgrid.param.PagingParam;
 
 public class ParamUtilsTest {
 
@@ -137,5 +141,23 @@ public class ParamUtilsTest {
         assertEquals("date", groupParam.getSelector());
         assertEquals("year", groupParam.getGroupInterval());
         assertFalse(groupParam.getIsExpanded());
+    }
+
+    @Test
+    public void testToPagingParams() throws Exception {
+        ObjectNode pagingParamNode = (ObjectNode) objectMapper.readTree(
+                "{ \"index\": 1, \"size\": 5, \"rowGroups\": [ { \"selector\": \"region\" }, { \"selector\": \"city\" } ] }");
+        PagingParam pagingParam = ParamUtils.toPagingParam(objectMapper, pagingParamNode);
+        assertEquals(1, pagingParam.getIndex());
+        assertEquals(5, pagingParam.getSize());
+
+        List<GroupParam> rowGroupParams = pagingParam.getRowGroupParams();
+        assertEquals(2, rowGroupParams.size());
+
+        GroupParam rowGroupParam = rowGroupParams.get(0);
+        assertEquals("region", rowGroupParam.getSelector());
+
+        rowGroupParam = rowGroupParams.get(1);
+        assertEquals("city", rowGroupParam.getSelector());
     }
 }
