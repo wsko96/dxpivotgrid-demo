@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotgrid.service;
+package kr.wise.demo.pivotgrid.csv;
 
 import java.util.Iterator;
 
@@ -6,7 +6,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataRow;
-import kr.wise.demo.pivotgrid.repository.CSVDataReader;
 
 public class CSVDataReaderDataFrame implements DataFrame {
 
