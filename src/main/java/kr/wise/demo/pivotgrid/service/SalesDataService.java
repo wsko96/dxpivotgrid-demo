@@ -1,6 +1,9 @@
 package kr.wise.demo.pivotgrid.service;
 
 import java.io.BufferedOutputStream;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -113,14 +116,14 @@ public class SalesDataService {
                 // 1. sort any child groups before writing.
 
                 // 2. cut groups to include only paginated groups
-                boolean pagingApplicable = isPagingApplicable(pagingParam, groupParams);
-                if (pagingApplicable) {
+                boolean allPagingGroupInGroupParams = hasAllPagingGroupInGroupParams(pagingParam, groupParams);
+                if (allPagingGroupInGroupParams) {
                     DataAggregationUtils.markPaginatedSummaryContainersVisible(aggregation,
                             pagingParam);
                 }
 
                 PivotGridJsonUtils.writeSummaryContainerToJson(gen, aggregation, null, "data",
-                        aggregation.getPaging(), pagingApplicable);
+                        aggregation.getPaging(), allPagingGroupInGroupParams);
             }
             else {
                 log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
@@ -136,30 +139,35 @@ public class SalesDataService {
         }
     }
 
-    private boolean isPagingApplicable(final PagingParam pagingParam, final GroupParam[] groupParams) {
-        if (pagingParam == null) {
+    private boolean hasAnyPagingGroupInGroupParams(final PagingParam pagingParam, final GroupParam[] groupParams) {
+        if (pagingParam == null || pagingParam.getRowGroupCount() == 0) {
             return false;
         }
 
-        if (pagingParam.getOffset() < 0 || pagingParam.getLimit() <= 0) {
-            return false;
-        }
+        final Set<String> groupParamKeys = Arrays.stream(groupParams)
+                .map((groupParam) -> groupParam.getKey()).collect(Collectors.toSet());
 
-        final int rowGroupParamCount = pagingParam.getRowGroupCount();
-
-        if (rowGroupParamCount == 0 || rowGroupParamCount > groupParams.length) {
-            return false;
-        }
-
-        int i = 0;
         for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
-            GroupParam groupParam = groupParams[i];
-            if (!StringUtils.equals(rowGroupParam.getSelector(), groupParam.getSelector())
-                    || !StringUtils.equals(rowGroupParam.getGroupInterval(),
-                            groupParam.getGroupInterval())) {
+            if (groupParamKeys.contains(rowGroupParam.getKey())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasAllPagingGroupInGroupParams(final PagingParam pagingParam, final GroupParam[] groupParams) {
+        if (pagingParam == null || pagingParam.getRowGroupCount() == 0) {
+            return false;
+        }
+
+        final Set<String> groupParamKeys = Arrays.stream(groupParams)
+                .map((groupParam) -> groupParam.getKey()).collect(Collectors.toSet());
+
+        for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
+            if (!groupParamKeys.contains(rowGroupParam.getKey())) {
                 return false;
             }
-            ++i;
         }
 
         return true;

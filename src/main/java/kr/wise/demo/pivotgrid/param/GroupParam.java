@@ -10,6 +10,8 @@ public class GroupParam {
     private String groupInterval;
     private boolean isExpanded;
 
+    private String key;
+
     public GroupParam() {
     }
 
@@ -17,6 +19,8 @@ public class GroupParam {
         this.selector = selector;
         this.groupInterval = StringUtils.defaultIfBlank(groupInterval, null);
         this.isExpanded = isExpanded;
+
+        this.key = StringUtils.joinWith(":", selector, groupInterval);
     }
 
     public String getSelector() {
@@ -25,6 +29,7 @@ public class GroupParam {
 
     public void setSelector(String selector) {
         this.selector = selector;
+        this.key = StringUtils.joinWith(":", selector, groupInterval);
     }
 
     public String getGroupInterval() {
@@ -33,6 +38,7 @@ public class GroupParam {
 
     public void setGroupInterval(String groupInterval) {
         this.groupInterval = groupInterval;
+        this.key = StringUtils.joinWith(":", selector, groupInterval);
     }
 
     public boolean getIsExpanded() {
@@ -41,6 +47,10 @@ public class GroupParam {
 
     public void setIsExpanded(boolean isExpanded) {
         this.isExpanded = isExpanded;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     @Override
