@@ -1,7 +1,5 @@
 package kr.wise.demo.pivotgrid.model;
 
-import java.util.List;
-
 /**
  * 그룹별 총 써머리 데이터 집합.
  * <P>
@@ -18,10 +16,6 @@ public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
 
     public DataAggregation() {
         super();
-    }
-
-    public List<DataGroup> getData() {
-        return super.getChildDataGroups();
     }
 
     public Paging getPaging() {

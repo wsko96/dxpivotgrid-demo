@@ -1,7 +1,5 @@
 package kr.wise.demo.pivotgrid.model;
 
-import java.util.List;
-
 import kr.wise.demo.pivotgrid.aggregator.DataAggregator;
 
 /**
@@ -22,10 +20,6 @@ public class DataGroup extends AbstractSummaryContainer<DataGroup> {
 
     public String getKey() {
         return key;
-    }
-
-    public List<DataGroup> getItems() {
-        return super.getChildDataGroups();
     }
 
     public DataGroup cloneWithoutChildDataGroups() {
