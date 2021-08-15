@@ -3,6 +3,10 @@ package kr.wise.demo.pivotgrid.param;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class PagingParam {
 
@@ -50,5 +54,47 @@ public class PagingParam {
     public List<GroupParam> getRowGroupParams() {
         return rowGroupParams != null ? Collections.unmodifiableList(rowGroupParams)
                 : Collections.emptyList();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof PagingParam)) {
+            return false;
+        }
+
+        final PagingParam that = (PagingParam) o;
+
+        if (offset != that.offset) {
+            return false;
+        }
+
+        if (limit != that.limit) {
+            return false;
+        }
+
+        final int rowGroupParamCount = rowGroupParams != null ? rowGroupParams.size() : 0;
+        final int thatRowGroupParamCount = that.rowGroupParams != null ? that.rowGroupParams.size() : 0;
+
+        if (rowGroupParamCount != thatRowGroupParamCount) {
+            return false;
+        }
+
+        if (!Objects.equals(rowGroupParams, that.rowGroupParams)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(offset).append(limit).append(rowGroupParams)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("offset", offset).append("limit", limit)
+                .append("rowGroupParams", rowGroupParams).toString();
     }
 }

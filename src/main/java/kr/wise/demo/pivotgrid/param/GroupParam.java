@@ -1,5 +1,9 @@
 package kr.wise.demo.pivotgrid.param;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 public class GroupParam {
 
     private String selector;
@@ -11,7 +15,7 @@ public class GroupParam {
 
     public GroupParam(final String selector, final String groupInterval, final boolean isExpanded) {
         this.selector = selector;
-        this.groupInterval = groupInterval;
+        this.groupInterval = StringUtils.defaultIfBlank(groupInterval, null);
         this.isExpanded = isExpanded;
     }
 
@@ -39,4 +43,38 @@ public class GroupParam {
         this.isExpanded = isExpanded;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof GroupParam)) {
+            return false;
+        }
+
+        final GroupParam that = (GroupParam) o;
+
+        if (!StringUtils.equals(selector, that.selector)) {
+            return false;
+        }
+
+        if (!StringUtils.equals(groupInterval, that.groupInterval)) {
+            return false;
+        }
+
+        if (isExpanded != that.isExpanded) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(selector).append(groupInterval).append(isExpanded)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("selector", selector)
+                .append("groupInterval", groupInterval).append("isExpanded", isExpanded).toString();
+    }
 }
