@@ -4,6 +4,7 @@ public class Paging {
 
     private int offset;
     private int limit;
+    private int count;
     private int total;
 
     public int getOffset() {
@@ -20,6 +21,14 @@ public class Paging {
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public int getTotal() {

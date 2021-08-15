@@ -7,25 +7,20 @@ import kr.wise.demo.pivotgrid.aggregator.DataAggregator;
  */
 public class DataGroup extends AbstractSummaryContainer<DataGroup> {
 
-    private final String key;
-
     public DataGroup() {
         this(null);
     }
 
     public DataGroup(final String key) {
-        super();
-        this.key = key;
-    }
-
-    public String getKey() {
-        return key;
+        super(key);
     }
 
     public DataGroup cloneWithoutChildDataGroups() {
-        final DataGroup clone = new DataGroup(key);
+        final DataGroup clone = new DataGroup(getKey());
         clone.setSummary(getSummary());
         clone.setRowCount(getRowCount());
+        clone.setChildDataGroupParam(getChildDataGroupParam());
+        clone.setDepth(getDepth());
         return clone;
     }
 }

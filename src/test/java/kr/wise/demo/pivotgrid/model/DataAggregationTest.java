@@ -9,8 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import kr.wise.demo.pivotgrid.param.GroupParam;
-
 public class DataAggregationTest {
 
     private DataAggregation dataAggregation;
@@ -18,9 +16,6 @@ public class DataAggregationTest {
     @BeforeEach
     public void setUp() throws Exception {
         dataAggregation = new DataAggregation();
-
-        GroupParam regionGroupParam = new GroupParam("region", null, true);
-        GroupParam cityGroupParam = new GroupParam("city", null, false);
 
         DataGroup group = dataAggregation.addChildDataGroup("North America");
         group.addChildDataGroup("New York")

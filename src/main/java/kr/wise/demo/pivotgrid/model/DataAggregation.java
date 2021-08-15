@@ -26,6 +26,8 @@ public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
         final DataAggregation clone = new DataAggregation();
         clone.setSummary(getSummary());
         clone.setRowCount(getRowCount());
+        clone.setChildDataGroupParam(getChildDataGroupParam());
+        clone.setDepth(getDepth());
         return clone;
     }
 }

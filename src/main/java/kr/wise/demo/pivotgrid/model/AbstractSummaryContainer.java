@@ -8,20 +8,41 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import kr.wise.demo.pivotgrid.param.GroupParam;
+
 abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T> {
+
+    private final String key;
 
     private List<BigDecimal> summary;
     private int rowCount;
+
+    private AbstractSummaryContainer<?> parent;
+    private int depth;
+
+    private GroupParam childDataGroupParam;
 
     private List<DataGroup> childDataGroups;
     private List<DataGroup> unmodifiableChildDataGroups;
     private Map<String, DataGroup> childDataGroupsMap;
 
+    private boolean visible;
+
     public AbstractSummaryContainer() {
-        
+        this(null);
+    }
+
+    public AbstractSummaryContainer(final String key) {
+        this.key = key;
+    }
+
+    @Override
+    public String getKey() {
+        return key;
     }
 
     @Override
@@ -78,6 +99,33 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         this.rowCount = rowCount;
     }
 
+    @JsonIgnore
+    public AbstractSummaryContainer<?> getParent() {
+        return parent;
+    }
+
+    @JsonIgnore
+    public int getDepth() {
+        return depth;
+    }
+
+    protected void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    protected void setParent(AbstractSummaryContainer<?> parent) {
+        this.parent = parent;
+    }
+
+    @JsonIgnore
+    public GroupParam getChildDataGroupParam() {
+        return childDataGroupParam;
+    }
+
+    public void setChildDataGroupParam(GroupParam childDataGroupParam) {
+        this.childDataGroupParam = childDataGroupParam;
+    }
+
     public void sortChildDataGroups(final Comparator<DataGroup> comparator) {
         if (childDataGroups != null) {
             Collections.sort(childDataGroups, comparator);
@@ -99,6 +147,8 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
         childDataGroups.add(group);
         childDataGroupsMap.put(group.getKey(), group);
+        group.setDepth(depth + 1);
+        group.setParent(this);
     }
 
     public DataGroup getChildDataGroup(final String key) {
@@ -107,6 +157,25 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
     @JsonIgnore
     public List<DataGroup> getChildDataGroups() {
-        return unmodifiableChildDataGroups;
+        return getChildDataGroups(false);
+    }
+
+    @JsonIgnore
+    public List<DataGroup> getChildDataGroups(final boolean visibleOnly) {
+       if (!visibleOnly || unmodifiableChildDataGroups == null) {
+            return unmodifiableChildDataGroups;
+        }
+
+        return unmodifiableChildDataGroups.stream().filter((dataGroup) -> dataGroup.isVisible())
+                .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

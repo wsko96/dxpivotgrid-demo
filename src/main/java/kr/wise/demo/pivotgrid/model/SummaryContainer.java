@@ -9,6 +9,8 @@ import java.util.List;
  */
 public interface SummaryContainer<T> {
 
+    public String getKey();
+
     public T addSummaryValue(final int value);
 
     public T addSummaryValue(final long value);

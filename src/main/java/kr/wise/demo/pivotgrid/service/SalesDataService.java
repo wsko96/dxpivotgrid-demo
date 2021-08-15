@@ -3,11 +3,8 @@ package kr.wise.demo.pivotgrid.service;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +39,7 @@ import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.PagingParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
 import kr.wise.demo.pivotgrid.repository.SalesDataRepository;
+import kr.wise.demo.pivotgrid.util.DataAggregationUtils;
 import kr.wise.demo.pivotgrid.util.ParamUtils;
 
 @RestController
@@ -123,22 +121,14 @@ public class SalesDataService {
                 // 1. sort any child groups before writing.
 
                 // 2. cut groups to include only paginated groups
-                if (pagingParam != null) {
-                    final int offset = pagingParam.getOffset();
-                    final int limit = pagingParam.getLimit();
-                    final int rowGroupCount = pagingParam.getRowGroupCount();
-                    if (offset >= 0 && limit > 0 && rowGroupCount > 0) {
-                        final Set<String> groupParamsInfoSet = new HashSet<>();
-                        Arrays.stream(groupParams).forEach((param) -> groupParamsInfoSet.add(param.getSelector()));
-                        if (pagingParam.getRowGroupParams().stream()
-                                .noneMatch((param) -> !groupParamsInfoSet.contains(param.getSelector()))) {
-                            aggregation.getPaging().setOffset(pagingParam.getOffset());
-                            aggregation.getPaging().setLimit(pagingParam.getLimit());
-                        }
-                    }
+                boolean pagingApplicable = isPagingApplicable(pagingParam, groupParams);
+                if (pagingApplicable) {
+                    DataAggregationUtils.markPaginatedSummaryContainersVisible(aggregation,
+                            pagingParam);
                 }
 
-                writeSummaryContainerToJson(gen, aggregation, null, "data", aggregation.getPaging());
+                writeSummaryContainerToJson(gen, aggregation, null, "data", aggregation.getPaging(),
+                        pagingApplicable);
             }
             else {
                 log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
@@ -154,9 +144,38 @@ public class SalesDataService {
         }
     }
 
+    private boolean isPagingApplicable(final PagingParam pagingParam, final GroupParam[] groupParams) {
+        if (pagingParam == null) {
+            return false;
+        }
+
+        if (pagingParam.getOffset() < 0 || pagingParam.getLimit() <= 0) {
+            return false;
+        }
+
+        final int rowGroupParamCount = pagingParam.getRowGroupCount();
+
+        if (rowGroupParamCount == 0 || rowGroupParamCount > groupParams.length) {
+            return false;
+        }
+
+        int i = 0;
+        for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
+            GroupParam groupParam = groupParams[i];
+            if (!StringUtils.equals(rowGroupParam.getSelector(), groupParam.getSelector())
+                    || !StringUtils.equals(rowGroupParam.getGroupInterval(),
+                            groupParam.getGroupInterval())) {
+                return false;
+            }
+            ++i;
+        }
+
+        return true;
+    }
+
     private void writeSummaryContainerToJson(final JsonGenerator gen,
             final AbstractSummaryContainer<?> summaryContainer, final String key,
-            final String childDataGroupArrayFieldName, final Paging paging) throws IOException {
+            final String childDataGroupArrayFieldName, final Paging paging, final boolean visibleOnly) throws IOException {
         gen.writeStartObject();
 
         if (key != null) {
@@ -179,19 +198,20 @@ public class SalesDataService {
             gen.writeStartObject();
             gen.writeNumberField("offset", paging.getOffset());
             gen.writeNumberField("limit", paging.getLimit());
+            gen.writeNumberField("count", paging.getCount());
             gen.writeNumberField("total", paging.getTotal());
             gen.writeEndObject();
         }
 
         gen.writeFieldName(childDataGroupArrayFieldName);
-        final List<DataGroup> childDataGroups = summaryContainer.getChildDataGroups();
+        final List<DataGroup> childDataGroups = summaryContainer.getChildDataGroups(visibleOnly);
         if (childDataGroups == null) {
             gen.writeNull();
         }
         else {
             gen.writeStartArray();
             for (DataGroup childDataGroup : childDataGroups) {
-                writeSummaryContainerToJson(gen, childDataGroup, childDataGroup.getKey(), "items", null);
+                writeSummaryContainerToJson(gen, childDataGroup, childDataGroup.getKey(), "items", null, visibleOnly);
             }
             gen.writeEndArray();
         }
