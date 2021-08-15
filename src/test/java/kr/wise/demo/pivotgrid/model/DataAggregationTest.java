@@ -22,44 +22,44 @@ public class DataAggregationTest {
         GroupParam regionGroupParam = new GroupParam("region", null, true);
         GroupParam cityGroupParam = new GroupParam("city", null, false);
 
-        DataGroup group = dataAggregation.addChildDataGroup(regionGroupParam, "North America");
-        group.addChildDataGroup(cityGroupParam, "New York")
+        DataGroup group = dataAggregation.addChildDataGroup("North America");
+        group.addChildDataGroup("New York")
                 .addSummaryValue(1)
                 .addSummaryValue(2)
                 .addSummaryValue(3);
-        group.addChildDataGroup(cityGroupParam, "Los Angeles")
+        group.addChildDataGroup("Los Angeles")
                 .addSummaryValue(4)
                 .addSummaryValue(5)
                 .addSummaryValue(6);
-        group.addChildDataGroup(cityGroupParam, "Denver")
+        group.addChildDataGroup("Denver")
                 .addSummaryValue(7)
                 .addSummaryValue(8)
                 .addSummaryValue(9);
 
-        group = dataAggregation.addChildDataGroup(regionGroupParam, "South America");
-        group.addChildDataGroup(cityGroupParam, "Rio de Janeiro")
+        group = dataAggregation.addChildDataGroup("South America");
+        group.addChildDataGroup("Rio de Janeiro")
                 .addSummaryValue(1)
                 .addSummaryValue(2)
                 .addSummaryValue(3);
-        group.addChildDataGroup(cityGroupParam, "Buenos Aires")
+        group.addChildDataGroup("Buenos Aires")
                 .addSummaryValue(4)
                 .addSummaryValue(5)
                 .addSummaryValue(6);
-        group.addChildDataGroup(cityGroupParam, "Asuncion")
+        group.addChildDataGroup("Asuncion")
                 .addSummaryValue(7)
                 .addSummaryValue(8)
                 .addSummaryValue(9);
 
-        group = dataAggregation.addChildDataGroup(regionGroupParam, "Europe");
-        group.addChildDataGroup(cityGroupParam, "London")
+        group = dataAggregation.addChildDataGroup("Europe");
+        group.addChildDataGroup("London")
                 .addSummaryValue(1)
                 .addSummaryValue(2)
                 .addSummaryValue(3);
-        group.addChildDataGroup(cityGroupParam, "Berlin")
+        group.addChildDataGroup("Berlin")
                 .addSummaryValue(4)
                 .addSummaryValue(5)
                 .addSummaryValue(6);
-        group.addChildDataGroup(cityGroupParam, "Madrid")
+        group.addChildDataGroup("Madrid")
                 .addSummaryValue(7)
                 .addSummaryValue(8)
                 .addSummaryValue(9);

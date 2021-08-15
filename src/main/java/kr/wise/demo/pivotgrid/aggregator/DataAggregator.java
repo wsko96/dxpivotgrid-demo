@@ -44,7 +44,7 @@ public class DataAggregator {
 
             DataGroup firstGroup = aggregation.getChildDataGroup(key);
             if (firstGroup == null) {
-                firstGroup = aggregation.addChildDataGroup(firstGroupParam, key);
+                firstGroup = aggregation.addChildDataGroup(key);
             }
 
             firstGroup.incrementRowCount();
@@ -60,7 +60,7 @@ public class DataAggregator {
 
                 DataGroup itemGroup = parentGroup.getChildDataGroup(key);
                 if (itemGroup == null) {
-                    itemGroup = parentGroup.addChildDataGroup(groupParam, key);
+                    itemGroup = parentGroup.addChildDataGroup(key);
                 }
 
                 itemGroup.incrementRowCount();
