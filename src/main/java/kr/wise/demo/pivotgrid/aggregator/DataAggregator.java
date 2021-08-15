@@ -22,6 +22,11 @@ import kr.wise.demo.pivotgrid.param.SummaryParam;
 public class DataAggregator {
 
     public DataAggregation createDataAggregation(final DataFrame dataFrame,
+            final GroupParam[] groupParams) throws Exception {
+        return createDataAggregation(dataFrame, null, groupParams, null, null);
+    }
+
+    public DataAggregation createDataAggregation(final DataFrame dataFrame,
             final FilterParam rootFilter, final GroupParam[] groupParams,
             final SummaryParam[] groupSummaryParams, final SummaryParam[] totalSummaryParams)
             throws Exception {
