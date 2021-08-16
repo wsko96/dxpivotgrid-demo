@@ -22,13 +22,13 @@ final class DataAggregationUtils {
     private DataAggregationUtils() {
     }
 
-    static void resetContainersVisible(final AbstractSummaryContainer<?> base,
+    static void resetContainersVisibility(final AbstractSummaryContainer<?> base,
             final boolean visible) {
         base.setVisible(visible);
         final List<DataGroup> childDataGroups = base.getChildDataGroups();
         if (childDataGroups != null) {
             for (DataGroup childDataGroup : childDataGroups) {
-                resetContainersVisible(childDataGroup, visible);
+                resetContainersVisibility(childDataGroup, visible);
             }
         }
     }

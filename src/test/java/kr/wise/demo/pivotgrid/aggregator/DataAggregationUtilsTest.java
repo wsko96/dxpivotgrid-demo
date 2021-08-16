@@ -122,7 +122,7 @@ public class DataAggregationUtilsTest {
         {
             pagingParam.setOffset(7);
 
-            DataAggregationUtils.resetContainersVisible(dataAggregation, false);
+            DataAggregationUtils.resetContainersVisibility(dataAggregation, false);
             DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam);
 
             assertEquals(7, dataAggregation.getPaging().getOffset());
@@ -148,7 +148,7 @@ public class DataAggregationUtilsTest {
         {
             pagingParam.setOffset(11);
 
-            DataAggregationUtils.resetContainersVisible(dataAggregation, false);
+            DataAggregationUtils.resetContainersVisibility(dataAggregation, false);
             DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam);
 
             assertEquals(11, dataAggregation.getPaging().getOffset());

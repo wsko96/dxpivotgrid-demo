@@ -83,7 +83,7 @@ public class DataAggregator {
             DataAggregationUtils.markPaginatedSummaryContainersVisible(pageAggregation, pagingParam);
             pageAggregation.setPagingApplied(true);
 
-            DataAggregationUtils.resetContainersVisible(dataAggregation, true);
+            DataAggregationUtils.resetContainersVisibility(dataAggregation, true);
             DataAggregationUtils.markRelevantSummaryContainersVisible(dataAggregation,
                     pageAggregation, pagingParam.getRowGroupParams(), 0);
             dataAggregation.setPagingApplied(true);
