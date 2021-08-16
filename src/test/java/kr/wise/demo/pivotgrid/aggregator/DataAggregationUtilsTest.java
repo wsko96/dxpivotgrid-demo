@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import kr.wise.demo.pivotgrid.aggregator.DataAggregationUtils;
 import kr.wise.demo.pivotgrid.model.AbstractSummaryContainer;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataGroup;
@@ -98,8 +97,7 @@ public class DataAggregationUtilsTest {
         {
             pagingParam.setOffset(0);
 
-            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam,
-                    pagingParam.getRowGroupParams());
+            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam);
 
             assertEquals(0, dataAggregation.getPaging().getOffset());
             assertEquals(7, dataAggregation.getPaging().getLimit());
@@ -125,8 +123,7 @@ public class DataAggregationUtilsTest {
             pagingParam.setOffset(7);
 
             DataAggregationUtils.resetContainersVisible(dataAggregation, false);
-            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam,
-                    pagingParam.getRowGroupParams());
+            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam);
 
             assertEquals(7, dataAggregation.getPaging().getOffset());
             assertEquals(7, dataAggregation.getPaging().getLimit());
@@ -152,8 +149,7 @@ public class DataAggregationUtilsTest {
             pagingParam.setOffset(11);
 
             DataAggregationUtils.resetContainersVisible(dataAggregation, false);
-            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam,
-                    pagingParam.getRowGroupParams());
+            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam);
 
             assertEquals(11, dataAggregation.getPaging().getOffset());
             assertEquals(7, dataAggregation.getPaging().getLimit());

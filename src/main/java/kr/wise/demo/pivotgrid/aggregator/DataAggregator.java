@@ -54,7 +54,7 @@ public class DataAggregator {
             }
         }
 
-        final DataAggregation pageAggregation = fullPagingMode || pagingRelevantViewMode
+        final DataAggregation pageAggregation = !fullPagingMode && pagingRelevantViewMode
                 ? new DataAggregation() : null;
 
         for (Iterator<DataRow> it = dataFrame.iterator(); it.hasNext();) {
@@ -76,13 +76,11 @@ public class DataAggregator {
         }
 
         if (fullPagingMode) {
-            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam,
-                    effectivePagingRowGroupParams);
+            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam);
             dataAggregation.setPagingApplied(true);
         }
         else if (pagingRelevantViewMode) {
-            DataAggregationUtils.markPaginatedSummaryContainersVisible(pageAggregation, pagingParam,
-                    pagingParam.getRowGroupParams());
+            DataAggregationUtils.markPaginatedSummaryContainersVisible(pageAggregation, pagingParam);
             pageAggregation.setPagingApplied(true);
 
             DataAggregationUtils.resetContainersVisible(dataAggregation, true);

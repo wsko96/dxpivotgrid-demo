@@ -80,7 +80,7 @@ final class DataAggregationUtils {
     }
 
     static void markPaginatedSummaryContainersVisible(final DataAggregation dataAggregation,
-            final PagingParam pagingParam, final List<GroupParam> effectiveRowGroupParams) {
+            final PagingParam pagingParam) {
         final int offset = pagingParam.getOffset();
         final int limit = pagingParam.getLimit();
         final List<GroupParam> rowGroupParams = pagingParam.getRowGroupParams();
