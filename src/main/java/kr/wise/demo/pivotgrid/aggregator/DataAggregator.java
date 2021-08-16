@@ -1,9 +1,13 @@
 package kr.wise.demo.pivotgrid.aggregator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -28,8 +32,8 @@ public class DataAggregator {
             final List<SummaryParam> groupSummaryParams, final List<SummaryParam> totalSummaryParams,
             final PagingParam pagingParam)
             throws Exception {
-        final DataAggregation aggregation = new DataAggregation();
-        final DataAggregation aggregationForPaging = pagingParam != null
+        final DataAggregation dataAggregation = new DataAggregation();
+        final DataAggregation pageAggregation = pagingParam != null
                 && pagingParam.getRowGroupCount() > 0 ? new DataAggregation() : null;
 
         for (Iterator<DataRow> it = dataFrame.iterator(); it.hasNext();) {
@@ -39,42 +43,64 @@ public class DataAggregator {
                 continue;
             }
 
-            aggregation.incrementRowCount();
-            updateSummaryContainerSummary(aggregation, row, totalSummaryParams);
+            dataAggregation.incrementRowCount();
+            updateSummaryContainerSummary(dataAggregation, row, totalSummaryParams);
 
-            AbstractSummaryContainer<?> parentGroup = aggregation;
+            contributeDataRowToDataAggregationOnEachGroup(row, dataAggregation, groupParams, groupSummaryParams);
 
-            for (GroupParam groupParam : groupParams) {
-                final String columnName = groupParam.getSelector();
-                final String dateInterval = groupParam.getGroupInterval();
-                final String key = row.getStringValue(columnName, dateInterval);
-
-                DataGroup childDataGroup = parentGroup.getChildDataGroup(key);
-                if (childDataGroup == null) {
-                    childDataGroup = parentGroup.addChildDataGroup(key);
-                }
-
-                childDataGroup.incrementRowCount();
-                updateSummaryContainerSummary(childDataGroup, row, groupSummaryParams);
-
-                parentGroup = childDataGroup;
+            if (pageAggregation != null) {
+                contributeDataRowToDataAggregationOnEachGroup(row, pageAggregation,
+                        pagingParam.getRowGroupParams(), null);
             }
         }
 
-        return aggregation;
+        if (pagingParam != null) {
+            final List<GroupParam> effectivePagingRowGroupParams = getPagingRowGroupParamsInGroupParams(
+                    pagingParam, groupParams);
+            final boolean fullPaging = pagingParam
+                    .getRowGroupCount() == effectivePagingRowGroupParams.size();
+
+            if (fullPaging) {
+                DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation,
+                        pagingParam, effectivePagingRowGroupParams);
+                dataAggregation.setPagingApplied(true);
+            }
+        }
+
+        return dataAggregation;
     }
 
-    private void f() {
-        
+    private void contributeDataRowToDataAggregationOnEachGroup(final DataRow row,
+            final DataAggregation dataAggregation, final List<GroupParam> groupParams,
+            List<SummaryParam> groupSummaryParams) {
+        AbstractSummaryContainer<?> parentGroup = dataAggregation;
+
+        for (GroupParam groupParam : groupParams) {
+            final String columnName = groupParam.getSelector();
+            final String dateInterval = groupParam.getGroupInterval();
+            final String key = row.getStringValue(columnName, dateInterval);
+
+            DataGroup childDataGroup = parentGroup.getChildDataGroup(key);
+            if (childDataGroup == null) {
+                childDataGroup = parentGroup.addChildDataGroup(key);
+            }
+
+            if (groupSummaryParams != null && !groupSummaryParams.isEmpty()) {
+                childDataGroup.incrementRowCount();
+                updateSummaryContainerSummary(childDataGroup, row, groupSummaryParams);
+            }
+
+            parentGroup = childDataGroup;
+        }
     }
 
     private <T> void updateSummaryContainerSummary(final SummaryContainer<T> summaryContainer,
             final DataRow dataRow, final List<SummaryParam> summaryParams) {
-        if (summaryParams.isEmpty()) {
+        final int size = summaryParams != null ? summaryParams.size() : 0;
+
+        if (size == 0) {
             return;
         }
-
-        final int size = summaryParams.size();
 
         if (summaryContainer.getSummary() == null) {
              for (int i = 0; i < size; i++) {
@@ -195,5 +221,27 @@ public class DataAggregator {
         }
 
         return true;
+    }
+
+    private List<GroupParam> getPagingRowGroupParamsInGroupParams(final PagingParam pagingParam,
+            final List<GroupParam> groupParams) {
+        List<GroupParam> rowGroupParams = null;
+
+        if (pagingParam != null && pagingParam.getRowGroupCount() > 0) {
+            final Set<String> groupParamKeys = groupParams.stream()
+                    .map((groupParam) -> groupParam.getKey()).collect(Collectors.toSet());
+
+            for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
+                if (groupParamKeys.contains(rowGroupParam.getKey())) {
+                    if (rowGroupParams == null) {
+                        rowGroupParams = new ArrayList<>();
+                    }
+
+                    rowGroupParams.add(rowGroupParam);
+                }
+            }
+        }
+
+        return rowGroupParams != null ? rowGroupParams : Collections.emptyList();
     }
 }

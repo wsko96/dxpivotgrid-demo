@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotgrid.util;
+package kr.wise.demo.pivotgrid.aggregator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,12 +9,12 @@ import kr.wise.demo.pivotgrid.model.DataGroup;
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.PagingParam;
 
-public final class DataAggregationUtils {
+final class DataAggregationUtils {
 
     private DataAggregationUtils() {
     }
 
-    public static void resetContainersVisible(final AbstractSummaryContainer<?> base,
+    static void resetContainersVisible(final AbstractSummaryContainer<?> base,
             final boolean visible) {
         base.setVisible(visible);
         final List<DataGroup> childDataGroups = base.getChildDataGroups();
@@ -25,7 +25,7 @@ public final class DataAggregationUtils {
         }
     }
 
-    public static void markPaginatedSummaryContainersVisible(final DataAggregation source,
+    static void markPaginatedSummaryContainersVisible(final DataAggregation source,
             final PagingParam pagingParam, final List<GroupParam> effectiveRowGroupParams) {
         final int offset = pagingParam.getOffset();
         final int limit = pagingParam.getLimit();

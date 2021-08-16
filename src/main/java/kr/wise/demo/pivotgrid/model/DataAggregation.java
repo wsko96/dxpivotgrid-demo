@@ -13,6 +13,7 @@ package kr.wise.demo.pivotgrid.model;
 public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
 
     private final Paging paging = new Paging();
+    private boolean pagingApplied;
 
     public DataAggregation() {
         super();
@@ -30,4 +31,13 @@ public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
         clone.setDepth(getDepth());
         return clone;
     }
+
+    public boolean isPagingApplied() {
+        return pagingApplied;
+    }
+
+    public void setPagingApplied(boolean pagingApplied) {
+        this.pagingApplied = pagingApplied;
+    }
+
 }
