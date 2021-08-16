@@ -20,8 +20,6 @@ $(function() {
         }
     }).dxChart("instance");
 
-    var pivotGridPaging = { offset: 0, limit: 7, rowGroups: [ { selector: 'region' }, { selector: 'city' } ] };
-
     var pivotGrid = $("#pivotgrid").dxPivotGrid({
         allowSortingBySummary: true,
         allowFiltering: true,

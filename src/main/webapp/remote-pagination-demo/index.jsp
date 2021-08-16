@@ -1,3 +1,11 @@
+<%@ page language="java" %>
+<%@ page import="org.apache.commons.lang3.math.NumberUtils" %>
+
+<%
+int offset = NumberUtils.toInt(request.getParameter("offset"), 0);
+int limit = NumberUtils.toInt(request.getParameter("limit"), 7);
+%>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -12,7 +20,6 @@
     <script src="https://cdn3.devexpress.com/jslib/18.2.7/js/dx.all.js"></script>
     <!--script src="data.js"></script-->
     <link rel="stylesheet" type="text/css" href="styles.css" />
-    <script src="index.js"></script>
 </head>
 <body class="dx-viewport">
     <div class="demo-container">
@@ -21,5 +28,11 @@
             <div id="pivotgrid"></div>
         </div>
     </div>
+
+    <script>
+        var pivotGridPaging = { offset: <%=offset%>, limit: <%=limit%>, rowGroups: [ { selector: 'region' }, { selector: 'city' } ] };
+    </script>
+    <script src="index.js"></script>
+
 </body>
 </html>

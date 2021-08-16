@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -249,23 +247,21 @@ public class DataAggregator {
 
     private List<GroupParam> getPagingRowGroupParamsInGroupParams(final PagingParam pagingParam,
             final List<GroupParam> groupParams) {
-        List<GroupParam> rowGroupParams = null;
+        final List<GroupParam> pageRowGroupParams = new ArrayList<>();
 
-        if (pagingParam != null && pagingParam.getRowGroupCount() > 0) {
-            final Set<String> groupParamKeys = groupParams.stream()
-                    .map((groupParam) -> groupParam.getKey()).collect(Collectors.toSet());
+        final int pageRowGroupCount = pagingParam.getRowGroupCount();
+        final int groupCount = groupParams.size();
+        final List<GroupParam> rowGroupParams = pagingParam.getRowGroupParams();
 
-            for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
-                if (groupParamKeys.contains(rowGroupParam.getKey())) {
-                    if (rowGroupParams == null) {
-                        rowGroupParams = new ArrayList<>();
-                    }
+        for (int i = 0; i < Math.min(pageRowGroupCount, groupCount); i++) {
+            final GroupParam rowGroupParam = rowGroupParams.get(i);
+            final GroupParam groupParam = groupParams.get(i);
 
-                    rowGroupParams.add(rowGroupParam);
-                }
+            if (StringUtils.equals(rowGroupParam.getKey(), groupParam.getKey())) {
+                pageRowGroupParams.add(rowGroupParam);
             }
         }
 
-        return rowGroupParams != null ? rowGroupParams : Collections.emptyList();
+        return pageRowGroupParams;
     }
 }
