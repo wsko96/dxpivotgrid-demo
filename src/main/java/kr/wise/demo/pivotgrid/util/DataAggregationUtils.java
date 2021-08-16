@@ -14,28 +14,6 @@ public final class DataAggregationUtils {
     private DataAggregationUtils() {
     }
 
-    public static void fillSummaryContainersToFlatList(final List<AbstractSummaryContainer<?>> list,
-            final AbstractSummaryContainer<?> base, final int maxDepth, final boolean parentFirst) {
-        if (base.getDepth() > maxDepth) {
-            return;
-        }
-
-        if (parentFirst) {
-            list.add(base);
-        }
-
-        final List<DataGroup> childDataGroups = base.getChildDataGroups();
-        if (childDataGroups != null) {
-            for (DataGroup childDataGroup : childDataGroups) {
-                fillSummaryContainersToFlatList(list, childDataGroup, maxDepth, parentFirst);
-            }
-        }
-
-        if (!parentFirst) {
-            list.add(base);
-        }
-    }
-
     public static void resetContainersVisible(final AbstractSummaryContainer<?> base,
             final boolean visible) {
         base.setVisible(visible);
@@ -48,11 +26,12 @@ public final class DataAggregationUtils {
     }
 
     public static void markPaginatedSummaryContainersVisible(final DataAggregation source,
-            final PagingParam pagingParam) {
+            final PagingParam pagingParam, final List<GroupParam> effectiveRowGroupParams) {
         final int offset = pagingParam.getOffset();
         final int limit = pagingParam.getLimit();
         final List<GroupParam> rowGroupParams = pagingParam.getRowGroupParams();
         final int maxDepth = rowGroupParams.size();
+        final boolean fullPagingMode = maxDepth == effectiveRowGroupParams.size();
 
         final List<AbstractSummaryContainer<?>> list = new LinkedList<>();
         DataAggregationUtils.fillSummaryContainersToFlatList(list, source, maxDepth, true);
@@ -86,6 +65,28 @@ public final class DataAggregationUtils {
                 break;
             }
             container.setVisible(true);
+        }
+    }
+
+    static void fillSummaryContainersToFlatList(final List<AbstractSummaryContainer<?>> list,
+            final AbstractSummaryContainer<?> base, final int maxDepth, final boolean parentFirst) {
+        if (base.getDepth() > maxDepth) {
+            return;
+        }
+
+        if (parentFirst) {
+            list.add(base);
+        }
+
+        final List<DataGroup> childDataGroups = base.getChildDataGroups();
+        if (childDataGroups != null) {
+            for (DataGroup childDataGroup : childDataGroups) {
+                fillSummaryContainersToFlatList(list, childDataGroup, maxDepth, parentFirst);
+            }
+        }
+
+        if (!parentFirst) {
+            list.add(base);
         }
     }
 

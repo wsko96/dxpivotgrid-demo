@@ -116,10 +116,10 @@ public class ParamUtilsTest {
     public void testSingleGroupParamParsing() throws Exception {
         ArrayNode groupParamsNode = (ArrayNode) objectMapper.readTree(
                 "[{\"selector\":\"date\",\"groupInterval\":\"year\",\"isExpanded\":false}]");
-        GroupParam[] groupParams = ParamUtils.toGroupParams(objectMapper, groupParamsNode);
-        assertEquals(1, groupParams.length);
+        List<GroupParam> groupParams = ParamUtils.toGroupParams(objectMapper, groupParamsNode);
+        assertEquals(1, groupParams.size());
 
-        GroupParam groupParam = groupParams[0];
+        GroupParam groupParam = groupParams.get(0);
         assertEquals("date", groupParam.getSelector());
         assertEquals("year", groupParam.getGroupInterval());
         assertFalse(groupParam.getIsExpanded());
@@ -129,15 +129,15 @@ public class ParamUtilsTest {
     public void testDoubleGroupParamParsing() throws Exception {
         ArrayNode groupParamsNode = (ArrayNode) objectMapper.readTree(
                 "[{\"selector\":\"region\",\"isExpanded\":false},{\"selector\":\"date\",\"groupInterval\":\"year\",\"isExpanded\":false}]");
-        GroupParam[] groupParams = ParamUtils.toGroupParams(objectMapper, groupParamsNode);
-        assertEquals(2, groupParams.length);
+        List<GroupParam> groupParams = ParamUtils.toGroupParams(objectMapper, groupParamsNode);
+        assertEquals(2, groupParams.size());
 
-        GroupParam groupParam = groupParams[0];
+        GroupParam groupParam = groupParams.get(0);
         assertEquals("region", groupParam.getSelector());
         assertNull(groupParam.getGroupInterval());
         assertFalse(groupParam.getIsExpanded());
 
-        groupParam = groupParams[1];
+        groupParam = groupParams.get(1);
         assertEquals("date", groupParam.getSelector());
         assertEquals("year", groupParam.getGroupInterval());
         assertFalse(groupParam.getIsExpanded());

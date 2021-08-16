@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,7 @@ import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataGroup;
 import kr.wise.demo.pivotgrid.model.DataRow;
 import kr.wise.demo.pivotgrid.model.SummaryContainer;
+import kr.wise.demo.pivotgrid.model.SummaryType;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
@@ -22,13 +22,8 @@ import kr.wise.demo.pivotgrid.param.SummaryParam;
 public class DataAggregator {
 
     public DataAggregation createDataAggregation(final DataFrame dataFrame,
-            final GroupParam[] groupParams) throws Exception {
-        return createDataAggregation(dataFrame, null, groupParams, null, null);
-    }
-
-    public DataAggregation createDataAggregation(final DataFrame dataFrame,
-            final FilterParam rootFilter, final GroupParam[] groupParams,
-            final SummaryParam[] groupSummaryParams, final SummaryParam[] totalSummaryParams)
+            final FilterParam rootFilter, final List<GroupParam> groupParams,
+            final List<SummaryParam> groupSummaryParams, final List<SummaryParam> totalSummaryParams)
             throws Exception {
         final DataAggregation aggregation = new DataAggregation();
 
@@ -42,7 +37,7 @@ public class DataAggregator {
             aggregation.incrementRowCount();
             updateDataGroupSummary(aggregation, row, totalSummaryParams);
 
-            final GroupParam firstGroupParam = groupParams[0];
+            final GroupParam firstGroupParam = groupParams.get(0);
             String columnName = firstGroupParam.getSelector();
             String dateInterval = firstGroupParam.getGroupInterval();
             String key = row.getStringValue(columnName, dateInterval);
@@ -57,8 +52,9 @@ public class DataAggregator {
 
             DataGroup parentGroup = firstGroup;
 
-            for (int i = 1; i < groupParams.length; i++) {
-                final GroupParam groupParam = groupParams[i];
+            final int size = groupParams.size();
+            for (int i = 1; i < size; i++) {
+                final GroupParam groupParam = groupParams.get(i);
                 columnName = groupParam.getSelector();
                 dateInterval = groupParam.getGroupInterval();
                 key = row.getStringValue(columnName, dateInterval);
@@ -79,43 +75,50 @@ public class DataAggregator {
     }
 
     private <T> void updateDataGroupSummary(final SummaryContainer<T> summaryContainer,
-            final DataRow dataRow, final SummaryParam[] summaryParams) {
-        if (ArrayUtils.isEmpty(summaryParams)) {
+            final DataRow dataRow, final List<SummaryParam> summaryParams) {
+        if (summaryParams.isEmpty()) {
             return;
         }
 
+        final int size = summaryParams.size();
+
         if (summaryContainer.getSummary() == null) {
-            for (int i = 0; i < summaryParams.length; i++) {
+             for (int i = 0; i < size; i++) {
                 summaryContainer.addSummaryValue(new BigDecimal(0));
             }
         }
 
         final List<BigDecimal> groupSummary = summaryContainer.getSummary();
 
-        for (int i = 0; i < summaryParams.length; i++) {
-            final SummaryParam groupSummaryParam = summaryParams[i];
+        for (int i = 0; i < size; i++) {
+            final SummaryParam groupSummaryParam = summaryParams.get(i);
             final String summaryColumnName = groupSummaryParam.getSelector();
-            final String summaryType = groupSummaryParam.getSummaryType();
+            final String summaryTypeName = StringUtils
+                    .upperCase(groupSummaryParam.getSummaryType());
+            final SummaryType summaryType = StringUtils.isEmpty(summaryTypeName) ? null
+                    : SummaryType.valueOf(summaryTypeName);
 
             final BigDecimal summaryValue = groupSummary.get(i);
             final BigDecimal rowValue = dataRow.getBigDecimalValue(summaryColumnName);
 
-            if ("sum".equals(summaryType)) {
+            switch (summaryType) {
+            case SUM:
                 groupSummary.set(i, summaryValue.add(rowValue));
-            }
-            else if ("count".equals(summaryType)) {
+                break;
+            case COUNT:
                 groupSummary.set(i, summaryValue.add(new BigDecimal(1)));
-            }
-            else if ("min".equals(summaryType)) {
+                break;
+            case MIN:
                 groupSummary.set(i, summaryValue.min(rowValue));
-            }
-            else if ("max".equals(summaryType)) {
+                break;
+            case MAX:
                 groupSummary.set(i, summaryValue.max(rowValue));
-            }
-            else if ("average".equals(summaryType)) {
+                break;
+            case AVERAGE:
                 final int rowCount = summaryContainer.getRowCount();
                 groupSummary.set(i, summaryValue.multiply(new BigDecimal(rowCount - 1))
                         .add(rowValue).divide(new BigDecimal(rowCount)));
+                break;
             }
         }
     }

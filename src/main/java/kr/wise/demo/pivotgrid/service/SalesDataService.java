@@ -1,7 +1,9 @@
 package kr.wise.demo.pivotgrid.service;
 
 import java.io.BufferedOutputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,7 +11,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +64,9 @@ public class SalesDataService {
         response.setContentType("application/json");
 
         FilterParam rootFilter = null;
-        GroupParam[] groupParams = null;
-        SummaryParam[] groupSummaryParams = null;
-        SummaryParam[] totalSummaryParams = null;
+        List<GroupParam> groupParams = null;
+        List<SummaryParam> groupSummaryParams = null;
+        List<SummaryParam> totalSummaryParams = null;
         PagingParam pagingParam = null;
 
         try {
@@ -106,24 +107,40 @@ public class SalesDataService {
             csvDataReader = repository.findAll();
             final DataFrame dataFrame = new CSVDataReaderDataFrame(csvDataReader);
 
-            if (ArrayUtils.isNotEmpty(groupParams)) {
+            if (!groupParams.isEmpty()) {
                 log.debug(
                         "Group aggregation data request invoked. filter: {}, group: {}, groupSummary: {}, totalSummary: {}, paging: {}",
                         filter, group, groupSummary, totalSummary, paging);
-                final DataAggregation aggregation = dataAggregator.createDataAggregation(dataFrame,
-                        rootFilter, groupParams, groupSummaryParams, totalSummaryParams);
 
-                // 1. sort any child groups before writing.
+                final List<GroupParam> effectivePagingRowGroupParams = getPagingRowGroupParamsInGroupParams(
+                        pagingParam, groupParams);
+                final boolean pagingApplicable = pagingParam != null
+                        && pagingParam.getRowGroupCount() == effectivePagingRowGroupParams.size();
 
-                // 2. cut groups to include only paginated groups
-                boolean allPagingGroupInGroupParams = hasAllPagingGroupInGroupParams(pagingParam, groupParams);
-                if (allPagingGroupInGroupParams) {
+//                if (pagingApplicable) {
+//                    if (effectivePagingRowGroupParams.size() < pagingParam.getRowGroupCount()) {
+//                        final List<GroupParam> pagingRowGroupParams = pagingParam.getRowGroupParams();
+//                        for (int i = effectivePagingRowGroupParams.size(); i < pagingRowGroupParams.size(); i++) {
+//                            final GroupParam pagingRowGroupParam = pagingRowGroupParams.get(i);
+//                            groupParams.add(pagingRowGroupParam);
+//                            groupSummaryParams.add(new SummaryParam(pagingRowGroupParam.getSelector(), "count"));
+//                        }
+//                    }
+//                }
+
+                DataAggregation aggregation = dataAggregator.createDataAggregation(dataFrame, rootFilter,
+                        groupParams, groupSummaryParams, totalSummaryParams);
+
+                // TODO: sort groups before writing.
+
+                // mark visible groups to include only paginated groups
+                if (pagingApplicable) {
                     DataAggregationUtils.markPaginatedSummaryContainersVisible(aggregation,
-                            pagingParam);
+                            pagingParam, effectivePagingRowGroupParams);
                 }
 
                 PivotGridJsonUtils.writeSummaryContainerToJson(gen, aggregation, null, "data",
-                        aggregation.getPaging(), allPagingGroupInGroupParams);
+                        aggregation.getPaging(), pagingApplicable);
             }
             else {
                 log.debug("Simple data request invoked. skip: {}, take: {}", skip, take);
@@ -131,7 +148,8 @@ public class SalesDataService {
             }
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("Failed to process data aggregation.", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         finally {
             IOUtils.closeQuietly(gen, bos, sos);
@@ -139,38 +157,25 @@ public class SalesDataService {
         }
     }
 
-    private boolean hasAnyPagingGroupInGroupParams(final PagingParam pagingParam, final GroupParam[] groupParams) {
-        if (pagingParam == null || pagingParam.getRowGroupCount() == 0) {
-            return false;
-        }
+    private List<GroupParam> getPagingRowGroupParamsInGroupParams(final PagingParam pagingParam,
+            final List<GroupParam> groupParams) {
+        List<GroupParam> rowGroupParams = null;
 
-        final Set<String> groupParamKeys = Arrays.stream(groupParams)
-                .map((groupParam) -> groupParam.getKey()).collect(Collectors.toSet());
+        if (pagingParam != null && pagingParam.getRowGroupCount() > 0) {
+            final Set<String> groupParamKeys = groupParams.stream()
+                    .map((groupParam) -> groupParam.getKey()).collect(Collectors.toSet());
 
-        for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
-            if (groupParamKeys.contains(rowGroupParam.getKey())) {
-                return true;
+            for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
+                if (groupParamKeys.contains(rowGroupParam.getKey())) {
+                    if (rowGroupParams == null) {
+                        rowGroupParams = new ArrayList<>();
+                    }
+
+                    rowGroupParams.add(rowGroupParam);
+                }
             }
         }
 
-        return false;
+        return rowGroupParams != null ? rowGroupParams : Collections.emptyList();
     }
-
-    private boolean hasAllPagingGroupInGroupParams(final PagingParam pagingParam, final GroupParam[] groupParams) {
-        if (pagingParam == null || pagingParam.getRowGroupCount() == 0) {
-            return false;
-        }
-
-        final Set<String> groupParamKeys = Arrays.stream(groupParams)
-                .map((groupParam) -> groupParam.getKey()).collect(Collectors.toSet());
-
-        for (GroupParam rowGroupParam : pagingParam.getRowGroupParams()) {
-            if (!groupParamKeys.contains(rowGroupParam.getKey())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 }

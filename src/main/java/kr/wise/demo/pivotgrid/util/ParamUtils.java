@@ -1,6 +1,7 @@
 package kr.wise.demo.pivotgrid.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,9 +78,9 @@ public final class ParamUtils {
         }
     }
 
-    public static GroupParam[] toGroupParams(final ObjectMapper objectMapper, final ArrayNode groupParamsNode) {
+    public static List<GroupParam> toGroupParams(final ObjectMapper objectMapper, final ArrayNode groupParamsNode) {
         if (groupParamsNode == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         final List<GroupParam> params = new ArrayList<>();
@@ -89,14 +90,18 @@ public final class ParamUtils {
             params.add(toGroupParam(objectMapper, groupParamsNode.get(i)));
         }
 
-        return params.toArray(new GroupParam[params.size()]);
+        return params;
     }
 
     public static GroupParam toGroupParam(final ObjectMapper objectMapper, final Object groupParamNode) {
         return objectMapper.convertValue(groupParamNode, GroupParam.class);
     }
 
-    public static SummaryParam[] toSummaryParams(final ObjectMapper objectMapper, final ArrayNode summaryParamsNode) {
+    public static List<SummaryParam> toSummaryParams(final ObjectMapper objectMapper, final ArrayNode summaryParamsNode) {
+        if (summaryParamsNode == null) {
+            return Collections.emptyList();
+        }
+
         final List<SummaryParam> params = new ArrayList<>();
         final int size = summaryParamsNode != null ? summaryParamsNode.size() : 0;
 
@@ -104,7 +109,7 @@ public final class ParamUtils {
             params.add(toSummaryParam(objectMapper, summaryParamsNode.get(i)));
         }
 
-        return params.toArray(new SummaryParam[params.size()]);
+        return params;
     }
 
     public static SummaryParam toSummaryParam(final ObjectMapper objectMapper, final Object summaryParamNode) {
