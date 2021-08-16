@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import kr.wise.demo.pivotgrid.param.GroupParam;
-
 abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T> {
 
     private final String key;
@@ -24,7 +22,7 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
     private AbstractSummaryContainer<?> parent;
     private int depth;
 
-    private GroupParam childDataGroupParam;
+    private String childDataGroupKey;
 
     private List<DataGroup> childDataGroups;
     private List<DataGroup> unmodifiableChildDataGroups;
@@ -117,13 +115,12 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         this.parent = parent;
     }
 
-    @JsonIgnore
-    public GroupParam getChildDataGroupParam() {
-        return childDataGroupParam;
+    public String getChildDataGroupKey() {
+        return childDataGroupKey;
     }
 
-    public void setChildDataGroupParam(GroupParam childDataGroupParam) {
-        this.childDataGroupParam = childDataGroupParam;
+    public void setChildDataGroupKey(String childDataGroupKey) {
+        this.childDataGroupKey = childDataGroupKey;
     }
 
     public void sortChildDataGroups(final Comparator<DataGroup> comparator) {

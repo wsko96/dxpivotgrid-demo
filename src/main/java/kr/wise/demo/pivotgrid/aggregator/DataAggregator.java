@@ -55,6 +55,11 @@ public class DataAggregator {
         }
 
         if (pagingParam != null) {
+            if (pageAggregation != null) {
+                DataAggregationUtils.markPaginatedSummaryContainersVisible(pageAggregation,
+                        pagingParam, pagingParam.getRowGroupParams());
+            }
+
             final List<GroupParam> effectivePagingRowGroupParams = getPagingRowGroupParamsInGroupParams(
                     pagingParam, groupParams);
             final boolean fullPaging = pagingParam
@@ -76,6 +81,8 @@ public class DataAggregator {
         AbstractSummaryContainer<?> parentGroup = dataAggregation;
 
         for (GroupParam groupParam : groupParams) {
+            parentGroup.setChildDataGroupKey(groupParam.getKey());
+
             final String columnName = groupParam.getSelector();
             final String dateInterval = groupParam.getGroupInterval();
             final String key = row.getStringValue(columnName, dateInterval);

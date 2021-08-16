@@ -23,15 +23,6 @@ public class DataAggregation extends AbstractSummaryContainer<DataAggregation> {
         return paging;
     }
 
-    public DataAggregation cloneWithoutChildDataGroups() {
-        final DataAggregation clone = new DataAggregation();
-        clone.setSummary(getSummary());
-        clone.setRowCount(getRowCount());
-        clone.setChildDataGroupParam(getChildDataGroupParam());
-        clone.setDepth(getDepth());
-        return clone;
-    }
-
     public boolean isPagingApplied() {
         return pagingApplied;
     }
