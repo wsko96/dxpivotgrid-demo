@@ -129,7 +129,7 @@ public class SalesDataService {
 //                }
 
                 DataAggregation aggregation = dataAggregator.createDataAggregation(dataFrame, rootFilter,
-                        groupParams, groupSummaryParams, totalSummaryParams);
+                        groupParams, groupSummaryParams, totalSummaryParams, pagingParam);
 
                 // TODO: sort groups before writing.
 

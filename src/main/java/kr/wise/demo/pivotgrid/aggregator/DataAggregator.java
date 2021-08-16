@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import kr.wise.demo.pivotgrid.model.AbstractSummaryContainer;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataFrame;
 import kr.wise.demo.pivotgrid.model.DataGroup;
@@ -16,6 +17,7 @@ import kr.wise.demo.pivotgrid.model.SummaryContainer;
 import kr.wise.demo.pivotgrid.model.SummaryType;
 import kr.wise.demo.pivotgrid.param.FilterParam;
 import kr.wise.demo.pivotgrid.param.GroupParam;
+import kr.wise.demo.pivotgrid.param.PagingParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
 
 @Service
@@ -23,9 +25,12 @@ public class DataAggregator {
 
     public DataAggregation createDataAggregation(final DataFrame dataFrame,
             final FilterParam rootFilter, final List<GroupParam> groupParams,
-            final List<SummaryParam> groupSummaryParams, final List<SummaryParam> totalSummaryParams)
+            final List<SummaryParam> groupSummaryParams, final List<SummaryParam> totalSummaryParams,
+            final PagingParam pagingParam)
             throws Exception {
         final DataAggregation aggregation = new DataAggregation();
+        final DataAggregation aggregationForPaging = pagingParam != null
+                && pagingParam.getRowGroupCount() > 0 ? new DataAggregation() : null;
 
         for (Iterator<DataRow> it = dataFrame.iterator(); it.hasNext();) {
             final DataRow row = it.next();
@@ -35,46 +40,35 @@ public class DataAggregator {
             }
 
             aggregation.incrementRowCount();
-            updateDataGroupSummary(aggregation, row, totalSummaryParams);
+            updateSummaryContainerSummary(aggregation, row, totalSummaryParams);
 
-            final GroupParam firstGroupParam = groupParams.get(0);
-            String columnName = firstGroupParam.getSelector();
-            String dateInterval = firstGroupParam.getGroupInterval();
-            String key = row.getStringValue(columnName, dateInterval);
+            AbstractSummaryContainer<?> parentGroup = aggregation;
 
-            DataGroup firstGroup = aggregation.getChildDataGroup(key);
-            if (firstGroup == null) {
-                firstGroup = aggregation.addChildDataGroup(key);
-            }
+            for (GroupParam groupParam : groupParams) {
+                final String columnName = groupParam.getSelector();
+                final String dateInterval = groupParam.getGroupInterval();
+                final String key = row.getStringValue(columnName, dateInterval);
 
-            firstGroup.incrementRowCount();
-            updateDataGroupSummary(firstGroup, row, groupSummaryParams);
-
-            DataGroup parentGroup = firstGroup;
-
-            final int size = groupParams.size();
-            for (int i = 1; i < size; i++) {
-                final GroupParam groupParam = groupParams.get(i);
-                columnName = groupParam.getSelector();
-                dateInterval = groupParam.getGroupInterval();
-                key = row.getStringValue(columnName, dateInterval);
-
-                DataGroup itemGroup = parentGroup.getChildDataGroup(key);
-                if (itemGroup == null) {
-                    itemGroup = parentGroup.addChildDataGroup(key);
+                DataGroup childDataGroup = parentGroup.getChildDataGroup(key);
+                if (childDataGroup == null) {
+                    childDataGroup = parentGroup.addChildDataGroup(key);
                 }
 
-                itemGroup.incrementRowCount();
-                updateDataGroupSummary(itemGroup, row, groupSummaryParams);
+                childDataGroup.incrementRowCount();
+                updateSummaryContainerSummary(childDataGroup, row, groupSummaryParams);
 
-                parentGroup = itemGroup;
+                parentGroup = childDataGroup;
             }
         }
 
         return aggregation;
     }
 
-    private <T> void updateDataGroupSummary(final SummaryContainer<T> summaryContainer,
+    private void f() {
+        
+    }
+
+    private <T> void updateSummaryContainerSummary(final SummaryContainer<T> summaryContainer,
             final DataRow dataRow, final List<SummaryParam> summaryParams) {
         if (summaryParams.isEmpty()) {
             return;
