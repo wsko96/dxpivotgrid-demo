@@ -40,7 +40,7 @@ public final class PivotGridJsonUtils {
         }
         gen.writeEndArray();
 
-        if (paging != null) {
+        if (paging != null && paging.getOffset() >= 0 && paging.getLimit() > 0) {
             gen.writeFieldName("paging");
             gen.writeStartObject();
             gen.writeNumberField("offset", paging.getOffset());

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T> {
@@ -121,6 +123,23 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
     public void setChildDataGroupKey(String childDataGroupKey) {
         this.childDataGroupKey = childDataGroupKey;
+    }
+
+    public void findSummaryContainersByChildDataGroupKeyIntoList(
+            final AbstractSummaryContainer<?> base, final String childDataGroupKey,
+            final List<AbstractSummaryContainer<?>> summaryContainers) {
+        if (StringUtils.equals(this.childDataGroupKey, childDataGroupKey)) {
+            summaryContainers.add(this);
+
+            final List<DataGroup> childDataGroups = getChildDataGroups();
+
+            if (childDataGroups != null) {
+                for (DataGroup childDataGroup : childDataGroups) {
+                    findSummaryContainersByChildDataGroupKeyIntoList(childDataGroup,
+                            childDataGroupKey, summaryContainers);
+                }
+            }
+        }
     }
 
     public void sortChildDataGroups(final Comparator<DataGroup> comparator) {

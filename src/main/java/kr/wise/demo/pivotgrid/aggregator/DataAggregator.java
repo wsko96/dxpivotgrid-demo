@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import kr.wise.demo.pivotgrid.model.AbstractSummaryContainer;
@@ -27,14 +29,33 @@ import kr.wise.demo.pivotgrid.param.SummaryParam;
 @Service
 public class DataAggregator {
 
+    private static Logger log = LoggerFactory.getLogger(DataAggregator.class);
+
     public DataAggregation createDataAggregation(final DataFrame dataFrame,
             final FilterParam rootFilter, final List<GroupParam> groupParams,
             final List<SummaryParam> groupSummaryParams, final List<SummaryParam> totalSummaryParams,
             final PagingParam pagingParam)
             throws Exception {
         final DataAggregation dataAggregation = new DataAggregation();
-        final DataAggregation pageAggregation = pagingParam != null
-                && pagingParam.getRowGroupCount() > 0 ? new DataAggregation() : null;
+
+        boolean fullPagingMode = false;
+        boolean pagingRelevantViewMode = false;
+        List<GroupParam> effectivePagingRowGroupParams = Collections.emptyList();
+
+        if (pagingParam != null) {
+            final int pageRowGroupCount = pagingParam.getRowGroupCount();
+            effectivePagingRowGroupParams = getPagingRowGroupParamsInGroupParams(pagingParam,
+                    groupParams);
+            final int effectivePagingRowGroupCount = effectivePagingRowGroupParams.size();
+
+            if (effectivePagingRowGroupCount > 0) {
+                fullPagingMode = effectivePagingRowGroupCount == pageRowGroupCount;
+                pagingRelevantViewMode = effectivePagingRowGroupCount < pageRowGroupCount;
+            }
+        }
+
+        final DataAggregation pageAggregation = fullPagingMode || pagingRelevantViewMode
+                ? new DataAggregation() : null;
 
         for (Iterator<DataRow> it = dataFrame.iterator(); it.hasNext();) {
             final DataRow row = it.next();
@@ -50,26 +71,24 @@ public class DataAggregator {
 
             if (pageAggregation != null) {
                 contributeDataRowToDataAggregationOnEachGroup(row, pageAggregation,
-                        pagingParam.getRowGroupParams(), null);
+                        pagingParam.getRowGroupParams(), Collections.emptyList());
             }
         }
 
-        if (pagingParam != null) {
-            if (pageAggregation != null) {
-                DataAggregationUtils.markPaginatedSummaryContainersVisible(pageAggregation,
-                        pagingParam, pagingParam.getRowGroupParams());
-            }
+        if (fullPagingMode) {
+            DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation, pagingParam,
+                    effectivePagingRowGroupParams);
+            dataAggregation.setPagingApplied(true);
+        }
+        else if (pagingRelevantViewMode) {
+            DataAggregationUtils.markPaginatedSummaryContainersVisible(pageAggregation, pagingParam,
+                    pagingParam.getRowGroupParams());
+            pageAggregation.setPagingApplied(true);
 
-            final List<GroupParam> effectivePagingRowGroupParams = getPagingRowGroupParamsInGroupParams(
-                    pagingParam, groupParams);
-            final boolean fullPaging = pagingParam
-                    .getRowGroupCount() == effectivePagingRowGroupParams.size();
-
-            if (fullPaging) {
-                DataAggregationUtils.markPaginatedSummaryContainersVisible(dataAggregation,
-                        pagingParam, effectivePagingRowGroupParams);
-                dataAggregation.setPagingApplied(true);
-            }
+            DataAggregationUtils.resetContainersVisible(dataAggregation, true);
+            DataAggregationUtils.markRelevantSummaryContainersVisible(dataAggregation,
+                    pageAggregation, pagingParam.getRowGroupParams(), 0);
+            dataAggregation.setPagingApplied(true);
         }
 
         return dataAggregation;
@@ -92,7 +111,7 @@ public class DataAggregator {
                 childDataGroup = parentGroup.addChildDataGroup(key);
             }
 
-            if (groupSummaryParams != null && !groupSummaryParams.isEmpty()) {
+            if (!groupSummaryParams.isEmpty()) {
                 childDataGroup.incrementRowCount();
                 updateSummaryContainerSummary(childDataGroup, row, groupSummaryParams);
             }

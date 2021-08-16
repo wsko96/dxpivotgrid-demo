@@ -2,6 +2,12 @@ package kr.wise.demo.pivotgrid.aggregator;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import kr.wise.demo.pivotgrid.model.AbstractSummaryContainer;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
@@ -10,6 +16,8 @@ import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.PagingParam;
 
 final class DataAggregationUtils {
+
+    private static Logger log = LoggerFactory.getLogger(DataAggregationUtils.class);
 
     private DataAggregationUtils() {
     }
@@ -25,26 +33,71 @@ final class DataAggregationUtils {
         }
     }
 
-    static void markPaginatedSummaryContainersVisible(final DataAggregation source,
+    static void markRelevantSummaryContainersVisible(
+            final AbstractSummaryContainer<?> parentDataGroup,
+            final AbstractSummaryContainer<?> parentPageGroup,
+            final List<GroupParam> rowGroupParams, final int rowGroupParamIndex) {
+        final GroupParam rowGroupParam = rowGroupParamIndex <= rowGroupParams.size() - 1
+                ? rowGroupParams.get(rowGroupParamIndex) : null;
+
+        log.debug(
+                "rowGroupParam.getKey(): {}, parentDataGroup.getChildDataGroupKey(): {}, parentPageGroup.getChildDataGroupKey(): {}",
+                rowGroupParam.getKey(), parentDataGroup.getChildDataGroupKey(),
+                parentPageGroup.getChildDataGroupKey());
+
+        if (!StringUtils.equals(rowGroupParam.getKey(), parentDataGroup.getChildDataGroupKey())
+                || !StringUtils.equals(rowGroupParam.getKey(),
+                        parentPageGroup.getChildDataGroupKey())) {
+            return;
+        }
+
+        final List<DataGroup> childPageGroups = parentPageGroup.getChildDataGroups(true);
+        final int childPageGroupCount = childPageGroups != null ? childPageGroups.size() : 0;
+
+        final List<DataGroup> childDataGroups = parentDataGroup.getChildDataGroups();
+        final int childDataGroupCount = childDataGroups != null ? childDataGroups.size() : 0;
+
+        final Set<String> pageGroupKeyValues = childPageGroups.stream().map((g) -> g.getKey())
+                .collect(Collectors.toSet());
+
+        for (int i = 0; i < childDataGroupCount; i++) {
+            final DataGroup childDataGroup = childDataGroups.get(i);
+            final String childDataGroupKey = childDataGroup.getKey();
+
+            if (!pageGroupKeyValues.contains(childDataGroupKey)) {
+                childDataGroup.setVisible(false);
+            }
+            else {
+                final DataGroup childPageGroup = (i <= childPageGroupCount - 1)
+                        ? childPageGroups.get(i) : null;
+
+                if (childPageGroup != null) {
+                    markRelevantSummaryContainersVisible(childDataGroup, childPageGroup,
+                            rowGroupParams, rowGroupParamIndex + 1);
+                }
+            }
+        }
+    }
+
+    static void markPaginatedSummaryContainersVisible(final DataAggregation dataAggregation,
             final PagingParam pagingParam, final List<GroupParam> effectiveRowGroupParams) {
         final int offset = pagingParam.getOffset();
         final int limit = pagingParam.getLimit();
         final List<GroupParam> rowGroupParams = pagingParam.getRowGroupParams();
         final int maxDepth = rowGroupParams.size();
-        final boolean fullPagingMode = maxDepth == effectiveRowGroupParams.size();
 
         final List<AbstractSummaryContainer<?>> list = new LinkedList<>();
-        DataAggregationUtils.fillSummaryContainersToFlatList(list, source, maxDepth, true);
+        DataAggregationUtils.fillSummaryContainersToFlatList(list, dataAggregation, maxDepth, true);
         final int total = list.size();
 
-        source.getPaging().setTotal(total);
+        dataAggregation.getPaging().setTotal(total);
 
         if (offset >= total) {
             return;
         }
 
-        source.getPaging().setOffset(offset);
-        source.getPaging().setLimit(limit);
+        dataAggregation.getPaging().setOffset(offset);
+        dataAggregation.getPaging().setLimit(limit);
 
         final int endIndex = Math.min(offset + limit, total);
         final List<AbstractSummaryContainer<?>> candidateList = list.subList(offset, endIndex);
@@ -57,7 +110,7 @@ final class DataAggregationUtils {
         }
 
         final int pageRowCount = Math.min(limit, candidateList.size());
-        source.getPaging().setCount(pageRowCount);
+        dataAggregation.getPaging().setCount(pageRowCount);
 
         int i = 0;
         for (AbstractSummaryContainer<?> container : candidateList) {
