@@ -40,11 +40,6 @@ final class DataAggregationUtils {
         final GroupParam rowGroupParam = rowGroupParamIndex <= rowGroupParams.size() - 1
                 ? rowGroupParams.get(rowGroupParamIndex) : null;
 
-        log.debug(
-                "rowGroupParam.getKey(): {}, parentDataGroup.getChildDataGroupKey(): {}, parentPageGroup.getChildDataGroupKey(): {}",
-                rowGroupParam.getKey(), parentDataGroup.getChildDataGroupKey(),
-                parentPageGroup.getChildDataGroupKey());
-
         if (!StringUtils.equals(rowGroupParam.getKey(), parentDataGroup.getChildDataGroupKey())
                 || !StringUtils.equals(rowGroupParam.getKey(),
                         parentPageGroup.getChildDataGroupKey())) {
