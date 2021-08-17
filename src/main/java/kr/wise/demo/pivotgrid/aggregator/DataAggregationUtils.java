@@ -88,6 +88,7 @@ final class DataAggregationUtils {
 
         final List<AbstractSummaryContainer<?>> list = new LinkedList<>();
         DataAggregationUtils.fillSummaryContainersToFlatList(list, dataAggregation, maxDepth, true);
+
         final int total = list.size();
 
         dataAggregation.getPaging().setTotal(total);
@@ -117,7 +118,13 @@ final class DataAggregationUtils {
             if (++i > pageRowCount) {
                 break;
             }
-            container.setVisible(true);
+
+            if (container.getDepth() == maxDepth) {
+                resetContainersVisibility(container, true);
+            }
+            else {
+                container.setVisible(true);
+            }
         }
     }
 
