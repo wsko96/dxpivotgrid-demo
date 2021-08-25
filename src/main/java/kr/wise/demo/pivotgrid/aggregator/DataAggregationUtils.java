@@ -82,7 +82,8 @@ final class DataAggregationUtils {
         final int maxDepth = rowGroupParams.size();
 
         final List<AbstractSummaryContainer<?>> list = new LinkedList<>();
-        DataAggregationUtils.fillSummaryContainersToFlatList(list, dataAggregation, maxDepth, true);
+        fillSummaryContainersToFlatList(list, dataAggregation, maxDepth, true);
+        insertAncestorsForPaging(list, limit, maxDepth);
 
         final int total = list.size();
 
@@ -96,24 +97,12 @@ final class DataAggregationUtils {
         dataAggregation.getPaging().setLimit(limit);
 
         final int endIndex = Math.min(offset + limit, total);
-        final List<AbstractSummaryContainer<?>> candidateList = list.subList(offset, endIndex);
-
-        final AbstractSummaryContainer<?>[] containers = candidateList
-                .toArray(new AbstractSummaryContainer<?>[candidateList.size()]);
-
-        for (AbstractSummaryContainer<?> container : containers) {
-            insertParentBeforeContainer(container, candidateList);
-        }
-
-        final int pageRowCount = Math.min(limit, candidateList.size());
+        final List<AbstractSummaryContainer<?>> pagedList = list.subList(offset, endIndex);
+        final int pageRowCount = Math.min(limit, pagedList.size());
         dataAggregation.getPaging().setCount(pageRowCount);
 
         int i = 0;
-        for (AbstractSummaryContainer<?> container : candidateList) {
-            if (++i > pageRowCount) {
-                break;
-            }
-
+        for (AbstractSummaryContainer<?> container : pagedList) {
             if (container.getDepth() == maxDepth) {
                 resetContainersVisibility(container, true);
             }
@@ -145,15 +134,26 @@ final class DataAggregationUtils {
         }
     }
 
-    private static void insertParentBeforeContainer(final AbstractSummaryContainer<?> container,
-            final List<AbstractSummaryContainer<?>> candidateList) {
-        final AbstractSummaryContainer<?> parent = container.getParent();
+    public static void insertAncestorsForPaging(final List<AbstractSummaryContainer<?>> list,
+            final int pageSize, final int maxDepth) {
+        if (pageSize < maxDepth + 1) {
+            // If pageSize is smaller than group dimension count including the root,
+            // then it's dangerous to continue due to potential infinite loop. So stop here then.
+            return;
+        }
 
-        if (parent != null && !candidateList.contains(parent)) {
-            final int offset = candidateList.indexOf(container);
-            candidateList.add(offset, parent);
+        int offset = 0;
 
-            insertParentBeforeContainer(parent, candidateList);
+        while (offset < list.size()) {
+            final AbstractSummaryContainer<?> firstContainerInPage = list.get(offset);
+            AbstractSummaryContainer<?> parent = firstContainerInPage.getParent();
+
+            while (parent != null) {
+                list.add(offset, parent);
+                parent = parent.getParent();
+            }
+
+            offset += pageSize;
         }
     }
 }
