@@ -78,7 +78,7 @@ public class SummaryMatrixUtilsTest {
 
     @Test
     public void testWithDataAggregationInput() throws Exception {
-        SummaryMatrix matrix = SummaryMatrixUtils.createSummaryMatrix(dataAggregation, 2);
+        SummaryMatrix matrix = SummaryMatrixUtils.createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation, 2);
 
         assertEquals(7, matrix.getRows());
         assertEquals(11, matrix.getCols());

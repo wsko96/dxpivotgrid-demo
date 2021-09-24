@@ -2,7 +2,9 @@ package kr.wise.demo.pivotmatrix.model;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +23,8 @@ public final class SummaryMatrixUtils {
     private SummaryMatrixUtils() {
     }
 
-    public static SummaryMatrix createSummaryMatrix(final DataAggregation dataAggregation,
-            final int rowDimensionMaxDepth) {
+    public static SummaryMatrix createSummaryMatrixFromFullyExpandedDataAggregation(
+            final DataAggregation dataAggregation, final int rowDimensionMaxDepth) {
         final SummaryDimension rowDimension = new SummaryDimension();
         final SummaryDimension colDimension = new SummaryDimension();
 
@@ -38,9 +40,11 @@ public final class SummaryMatrixUtils {
 
         final SummaryMatrix matrix = new SummaryMatrix(rowDimension, colDimension);
 
-        fillSummaryValuesToCells(matrix, dataAggregation, rowDimensionMaxDepth);
+        final Map<AbstractSummaryContainer<?>, Pair<Integer, Integer>> rowColIndexPairCacheMap = new HashMap<>();
+        fillSummaryValuesOfLeafDataGroups(matrix, dataAggregation, rowDimensionMaxDepth,
+                rowColIndexPairCacheMap);
 
-        calculateEmptySummaryCellsBySummaryContainers(matrix, dataAggregation, rowDimensionMaxDepth);
+        calculateEmptyParentSummaryCells(matrix);
 
         return matrix;
     }
@@ -86,106 +90,108 @@ public final class SummaryMatrixUtils {
         }
     }
 
-    private static void fillSummaryValuesToCells(final SummaryMatrix matrix,
-            final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth) {
-        final Pair<Integer, Integer> pair = getRowColIndexPair(baseContainer, matrix,
-                rowDimensionMaxDepth);
-        final int rowIndex = pair.getLeft();
-        final int colIndex = pair.getRight();
-
-        if (rowIndex >= 0 && colIndex >= 0) {
-            final List<SummaryValue> summaryValues = temporarilyToSummaryValueList(
-                    baseContainer.getSummary());
-
-            if (summaryValues != null) {
-                matrix.summaryCells[rowIndex][colIndex] = new SummaryCell()
-                        .addSummaryValues(summaryValues);
-            }
-        }
-
+    private static void fillSummaryValuesOfLeafDataGroups(final SummaryMatrix matrix,
+            final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth,
+            final Map<AbstractSummaryContainer<?>, Pair<Integer, Integer>> rowColIndexPairCacheMap) {
         final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
         final int childCount = childGroups != null ? childGroups.size() : 0;
 
         if (childCount > 0) {
             for (DataGroup childDataGroup : childGroups) {
-                fillSummaryValuesToCells(matrix, childDataGroup, rowDimensionMaxDepth);
+                fillSummaryValuesOfLeafDataGroups(matrix, childDataGroup, rowDimensionMaxDepth,
+                        rowColIndexPairCacheMap);
+            }
+        }
+        else {
+            Pair<Integer, Integer> pair = rowColIndexPairCacheMap.get(baseContainer);
+
+            if (pair == null) {
+                pair = resolveRowColIndexPair(baseContainer, matrix, rowDimensionMaxDepth);
+                rowColIndexPairCacheMap.put(baseContainer, pair);
+            }
+
+            if (pair != null) {
+                final List<SummaryValue> summaryValues = temporarilyToSummaryValueList(
+                        baseContainer.getSummary());
+                matrix.summaryCells[pair.getLeft()][pair.getRight()]
+                        .addSummaryValues(summaryValues);
             }
         }
     }
 
-    private static void calculateEmptySummaryCellsBySummaryContainers(final SummaryMatrix matrix,
-            final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth) {
-        final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
-        final int childCount = childGroups != null ? childGroups.size() : 0;
+    private static void calculateEmptyParentSummaryCells(final SummaryMatrix matrix) {
+        for (int i = matrix.getRows() - 1; i >= 0; i--) {
+            for (int j = matrix.getCols() - 1; j >= 0; j--) {
+                final SummaryCell cell = matrix.summaryCells[i][j];
 
-        if (childCount > 0) {
-            for (DataGroup childDataGroup : childGroups) {
-                calculateEmptySummaryCellsBySummaryContainers(matrix, childDataGroup, rowDimensionMaxDepth);
-            }
+                if (!cell.hasSummaryValue()) {
+                    final List<Integer> colChildIndices = cell.getColChildCellIndices();
+                    final int colChildrenRowIndex = cell.getColChildrenRowIndex();
 
-            final Pair<Integer, Integer> pair = getRowColIndexPair(baseContainer, matrix,
-                    rowDimensionMaxDepth);
-            final int rowIndex = pair.getLeft();
-            final int colIndex = pair.getRight();
+                    if (colChildIndices != null && !colChildIndices.isEmpty()) {
+                        SummaryCell[] childCells = new SummaryCell[colChildIndices.size()];
+                        int k = 0;
+                        for (Integer index : colChildIndices) {
+                            childCells[k++] = matrix.summaryCells[colChildrenRowIndex][index];
+                        }
+                        final List<SummaryValue> summaryValues = aggregateSummaryValuesOfCells(
+                                childCells, 0, childCells.length);
+                        if (summaryValues != null) {
+                            cell.addSummaryValues(summaryValues);
+                        }
+                    }
 
-            if (rowIndex >= 0 && colIndex >= 0) {
-                SummaryCell cell = matrix.summaryCells[rowIndex][colIndex];
+                    if (!cell.hasSummaryValue()) {
+                        final List<Integer> rowChildIndices = cell.getRowChildCellIndices();
+                        final int rowChildrenColIndex = cell.getRowChildrenColIndex();
 
-                if (cell == null) {
-                    final List<SummaryValue> summaryValues = calculateSummaryValuesOfChildren(
-                            matrix, childGroups, rowDimensionMaxDepth);
-
-                    if (summaryValues != null) {
-                        cell = new SummaryCell().addSummaryValues(summaryValues);
-                        matrix.summaryCells[rowIndex][colIndex] = cell;
+                        if (rowChildIndices != null && !rowChildIndices.isEmpty()) {
+                            SummaryCell[] childCells = new SummaryCell[rowChildIndices.size()];
+                            int k = 0;
+                            for (Integer index : rowChildIndices) {
+                                childCells[k++] = matrix.summaryCells[index][rowChildrenColIndex];
+                            }
+                            final List<SummaryValue> summaryValues = aggregateSummaryValuesOfCells(
+                                    childCells, 0, childCells.length);
+                            if (summaryValues != null) {
+                                cell.addSummaryValues(summaryValues);
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    private static List<SummaryValue> calculateSummaryValuesOfChildren(final SummaryMatrix matrix,
-            final List<DataGroup> childGroups, final int rowDimensionMaxDepth) {
+    private static List<SummaryValue> aggregateSummaryValuesOfCells(
+            final SummaryCell[] summaryCells, final int beginIndex, final int endIndex) {
         BigDecimal sum = new BigDecimal(0);
 
-        for (DataGroup childGroup : childGroups) {
-            final Pair<Integer, Integer> pair = getRowColIndexPair(childGroup, matrix,
-                    rowDimensionMaxDepth);
-            final int rowIndex = pair.getLeft();
-            final int colIndex = pair.getRight();
+        for (int i = beginIndex; i < endIndex; i++) {
+            final SummaryCell cell = summaryCells[i];
 
-            if (rowIndex >= 0 && colIndex >= 0) {
-                final SummaryCell cell = matrix.summaryCells[rowIndex][colIndex];
-
-                if (cell == null) {
-                    return null;
-                }
-
-                final List<SummaryValue> summaryValues = cell.getSummaryValues();
-                // FIXME
-                sum = sum.add(summaryValues.get(0).getRepresentingValue());
+            if (cell == null || !cell.hasSummaryValue()) {
+                return null;
             }
+
+            final List<SummaryValue> summaryValues = cell.getSummaryValues();
+            // FIXME
+            sum = sum.add(summaryValues.get(0).getRepresentingValue());
         }
 
         SummaryValue summaryValue = new SummaryValue(null, SummaryType.SUM, sum);
         return Arrays.asList(summaryValue);
     }
 
-    private static Pair<Integer, Integer> getRowColIndexPair(
+    private static Pair<Integer, Integer> resolveRowColIndexPair(
             final AbstractSummaryContainer<?> container, final SummaryMatrix matrix,
             final int rowDimensionMaxDepth) {
-        Pair<Integer, Integer> pair = (Pair<Integer, Integer>) container
-                .getAttribute("rowColIndexPair");
-
-        if (pair != null) {
-            return pair;
-        }
-
         final String path = container.getPath();
         final String rowPath;
         final String colPath;
         final int offset = StringUtils.ordinalIndexOf(path, SummaryDimension.PATH_DELIMITER,
                 rowDimensionMaxDepth + 1);
+
         if (offset == -1) {
             rowPath = path;
             colPath = "";
@@ -198,10 +204,11 @@ public final class SummaryMatrixUtils {
         final int rowIndex = matrix.getRowIndexByDimensionPath(rowPath);
         final int colIndex = matrix.getColIndexByDimensionPath(colPath);
 
-        pair = Pair.of(rowIndex, colIndex);
-        container.setAttribute("rowColIndexPair", pair);
+        if (rowIndex < 0 || colIndex < 0) {
+            return null;
+        }
 
-        return pair;
+        return Pair.of(rowIndex, colIndex);
     }
 
     // FIXME

@@ -22,6 +22,7 @@ public class SummaryDimension {
     private Map<String, SummaryDimension> childMapByKey;
 
     private SummaryDimension parent;
+    private int depth;
 
     private String path = "";
 
@@ -65,6 +66,7 @@ public class SummaryDimension {
         childMapByKey.put(child.getKey(), child);
 
         child.parent = this;
+        child.depth = depth + 1;
         child.path = path + PATH_DELIMITER + child.getKey();
 
         return child;
@@ -76,6 +78,10 @@ public class SummaryDimension {
 
     public SummaryDimension getParent() {
         return parent;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 
     public String getPath() {
