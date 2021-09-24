@@ -2,9 +2,7 @@ package kr.wise.demo.pivotmatrix.model;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,9 +38,7 @@ public final class SummaryMatrixUtils {
 
         final SummaryMatrix matrix = new SummaryMatrix(rowDimension, colDimension);
 
-        final Map<AbstractSummaryContainer<?>, Pair<Integer, Integer>> rowColIndexPairCacheMap = new HashMap<>();
-        fillSummaryValuesOfLeafDataGroups(matrix, dataAggregation, rowDimensionMaxDepth,
-                rowColIndexPairCacheMap);
+        fillSummaryValuesOfLeafDataGroups(matrix, dataAggregation, rowDimensionMaxDepth);
 
         calculateEmptyParentSummaryCells(matrix);
 
@@ -91,24 +87,18 @@ public final class SummaryMatrixUtils {
     }
 
     private static void fillSummaryValuesOfLeafDataGroups(final SummaryMatrix matrix,
-            final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth,
-            final Map<AbstractSummaryContainer<?>, Pair<Integer, Integer>> rowColIndexPairCacheMap) {
+            final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth) {
         final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
         final int childCount = childGroups != null ? childGroups.size() : 0;
 
         if (childCount > 0) {
             for (DataGroup childDataGroup : childGroups) {
-                fillSummaryValuesOfLeafDataGroups(matrix, childDataGroup, rowDimensionMaxDepth,
-                        rowColIndexPairCacheMap);
+                fillSummaryValuesOfLeafDataGroups(matrix, childDataGroup, rowDimensionMaxDepth);
             }
         }
         else {
-            Pair<Integer, Integer> pair = rowColIndexPairCacheMap.get(baseContainer);
-
-            if (pair == null) {
-                pair = resolveRowColIndexPair(baseContainer, matrix, rowDimensionMaxDepth);
-                rowColIndexPairCacheMap.put(baseContainer, pair);
-            }
+            final Pair<Integer, Integer> pair = findRowColIndexPair(baseContainer, matrix,
+                    rowDimensionMaxDepth);
 
             if (pair != null) {
                 final List<SummaryValue> summaryValues = temporarilyToSummaryValueList(
@@ -183,7 +173,7 @@ public final class SummaryMatrixUtils {
         return Arrays.asList(summaryValue);
     }
 
-    private static Pair<Integer, Integer> resolveRowColIndexPair(
+    private static Pair<Integer, Integer> findRowColIndexPair(
             final AbstractSummaryContainer<?> container, final SummaryMatrix matrix,
             final int rowDimensionMaxDepth) {
         final String path = container.getPath();
