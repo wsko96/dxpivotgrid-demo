@@ -32,6 +32,8 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
     private boolean visible;
 
+    private Map<String, Object> attributes;
+
     private String path = "";
 
     public AbstractSummaryContainer() {
@@ -179,6 +181,18 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public Object getAttribute(final String attrName) {
+        return attributes != null ? attributes.get(attrName) : null;
+    }
+
+    public void setAttribute(final String attrName, final Object attrValue) {
+        if (attributes == null) {
+            attributes = new HashMap<>();
+        }
+
+        attributes.put(attrName, attrValue);
     }
 
     public String getPath() {

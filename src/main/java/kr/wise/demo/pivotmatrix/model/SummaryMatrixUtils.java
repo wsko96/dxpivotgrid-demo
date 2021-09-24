@@ -1,10 +1,12 @@
 package kr.wise.demo.pivotmatrix.model;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +27,9 @@ public final class SummaryMatrixUtils {
         final SummaryDimension colDimension = new SummaryDimension();
 
         final List<DataGroup> childGroups = dataAggregation.getChildDataGroups();
+        final int childCount = childGroups != null ? childGroups.size() : 0;
 
-        if (childGroups != null && !childGroups.isEmpty()) {
+        if (childCount > 0) {
             for (DataGroup dataGroup : childGroups) {
                 fillRowAndColSummaryDimensions(dataGroup, rowDimensionMaxDepth, rowDimension,
                         colDimension);
@@ -37,7 +40,7 @@ public final class SummaryMatrixUtils {
 
         fillSummaryValuesToCells(matrix, dataAggregation, rowDimensionMaxDepth);
 
-        calculateEmptySummarCells(matrix);
+        calculateEmptySummaryCellsBySummaryContainers(matrix, dataAggregation, rowDimensionMaxDepth);
 
         return matrix;
     }
@@ -47,6 +50,7 @@ public final class SummaryMatrixUtils {
             final SummaryDimension baseColDimension) {
         final int curDepth = baseGroup.getDepth();
         final List<DataGroup> childGroups = baseGroup.getChildDataGroups();
+        final int childCount = childGroups != null ? childGroups.size() : 0;
 
         SummaryDimension childDimension;
 
@@ -73,7 +77,7 @@ public final class SummaryMatrixUtils {
                         .addChild(new SummaryDimension(baseGroup.getKey()));
             }
 
-            if (childGroups != null && !childGroups.isEmpty()) {
+            if (childCount > 0) {
                 for (DataGroup childDataGroup : childGroups) {
                     fillRowAndColSummaryDimensions(childDataGroup, rowDimensionMaxDepth,
                             baseRowDimension, childDimension);
@@ -84,7 +88,100 @@ public final class SummaryMatrixUtils {
 
     private static void fillSummaryValuesToCells(final SummaryMatrix matrix,
             final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth) {
-        final String path = baseContainer.getPath();
+        final Pair<Integer, Integer> pair = getRowColIndexPair(baseContainer, matrix,
+                rowDimensionMaxDepth);
+        final int rowIndex = pair.getLeft();
+        final int colIndex = pair.getRight();
+
+        if (rowIndex >= 0 && colIndex >= 0) {
+            final List<SummaryValue> summaryValues = temporarilyToSummaryValueList(
+                    baseContainer.getSummary());
+
+            if (summaryValues != null) {
+                matrix.summaryCells[rowIndex][colIndex] = new SummaryCell()
+                        .addSummaryValues(summaryValues);
+            }
+        }
+
+        final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
+        final int childCount = childGroups != null ? childGroups.size() : 0;
+
+        if (childCount > 0) {
+            for (DataGroup childDataGroup : childGroups) {
+                fillSummaryValuesToCells(matrix, childDataGroup, rowDimensionMaxDepth);
+            }
+        }
+    }
+
+    private static void calculateEmptySummaryCellsBySummaryContainers(final SummaryMatrix matrix,
+            final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth) {
+        final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
+        final int childCount = childGroups != null ? childGroups.size() : 0;
+
+        if (childCount > 0) {
+            for (DataGroup childDataGroup : childGroups) {
+                calculateEmptySummaryCellsBySummaryContainers(matrix, childDataGroup, rowDimensionMaxDepth);
+            }
+
+            final Pair<Integer, Integer> pair = getRowColIndexPair(baseContainer, matrix,
+                    rowDimensionMaxDepth);
+            final int rowIndex = pair.getLeft();
+            final int colIndex = pair.getRight();
+
+            if (rowIndex >= 0 && colIndex >= 0) {
+                SummaryCell cell = matrix.summaryCells[rowIndex][colIndex];
+
+                if (cell == null) {
+                    final List<SummaryValue> summaryValues = calculateSummaryValuesOfChildren(
+                            matrix, childGroups, rowDimensionMaxDepth);
+
+                    if (summaryValues != null) {
+                        cell = new SummaryCell().addSummaryValues(summaryValues);
+                        matrix.summaryCells[rowIndex][colIndex] = cell;
+                    }
+                }
+            }
+        }
+    }
+
+    private static List<SummaryValue> calculateSummaryValuesOfChildren(final SummaryMatrix matrix,
+            final List<DataGroup> childGroups, final int rowDimensionMaxDepth) {
+        BigDecimal sum = new BigDecimal(0);
+
+        for (DataGroup childGroup : childGroups) {
+            final Pair<Integer, Integer> pair = getRowColIndexPair(childGroup, matrix,
+                    rowDimensionMaxDepth);
+            final int rowIndex = pair.getLeft();
+            final int colIndex = pair.getRight();
+
+            if (rowIndex >= 0 && colIndex >= 0) {
+                final SummaryCell cell = matrix.summaryCells[rowIndex][colIndex];
+
+                if (cell == null) {
+                    return null;
+                }
+
+                final List<SummaryValue> summaryValues = cell.getSummaryValues();
+                // FIXME
+                sum = sum.add(summaryValues.get(0).getRepresentingValue());
+            }
+        }
+
+        SummaryValue summaryValue = new SummaryValue(null, SummaryType.SUM, sum);
+        return Arrays.asList(summaryValue);
+    }
+
+    private static Pair<Integer, Integer> getRowColIndexPair(
+            final AbstractSummaryContainer<?> container, final SummaryMatrix matrix,
+            final int rowDimensionMaxDepth) {
+        Pair<Integer, Integer> pair = (Pair<Integer, Integer>) container
+                .getAttribute("rowColIndexPair");
+
+        if (pair != null) {
+            return pair;
+        }
+
+        final String path = container.getPath();
         final String rowPath;
         final String colPath;
         final int offset = StringUtils.ordinalIndexOf(path, SummaryDimension.PATH_DELIMITER,
@@ -101,32 +198,10 @@ public final class SummaryMatrixUtils {
         final int rowIndex = matrix.getRowIndexByDimensionPath(rowPath);
         final int colIndex = matrix.getColIndexByDimensionPath(colPath);
 
-        if (rowIndex >= 0 && colIndex >= 0) {
-            matrix.summaryCells[rowIndex][colIndex] = new SummaryCell()
-                    .addSummaryValues(temporarilyToSummaryValueList(baseContainer.getSummary()));
-        }
+        pair = Pair.of(rowIndex, colIndex);
+        container.setAttribute("rowColIndexPair", pair);
 
-        final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
-
-        if (childGroups != null && !childGroups.isEmpty()) {
-            for (DataGroup childDataGroup : childGroups) {
-                fillSummaryValuesToCells(matrix, childDataGroup, rowDimensionMaxDepth);
-            }
-        }
-    }
-
-    private static void calculateEmptySummarCells(final SummaryMatrix matrix) {
-        final int rows = matrix.getRows();
-        final int cols = matrix.getCols();
-        final SummaryCell[][] cells = matrix.summaryCells;
-
-        for (int i = rows - 1; i >= 0; i--) {
-            for (int j = cols - 1; j >= 0; j--) {
-                if (cells[i][j] == null) {
-                    
-                }
-            }
-        }
+        return pair;
     }
 
     // FIXME
