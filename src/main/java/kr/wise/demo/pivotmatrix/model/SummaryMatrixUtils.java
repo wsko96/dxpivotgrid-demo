@@ -37,6 +37,8 @@ public final class SummaryMatrixUtils {
 
         fillSummaryValuesToCells(matrix, dataAggregation, rowDimensionMaxDepth);
 
+        calculateEmptySummarCells(matrix);
+
         return matrix;
     }
 
@@ -85,7 +87,8 @@ public final class SummaryMatrixUtils {
         final String path = baseContainer.getPath();
         final String rowPath;
         final String colPath;
-        final int offset = StringUtils.ordinalIndexOf(path, "/", rowDimensionMaxDepth + 1);
+        final int offset = StringUtils.ordinalIndexOf(path, SummaryDimension.PATH_DELIMITER,
+                rowDimensionMaxDepth + 1);
         if (offset == -1) {
             rowPath = path;
             colPath = "";
@@ -100,7 +103,7 @@ public final class SummaryMatrixUtils {
 
         if (rowIndex >= 0 && colIndex >= 0) {
             matrix.summaryCells[rowIndex][colIndex] = new SummaryCell()
-                    .addSummaryValues(toSummaryValueList(baseContainer.getSummary()));
+                    .addSummaryValues(temporarilyToSummaryValueList(baseContainer.getSummary()));
         }
 
         final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
@@ -112,7 +115,22 @@ public final class SummaryMatrixUtils {
         }
     }
 
-    private static List<SummaryValue> toSummaryValueList(final List<BigDecimal> values) {
+    private static void calculateEmptySummarCells(final SummaryMatrix matrix) {
+        final int rows = matrix.getRows();
+        final int cols = matrix.getCols();
+        final SummaryCell[][] cells = matrix.summaryCells;
+
+        for (int i = rows - 1; i >= 0; i--) {
+            for (int j = cols - 1; j >= 0; j--) {
+                if (cells[i][j] == null) {
+                    
+                }
+            }
+        }
+    }
+
+    // FIXME
+    private static List<SummaryValue> temporarilyToSummaryValueList(final List<BigDecimal> values) {
         if (values == null) {
             return null;
         }

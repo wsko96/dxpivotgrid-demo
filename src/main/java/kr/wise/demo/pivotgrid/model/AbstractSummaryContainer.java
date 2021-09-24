@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import kr.wise.demo.pivotmatrix.model.SummaryDimension;
+
 abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T> {
 
     private final String key;
@@ -148,7 +150,7 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         childDataGroupsMap.put(group.getKey(), group);
         group.setDepth(depth + 1);
         group.setParent(this);
-        group.setPath(path + "/" + group.getKey());
+        group.setPath(path + SummaryDimension.PATH_DELIMITER + group.getKey());
     }
 
     public DataGroup getChildDataGroup(final String key) {

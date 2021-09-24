@@ -13,6 +13,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SummaryDimension {
 
+    public static final String PATH_DELIMITER = "~|_";
+
     private final String key;
 
     private List<SummaryDimension> children;
@@ -63,7 +65,7 @@ public class SummaryDimension {
         childMapByKey.put(child.getKey(), child);
 
         child.parent = this;
-        child.path = path + "/" + child.getKey();
+        child.path = path + PATH_DELIMITER + child.getKey();
 
         return child;
     }
