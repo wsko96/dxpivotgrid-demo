@@ -6,7 +6,7 @@
     </Console>
   </Appenders>
   <Loggers>
-    <Logger name="kr.wise.demo.pivotgrid" level="debug" additivity="false">
+    <Logger name="kr.wise.demo" level="debug" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
     <Root level="error">

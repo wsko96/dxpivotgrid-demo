@@ -30,6 +30,8 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
     private boolean visible;
 
+    private String path = "";
+
     public AbstractSummaryContainer() {
         this(null);
     }
@@ -146,6 +148,7 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
         childDataGroupsMap.put(group.getKey(), group);
         group.setDepth(depth + 1);
         group.setParent(this);
+        group.setPath(path + "/" + group.getKey());
     }
 
     public DataGroup getChildDataGroup(final String key) {
@@ -174,5 +177,13 @@ abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T>
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(final String path) {
+        this.path = path;
     }
 }

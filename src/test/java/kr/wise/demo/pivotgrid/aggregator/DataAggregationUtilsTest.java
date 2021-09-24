@@ -102,7 +102,7 @@ public class DataAggregationUtilsTest {
             assertEquals(0, dataAggregation.getPaging().getOffset());
             assertEquals(7, dataAggregation.getPaging().getLimit());
             assertEquals(7, dataAggregation.getPaging().getCount());
-            assertEquals(13, dataAggregation.getPaging().getTotal());
+            assertEquals(17, dataAggregation.getPaging().getTotal());
 
             List<DataGroup> groups = dataAggregation.getChildDataGroups(true);
             assertEquals(2, groups.size());
@@ -128,7 +128,7 @@ public class DataAggregationUtilsTest {
             assertEquals(7, dataAggregation.getPaging().getOffset());
             assertEquals(7, dataAggregation.getPaging().getLimit());
             assertEquals(7, dataAggregation.getPaging().getCount());
-            assertEquals(13, dataAggregation.getPaging().getTotal());
+            assertEquals(17, dataAggregation.getPaging().getTotal());
 
             List<DataGroup> groups = dataAggregation.getChildDataGroups(true);
             assertEquals(2, groups.size());
@@ -153,8 +153,8 @@ public class DataAggregationUtilsTest {
 
             assertEquals(11, dataAggregation.getPaging().getOffset());
             assertEquals(7, dataAggregation.getPaging().getLimit());
-            assertEquals(4, dataAggregation.getPaging().getCount());
-            assertEquals(13, dataAggregation.getPaging().getTotal());
+            assertEquals(6, dataAggregation.getPaging().getCount());
+            assertEquals(17, dataAggregation.getPaging().getTotal());
 
             List<DataGroup> groups = dataAggregation.getChildDataGroups(true);
             assertEquals(1, groups.size());
@@ -164,7 +164,7 @@ public class DataAggregationUtilsTest {
 
             groupKeys = dataAggregation.getChildDataGroup("Europe").getChildDataGroups(true)
                     .stream().map((group) -> group.getKey()).toArray();
-            assertArrayEquals(new Object[] { "Berlin", "Madrid" }, groupKeys);
+            assertArrayEquals(new Object[] { "London", "Berlin", "Madrid" }, groupKeys);
         }
     }
 }
