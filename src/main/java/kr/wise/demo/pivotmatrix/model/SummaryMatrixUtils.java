@@ -130,22 +130,22 @@ public final class SummaryMatrixUtils {
                             cell.addSummaryValues(summaryValues);
                         }
                     }
+                }
 
-                    if (!cell.hasSummaryValue()) {
-                        final List<Integer> rowChildIndices = cell.getRowChildCellIndices();
-                        final int rowChildrenColIndex = cell.getRowChildrenColIndex();
+                if (!cell.hasSummaryValue()) {
+                    final List<Integer> rowChildIndices = cell.getRowChildCellIndices();
+                    final int rowChildrenColIndex = cell.getRowChildrenColIndex();
 
-                        if (rowChildIndices != null && !rowChildIndices.isEmpty()) {
-                            SummaryCell[] childCells = new SummaryCell[rowChildIndices.size()];
-                            int k = 0;
-                            for (Integer index : rowChildIndices) {
-                                childCells[k++] = matrix.summaryCells[index][rowChildrenColIndex];
-                            }
-                            final List<SummaryValue> summaryValues = aggregateSummaryValuesOfCells(
-                                    childCells, 0, childCells.length);
-                            if (summaryValues != null) {
-                                cell.addSummaryValues(summaryValues);
-                            }
+                    if (rowChildIndices != null && !rowChildIndices.isEmpty()) {
+                        SummaryCell[] childCells = new SummaryCell[rowChildIndices.size()];
+                        int k = 0;
+                        for (Integer index : rowChildIndices) {
+                            childCells[k++] = matrix.summaryCells[index][rowChildrenColIndex];
+                        }
+                        final List<SummaryValue> summaryValues = aggregateSummaryValuesOfCells(
+                                childCells, 0, childCells.length);
+                        if (summaryValues != null) {
+                            cell.addSummaryValues(summaryValues);
                         }
                     }
                 }
