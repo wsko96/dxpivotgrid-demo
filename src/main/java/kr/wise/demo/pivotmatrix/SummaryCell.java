@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotmatrix.model;
+package kr.wise.demo.pivotmatrix;
 
 import java.util.ArrayList;
 import java.util.Collection;

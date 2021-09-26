@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotmatrix.model;
+package kr.wise.demo.pivotmatrix;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

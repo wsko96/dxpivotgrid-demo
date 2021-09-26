@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotmatrix.model;
+package kr.wise.demo.pivotmatrix.impl;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,22 +12,29 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SummaryMatrix {
+import kr.wise.demo.pivotmatrix.SummaryCell;
+import kr.wise.demo.pivotmatrix.SummaryDimension;
+import kr.wise.demo.pivotmatrix.SummaryMatrix;
 
-    private static Logger log = LoggerFactory.getLogger(SummaryMatrix.class);
+public class DefaultSummaryMatrixImpl implements SummaryMatrix {
 
-    private final SummaryDimension rowSummaryDimension;
-    private final SummaryDimension colSummaryDimension;
-    private final SummaryDimension[] rowFlattenedSummaryDimensions;
-    private final SummaryDimension[] colFlattenedSummaryDimensions;
-    private final Map<String, Pair<Integer, SummaryDimension>> rowSummaryDimensionPathMap = new HashMap<>();
-    private final Map<String, Pair<Integer, SummaryDimension>> colSummaryDimensionPathMap = new HashMap<>();
+    private static Logger log = LoggerFactory.getLogger(DefaultSummaryMatrixImpl.class);
 
-    private final int rows;
-    private final int cols;
-    final SummaryCell[][] summaryCells;
+    private SummaryDimension rowSummaryDimension;
+    private SummaryDimension colSummaryDimension;
+    private SummaryDimension[] rowFlattenedSummaryDimensions;
+    private SummaryDimension[] colFlattenedSummaryDimensions;
+    private Map<String, Pair<Integer, SummaryDimension>> rowSummaryDimensionPathMap = new HashMap<>();
+    private Map<String, Pair<Integer, SummaryDimension>> colSummaryDimensionPathMap = new HashMap<>();
 
-    public SummaryMatrix(final SummaryDimension rowSummaryDimension, final SummaryDimension colSummaryDimension) {
+    private int rows;
+    private int cols;
+    SummaryCell[][] summaryCells;
+
+    private DefaultSummaryMatrixImpl() {
+    }
+
+    public DefaultSummaryMatrixImpl(final SummaryDimension rowSummaryDimension, final SummaryDimension colSummaryDimension) {
         this.rowSummaryDimension = rowSummaryDimension;
         this.colSummaryDimension = colSummaryDimension;
 
@@ -124,30 +131,35 @@ public class SummaryMatrix {
         }
     }
 
-    public SummaryDimension getRowSummaryDimensions() {
+    public SummaryDimension getRowSummaryDimension() {
         return rowSummaryDimension;
     }
 
-    public SummaryDimension getColSummaryDimensions() {
+    public SummaryDimension getColSummaryDimension() {
         return colSummaryDimension;
     }
 
+    @Override
     public SummaryDimension[] getRowFlattendSummaryDimensions() {
         return rowFlattenedSummaryDimensions;
     }
 
+    @Override
     public SummaryDimension[] getColFlattendSummaryDimensions() {
         return colFlattenedSummaryDimensions;
     }
 
+    @Override
     public int getRows() {
         return rows;
     }
 
+    @Override
     public int getCols() {
         return cols;
     }
 
+    @Override
     public SummaryCell[][] getSummaryCells() {
         return summaryCells;
     }
@@ -173,13 +185,43 @@ public class SummaryMatrix {
         return cells;
     }
 
+    public SummaryMatrix sliceRows(final List<Integer> rowIndices) {
+        final DefaultSummaryMatrixImpl sliced = new DefaultSummaryMatrixImpl();
+
+        sliced.rowSummaryDimension = rowSummaryDimension;
+        sliced.colSummaryDimension = colSummaryDimension;
+
+        sliced.rows = rowIndices.size();
+        sliced.cols = cols;
+
+        sliced.summaryCells = new SummaryCell[rowIndices.size()][cols];
+
+        sliced.rowFlattenedSummaryDimensions = new SummaryDimension[rowIndices.size()];
+        int i = 0;
+        for (int rowIndex : rowIndices) {
+            sliced.rowFlattenedSummaryDimensions[i] = rowFlattenedSummaryDimensions[rowIndex];
+            System.arraycopy(summaryCells[rowIndex], 0, sliced.summaryCells[i], 0, cols);
+            ++i;
+        }
+
+        sliced.colFlattenedSummaryDimensions = new SummaryDimension[cols];
+        if (cols > 0) {
+            System.arraycopy(colFlattenedSummaryDimensions, 0, sliced.colFlattenedSummaryDimensions, 0, cols);
+        }
+
+        sliced.rowSummaryDimensionPathMap = rowSummaryDimensionPathMap;
+        sliced.colSummaryDimensionPathMap = colSummaryDimensionPathMap;
+
+        return sliced;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SummaryMatrix)) {
+        if (!(o instanceof DefaultSummaryMatrixImpl)) {
             return false;
         }
 
-        final SummaryMatrix that = (SummaryMatrix) o;
+        final DefaultSummaryMatrixImpl that = (DefaultSummaryMatrixImpl) o;
 
         if (rows != that.rows || cols != that.cols) {
             return false;

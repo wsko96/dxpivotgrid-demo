@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import kr.wise.demo.pivotmatrix.model.SummaryDimension;
+import kr.wise.demo.pivotmatrix.SummaryDimension;
 
 abstract public class AbstractSummaryContainer<T> implements SummaryContainer<T> {
 

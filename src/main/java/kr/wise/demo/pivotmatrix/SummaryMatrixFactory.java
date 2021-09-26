@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotmatrix.model;
+package kr.wise.demo.pivotmatrix;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -13,13 +13,15 @@ import org.slf4j.LoggerFactory;
 import kr.wise.demo.pivotgrid.model.AbstractSummaryContainer;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataGroup;
+import kr.wise.demo.pivotmatrix.impl.DefaultSummaryMatrixImpl;
 
-public final class SummaryMatrixUtils {
+public final class SummaryMatrixFactory {
 
-    private static Logger log = LoggerFactory.getLogger(SummaryMatrixUtils.class);
+    private static Logger log = LoggerFactory.getLogger(SummaryMatrixFactory.class);
 
-    private SummaryMatrixUtils() {
+    private SummaryMatrixFactory() {
     }
+
 
     public static SummaryMatrix createSummaryMatrixFromFullyExpandedDataAggregation(
             final DataAggregation dataAggregation, final int rowDimensionMaxDepth) {
@@ -36,7 +38,7 @@ public final class SummaryMatrixUtils {
             }
         }
 
-        final SummaryMatrix matrix = new SummaryMatrix(rowDimension, colDimension);
+        final DefaultSummaryMatrixImpl matrix = new DefaultSummaryMatrixImpl(rowDimension, colDimension);
 
         fillSummaryValuesOfLeafDataGroups(matrix, dataAggregation, rowDimensionMaxDepth);
 
@@ -86,7 +88,7 @@ public final class SummaryMatrixUtils {
         }
     }
 
-    private static void fillSummaryValuesOfLeafDataGroups(final SummaryMatrix matrix,
+    private static void fillSummaryValuesOfLeafDataGroups(final DefaultSummaryMatrixImpl matrix,
             final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth) {
         final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
         final int childCount = childGroups != null ? childGroups.size() : 0;
@@ -103,16 +105,18 @@ public final class SummaryMatrixUtils {
             if (pair != null) {
                 final List<SummaryValue> summaryValues = temporarilyToSummaryValueList(
                         baseContainer.getSummary());
-                matrix.summaryCells[pair.getLeft()][pair.getRight()]
-                        .addSummaryValues(summaryValues);
+                final SummaryCell[][] summaryCells = matrix.getSummaryCells();
+                summaryCells[pair.getLeft()][pair.getRight()].addSummaryValues(summaryValues);
             }
         }
     }
 
     private static void calculateEmptyParentSummaryCells(final SummaryMatrix matrix) {
+        final SummaryCell[][] summaryCells = matrix.getSummaryCells();
+
         for (int i = matrix.getRows() - 1; i >= 0; i--) {
             for (int j = matrix.getCols() - 1; j >= 0; j--) {
-                final SummaryCell cell = matrix.summaryCells[i][j];
+                final SummaryCell cell = summaryCells[i][j];
 
                 if (!cell.hasSummaryValue()) {
                     final List<Integer> colChildIndices = cell.getColChildCellIndices();
@@ -122,7 +126,7 @@ public final class SummaryMatrixUtils {
                         SummaryCell[] childCells = new SummaryCell[colChildIndices.size()];
                         int k = 0;
                         for (Integer index : colChildIndices) {
-                            childCells[k++] = matrix.summaryCells[colChildrenRowIndex][index];
+                            childCells[k++] = summaryCells[colChildrenRowIndex][index];
                         }
                         final List<SummaryValue> summaryValues = aggregateSummaryValuesOfCells(
                                 childCells, 0, childCells.length);
@@ -140,7 +144,7 @@ public final class SummaryMatrixUtils {
                         SummaryCell[] childCells = new SummaryCell[rowChildIndices.size()];
                         int k = 0;
                         for (Integer index : rowChildIndices) {
-                            childCells[k++] = matrix.summaryCells[index][rowChildrenColIndex];
+                            childCells[k++] = summaryCells[index][rowChildrenColIndex];
                         }
                         final List<SummaryValue> summaryValues = aggregateSummaryValuesOfCells(
                                 childCells, 0, childCells.length);
@@ -174,7 +178,7 @@ public final class SummaryMatrixUtils {
     }
 
     private static Pair<Integer, Integer> findRowColIndexPair(
-            final AbstractSummaryContainer<?> container, final SummaryMatrix matrix,
+            final AbstractSummaryContainer<?> container, final DefaultSummaryMatrixImpl matrix,
             final int rowDimensionMaxDepth) {
         final String path = container.getPath();
         final String rowPath;

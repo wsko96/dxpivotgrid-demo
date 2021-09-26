@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotmatrix.model;
+package kr.wise.demo.pivotmatrix;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataGroup;
+import kr.wise.demo.pivotgrid.model.Paging;
 
 public class SummaryMatrixUtilsTest {
 
@@ -77,8 +78,9 @@ public class SummaryMatrixUtilsTest {
     }
 
     @Test
-    public void testWithDataAggregationInput() throws Exception {
-        SummaryMatrix matrix = SummaryMatrixUtils.createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation, 2);
+    public void testWithFullyExpandedDataAggregation() throws Exception {
+        SummaryMatrix matrix = SummaryMatrixFactory
+                .createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation, 2);
 
         assertEquals(7, matrix.getRows());
         assertEquals(11, matrix.getCols());
@@ -90,8 +92,7 @@ public class SummaryMatrixUtilsTest {
                         .collect(Collectors.toList()));
 
         assertEquals(
-                Arrays.asList(null, "2013", "Q1", "Q2", "Q3", "Q4", "2014", "Q1", "Q2", "Q3",
-                        "Q4"),
+                Arrays.asList(null, "2013", "Q1", "Q2", "Q3", "Q4", "2014", "Q1", "Q2", "Q3", "Q4"),
                 Arrays.stream(matrix.getColFlattendSummaryDimensions()).map(dim -> dim.getKey())
                         .collect(Collectors.toList()));
 
@@ -105,4 +106,28 @@ public class SummaryMatrixUtilsTest {
             assertEquals(matrix.getCols(), cells[i].length);
         }
     }
+
+    @Test
+    public void testPaginationWithSummaryMatrix() throws Exception {
+        SummaryMatrix matrix = SummaryMatrixFactory
+                .createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation, 2);
+        log.debug("matrix: {}", matrix);
+
+        Paging paging = new Paging();
+        paging.setOffset(0);
+        paging.setLimit(4);
+
+        SummaryMatrix pageMatrix = SummaryMatrixUtils.slicePageSummaryMatrix(matrix, paging, 2);
+        log.debug("pageMatrix: {}", pageMatrix);
+        log.debug("paging: {}", paging);
+
+        paging = new Paging();
+        paging.setOffset(4);
+        paging.setLimit(4);
+
+        pageMatrix = SummaryMatrixUtils.slicePageSummaryMatrix(matrix, paging, 2);
+        log.debug("pageMatrix: {}", pageMatrix);
+        log.debug("paging: {}", paging);
+    }
+
 }

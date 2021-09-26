@@ -1,4 +1,4 @@
-package kr.wise.demo.pivotmatrix.model;
+package kr.wise.demo.pivotmatrix;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+
+import kr.wise.demo.pivotmatrix.impl.DefaultSummaryMatrixImpl;
 
 public class SummaryMatrixTest {
 
@@ -31,7 +33,7 @@ public class SummaryMatrixTest {
         child.addChild(new SummaryDimension("Q3"));
         child.addChild(new SummaryDimension("Q4"));
 
-        SummaryMatrix matrix = new SummaryMatrix(dimRow, dimCol);
+        DefaultSummaryMatrixImpl matrix = new DefaultSummaryMatrixImpl(dimRow, dimCol);
 
         assertEquals(7, matrix.getRows());
         assertEquals(11, matrix.getCols());
