@@ -1,5 +1,7 @@
 package kr.wise.demo.pivotmatrix.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +14,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.wise.demo.pivotgrid.param.GroupParam;
+import kr.wise.demo.pivotgrid.param.SummaryParam;
 import kr.wise.demo.pivotmatrix.SummaryCell;
 import kr.wise.demo.pivotmatrix.SummaryDimension;
 import kr.wise.demo.pivotmatrix.SummaryMatrix;
@@ -19,6 +23,10 @@ import kr.wise.demo.pivotmatrix.SummaryMatrix;
 public class DefaultSummaryMatrixImpl implements SummaryMatrix {
 
     private static Logger log = LoggerFactory.getLogger(DefaultSummaryMatrixImpl.class);
+
+    private List<GroupParam> rowGroupParams;
+    private List<GroupParam> colGroupParams;
+    private List<SummaryParam> summaryParams;
 
     private SummaryDimension rowSummaryDimension;
     private SummaryDimension colSummaryDimension;
@@ -34,7 +42,23 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
     private DefaultSummaryMatrixImpl() {
     }
 
-    public DefaultSummaryMatrixImpl(final SummaryDimension rowSummaryDimension, final SummaryDimension colSummaryDimension) {
+    public DefaultSummaryMatrixImpl(final List<GroupParam> rowGroupParams,
+            final List<GroupParam> colGroupParams, final List<SummaryParam> summaryParams,
+            final SummaryDimension rowSummaryDimension,
+            final SummaryDimension colSummaryDimension) {
+        this.rowGroupParams = new ArrayList<>();
+        if (rowGroupParams != null) {
+            this.rowGroupParams.addAll(rowGroupParams);
+        }
+        this.colGroupParams = new ArrayList<>();
+        if (colGroupParams != null) {
+            this.colGroupParams.addAll(colGroupParams);
+        }
+        this.summaryParams = new ArrayList<>();
+        if (summaryParams != null) {
+            this.summaryParams.addAll(summaryParams);
+        }
+
         this.rowSummaryDimension = rowSummaryDimension;
         this.colSummaryDimension = colSummaryDimension;
 
@@ -131,6 +155,24 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
         }
     }
 
+    @Override
+    public List<GroupParam> getRowGroupParams() {
+        return rowGroupParams != null ? Collections.unmodifiableList(rowGroupParams)
+                : Collections.emptyList();
+    }
+
+    @Override
+    public List<GroupParam> getColGroupParams() {
+        return colGroupParams != null ? Collections.unmodifiableList(colGroupParams)
+                : Collections.emptyList();
+    }
+
+    @Override
+    public List<SummaryParam> getSummaryParams() {
+        return summaryParams != null ? Collections.unmodifiableList(summaryParams)
+                : Collections.emptyList();
+    }
+
     public SummaryDimension getRowSummaryDimension() {
         return rowSummaryDimension;
     }
@@ -174,7 +216,8 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
         return pair != null ? pair.getLeft() : -1;
     }
 
-    public SummaryCell[] getColumnSummaryCells(final int colIndex, final int rowBeginIndex, final int maxLength) {
+    public SummaryCell[] getColumnSummaryCells(final int colIndex, final int rowBeginIndex,
+            final int maxLength) {
         final int rowEndIndex = Math.min(rowBeginIndex + maxLength, rows);
         final SummaryCell[] cells = new SummaryCell[rowEndIndex - rowBeginIndex];
 
@@ -187,6 +230,21 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
 
     public SummaryMatrix sliceRows(final List<Integer> rowIndices) {
         final DefaultSummaryMatrixImpl sliced = new DefaultSummaryMatrixImpl();
+
+        sliced.rowGroupParams = new ArrayList<>();
+        if (rowGroupParams != null) {
+            sliced.rowGroupParams.addAll(rowGroupParams);
+        }
+
+        sliced.colGroupParams = new ArrayList<>();
+        if (colGroupParams != null) {
+            sliced.colGroupParams.addAll(colGroupParams);
+        }
+
+        sliced.summaryParams = new ArrayList<>();
+        if (summaryParams != null) {
+            sliced.summaryParams.addAll(summaryParams);
+        }
 
         sliced.rowSummaryDimension = rowSummaryDimension;
         sliced.colSummaryDimension = colSummaryDimension;
@@ -206,7 +264,8 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
 
         sliced.colFlattenedSummaryDimensions = new SummaryDimension[cols];
         if (cols > 0) {
-            System.arraycopy(colFlattenedSummaryDimensions, 0, sliced.colFlattenedSummaryDimensions, 0, cols);
+            System.arraycopy(colFlattenedSummaryDimensions, 0, sliced.colFlattenedSummaryDimensions,
+                    0, cols);
         }
 
         sliced.rowSummaryDimensionPathMap = rowSummaryDimensionPathMap;
@@ -273,8 +332,8 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
         sb.append("]\n");
 
         return new ToStringBuilder(this).append("rowSummaryDimension", rowSummaryDimension)
-                .append("colSummaryDimension", colSummaryDimension)
-                .append("summaryCells", sb).toString();
+                .append("colSummaryDimension", colSummaryDimension).append("summaryCells", sb)
+                .toString();
     }
 
     private void fillSummaryDimensionsToList(final List<SummaryDimension> list,

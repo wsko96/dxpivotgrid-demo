@@ -2,7 +2,9 @@ package kr.wise.demo.pivotmatrix;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,15 +15,31 @@ import org.slf4j.LoggerFactory;
 import kr.wise.demo.pivotgrid.model.DataAggregation;
 import kr.wise.demo.pivotgrid.model.DataGroup;
 import kr.wise.demo.pivotgrid.model.Paging;
+import kr.wise.demo.pivotgrid.param.GroupParam;
+import kr.wise.demo.pivotgrid.param.SummaryParam;
 
-public class SummaryMatrixUtilsTest {
+public class SummaryMatrixFactoryTest {
 
-    private static Logger log = LoggerFactory.getLogger(SummaryMatrixUtilsTest.class);
+    private static Logger log = LoggerFactory.getLogger(SummaryMatrixFactoryTest.class);
 
+    private List<GroupParam> rowGroupParams;
+    private List<GroupParam> colGroupParams;
+    private List<SummaryParam> summaryParams;
     private DataAggregation dataAggregation;
 
     @BeforeEach
     public void setUp() throws Exception {
+        rowGroupParams = new ArrayList<>();
+        rowGroupParams.add(new GroupParam("region", null, true));
+        rowGroupParams.add(new GroupParam("city", null, false));
+
+        colGroupParams = new ArrayList<>();
+        colGroupParams.add(new GroupParam("date", "year", true));
+        colGroupParams.add(new GroupParam("date", "quarter", false));
+
+        summaryParams = new ArrayList<>();
+        summaryParams.add(new SummaryParam("amount", "sum"));
+
         dataAggregation = new DataAggregation();
 
         DataGroup group = dataAggregation.addChildDataGroup("North America");
@@ -80,7 +98,8 @@ public class SummaryMatrixUtilsTest {
     @Test
     public void testWithFullyExpandedDataAggregation() throws Exception {
         SummaryMatrix matrix = SummaryMatrixFactory
-                .createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation, 2);
+                .createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation,
+                        rowGroupParams, colGroupParams, summaryParams);
 
         assertEquals(7, matrix.getRows());
         assertEquals(11, matrix.getCols());
@@ -110,14 +129,15 @@ public class SummaryMatrixUtilsTest {
     @Test
     public void testPaginationWithSummaryMatrix() throws Exception {
         SummaryMatrix matrix = SummaryMatrixFactory
-                .createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation, 2);
+                .createSummaryMatrixFromFullyExpandedDataAggregation(dataAggregation,
+                        rowGroupParams, colGroupParams, summaryParams);
         log.debug("matrix: {}", matrix);
 
         Paging paging = new Paging();
         paging.setOffset(0);
         paging.setLimit(4);
 
-        SummaryMatrix pageMatrix = SummaryMatrixUtils.slicePageSummaryMatrix(matrix, paging, 2);
+        SummaryMatrix pageMatrix = SummaryMatrixFactory.slicePageSummaryMatrix(matrix, paging, 2);
         log.debug("pageMatrix: {}", pageMatrix);
         log.debug("paging: {}", paging);
 
@@ -125,7 +145,7 @@ public class SummaryMatrixUtilsTest {
         paging.setOffset(4);
         paging.setLimit(4);
 
-        pageMatrix = SummaryMatrixUtils.slicePageSummaryMatrix(matrix, paging, 2);
+        pageMatrix = SummaryMatrixFactory.slicePageSummaryMatrix(matrix, paging, 2);
         log.debug("pageMatrix: {}", pageMatrix);
         log.debug("paging: {}", paging);
     }
