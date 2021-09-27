@@ -74,7 +74,7 @@ public final class SummaryMatrixFactory {
 
         int offset = 0;
 
-        while (offset < pageRowIndices.size()) {
+        while (offset < flattendedRowDimensions.length) {
             final SummaryDimension rowDimension = flattendedRowDimensions[offset];
             SummaryDimension parentRowDimension = rowDimension.getParent();
 
