@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SummaryCell {
 
@@ -35,10 +42,12 @@ public class SummaryCell {
         return this;
     }
 
+    @JsonProperty(value = "vs")
     public List<SummaryValue> getSummaryValues() {
         return unmodifiableSummaryValues;
     }
 
+    @JsonIgnore
     public List<Integer> getRowChildCellIndices() {
         return rowChildCellIndices;
     }
@@ -47,6 +56,7 @@ public class SummaryCell {
         this.rowChildCellIndices = rowChildCellIndices;
     }
 
+    @JsonIgnore
     public List<Integer> getColChildCellIndices() {
         return colChildCellIndices;
     }
@@ -55,6 +65,7 @@ public class SummaryCell {
         this.colChildCellIndices = colChildCellIndices;
     }
 
+    @JsonIgnore
     public int getRowChildrenColIndex() {
         return rowChildrenColIndex;
     }
@@ -63,6 +74,7 @@ public class SummaryCell {
         this.rowChildrenColIndex = rowChildrenColIndex;
     }
 
+    @JsonIgnore
     public int getColChildrenRowIndex() {
         return colChildrenRowIndex;
     }
@@ -71,4 +83,46 @@ public class SummaryCell {
         this.colChildrenRowIndex = colChildrenRowIndex;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SummaryCell)) {
+            return false;
+        }
+
+        final SummaryCell that = (SummaryCell) o;
+
+        if (!Objects.equals(summaryValues, that.summaryValues)) {
+            return false;
+        }
+
+        if (!Objects.equals(rowChildCellIndices, that.rowChildCellIndices)) {
+            return false;
+        }
+
+        if (rowChildrenColIndex != that.rowChildrenColIndex) {
+            return false;
+        }
+
+        if (!Objects.equals(colChildCellIndices, that.colChildCellIndices)) {
+            return false;
+        }
+
+        if (colChildrenRowIndex != that.colChildrenRowIndex) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(summaryValues).append(rowChildCellIndices)
+                .append(rowChildrenColIndex).append(colChildCellIndices).append(colChildrenRowIndex)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("summaryValues", summaryValues).toString();
+    }
 }

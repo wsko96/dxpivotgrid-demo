@@ -11,6 +11,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SummaryValue {
 
@@ -38,6 +41,8 @@ public class SummaryValue {
         this.value = value;
     }
 
+    @JsonInclude(Include.NON_NULL)
+    @JsonProperty("f")
     public String getFieldName() {
         return fieldName;
     }
@@ -46,6 +51,7 @@ public class SummaryValue {
         this.fieldName = fieldName;
     }
 
+    @JsonProperty("t")
     public SummaryType getSummaryType() {
         return summaryType;
     }
@@ -54,6 +60,8 @@ public class SummaryValue {
         this.summaryType = summaryType;
     }
 
+    @JsonProperty("c")
+    @JsonInclude(Include.NON_DEFAULT)
     public long getCount() {
         return count;
     }
@@ -66,6 +74,8 @@ public class SummaryValue {
         return ++count;
     }
 
+    @JsonInclude(Include.NON_NULL)
+    @JsonProperty("s")
     public BigDecimal getSum() {
         return sum;
     }
@@ -74,10 +84,12 @@ public class SummaryValue {
         this.sum = sum;
     }
 
+    @JsonInclude(Include.NON_NULL)
+    @JsonProperty("tv")
     public String getTextValue() {
-    	return textValue;
+        return textValue;
     }
-    
+
     public void setTextValue(String textValue) {
     	this.textValue = textValue;
     }
@@ -100,6 +112,7 @@ public class SummaryValue {
         distinctValues.add(distinctValue);
     }
 
+    @JsonProperty("v")
     public BigDecimal getValue() {
         return value;
     }

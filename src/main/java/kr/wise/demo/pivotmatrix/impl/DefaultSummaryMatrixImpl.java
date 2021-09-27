@@ -14,6 +14,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import kr.wise.demo.pivotgrid.param.GroupParam;
 import kr.wise.demo.pivotgrid.param.SummaryParam;
 import kr.wise.demo.pivotmatrix.SummaryCell;
@@ -72,14 +74,15 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
         colFlattenedSummaryDimensions = flattendList
                 .toArray(new SummaryDimension[flattendList.size()]);
 
-        rows = rowFlattenedSummaryDimensions.length;
-        cols = colFlattenedSummaryDimensions.length;
-
-        summaryCells = new SummaryCell[rows][cols];
         initSummaryCells();
     }
 
     private void initSummaryCells() {
+        rows = rowFlattenedSummaryDimensions.length;
+        cols = colFlattenedSummaryDimensions.length;
+
+        summaryCells = new SummaryCell[rows][cols];
+
         final SummaryCell rootCell = new SummaryCell();
         summaryCells[0][0] = rootCell;
 
@@ -202,8 +205,13 @@ public class DefaultSummaryMatrixImpl implements SummaryMatrix {
     }
 
     @Override
+    @JsonProperty("cells")
     public SummaryCell[][] getSummaryCells() {
         return summaryCells;
+    }
+
+    public void setSummaryCells(SummaryCell[][] summaryCells) {
+        this.summaryCells = summaryCells;
     }
 
     public int getRowIndexByDimensionPath(final String path) {
