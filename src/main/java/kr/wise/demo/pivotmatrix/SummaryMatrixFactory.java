@@ -118,7 +118,7 @@ public final class SummaryMatrixFactory {
         final DefaultSummaryMatrixImpl matrix = new DefaultSummaryMatrixImpl(rowGroupParams,
                 colGroupParams, summaryParams, rowDimension, colDimension);
 
-        fillSummaryValuesOfLeafDataGroups(matrix, dataAggregation, rowDimensionMaxDepth);
+        fillSummaryValuesOfDataGroups(matrix, dataAggregation, rowDimensionMaxDepth);
 
         calculateEmptyParentSummaryCells(matrix);
 
@@ -166,26 +166,25 @@ public final class SummaryMatrixFactory {
         }
     }
 
-    private static void fillSummaryValuesOfLeafDataGroups(final DefaultSummaryMatrixImpl matrix,
+    private static void fillSummaryValuesOfDataGroups(final DefaultSummaryMatrixImpl matrix,
             final AbstractSummaryContainer<?> baseContainer, final int rowDimensionMaxDepth) {
         final List<DataGroup> childGroups = baseContainer.getChildDataGroups();
         final int childCount = childGroups != null ? childGroups.size() : 0;
 
         if (childCount > 0) {
             for (DataGroup childDataGroup : childGroups) {
-                fillSummaryValuesOfLeafDataGroups(matrix, childDataGroup, rowDimensionMaxDepth);
+                fillSummaryValuesOfDataGroups(matrix, childDataGroup, rowDimensionMaxDepth);
             }
         }
-        else {
-            final Pair<Integer, Integer> pair = findRowColIndexPair(baseContainer, matrix,
-                    rowDimensionMaxDepth);
 
-            if (pair != null) {
-                final List<SummaryValue> summaryValues = temporarilyToSummaryValueList(
-                        baseContainer.getSummary());
-                final SummaryCell[][] summaryCells = matrix.getSummaryCells();
-                summaryCells[pair.getLeft()][pair.getRight()].addSummaryValues(summaryValues);
-            }
+        final Pair<Integer, Integer> pair = findRowColIndexPair(baseContainer, matrix,
+                rowDimensionMaxDepth);
+
+        if (pair != null) {
+            final List<SummaryValue> summaryValues = temporarilyToSummaryValueList(
+                    baseContainer.getSummary());
+            final SummaryCell[][] summaryCells = matrix.getSummaryCells();
+            summaryCells[pair.getLeft()][pair.getRight()].addSummaryValues(summaryValues);
         }
     }
 
